@@ -14,7 +14,7 @@
 namespace App\View;
 
 use Cake\View\View;
-
+use Cake\Utility\Inflector;
 /**
  * Application View
  *
@@ -36,5 +36,12 @@ class AppView extends View
      */
     public function initialize()
     {
+    }
+    
+    public function bodyClass(){
+        $action = Inflector::dasherize($this->request->action);
+        $controller = Inflector::dasherize($this->name);
+        
+        return "controller-{$controller} action-{$action}";
     }
 }

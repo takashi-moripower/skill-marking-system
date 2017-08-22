@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -12,11 +13,13 @@
  * @since     0.2.9
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace App\Controller;
 
 use Cake\Controller\Controller;
 use Cake\Event\Event;
-
+use Cake\Controller\ComponentRegistry;
+use Acl\Controller\Component\AclComponent;
 /**
  * Application Controller
  *
@@ -25,8 +28,7 @@ use Cake\Event\Event;
  *
  * @link https://book.cakephp.org/3.0/en/controllers.html#the-app-controller
  */
-class AppController extends Controller
-{
+class AppController extends Controller {
 
     /**
      * Initialization hook method.
@@ -37,19 +39,25 @@ class AppController extends Controller
      *
      * @return void
      */
-    public function initialize()
-    {
+    public function initialize() {
         parent::initialize();
 
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
+        $this->loadComponent('Acl.Acl');
 
-        /*
-         * Enable the following components for recommended CakePHP security settings.
-         * see https://book.cakephp.org/3.0/en/controllers/components/security.html
-         */
-        //$this->loadComponent('Security');
-        //$this->loadComponent('Csrf');
+
+        $this->loadComponent('Auth', [
+            'authorize' => 'Controller',
+            // 権限無しページに飛ぶと無限ループになったり、変なURLにリダイレクトされるのを防ぐ
+            'unauthorizedRedirect' => ['plugin' => NULL, 'controller' => 'users', 'action' => 'login'],
+            'authError' => 'アクセス権限がありません',
+            'authenticate' => [
+                'Form' => [
+                    'fields' => ['username' => 'email']
+                ]
+            ]
+        ]);
     }
 
     /**
@@ -58,15 +66,32 @@ class AppController extends Controller
      * @param \Cake\Event\Event $event The beforeRender event.
      * @return \Cake\Http\Response|null|void
      */
-    public function beforeRender(Event $event)
-    {
+    public function beforeRender(Event $event) {
         // Note: These defaults are just to get started quickly with development
         // and should not be used in production. You should instead set "_serialize"
         // in each action as required.
         if (!array_key_exists('_serialize', $this->viewVars) &&
-            in_array($this->response->type(), ['application/json', 'application/xml'])
+                in_array($this->response->type(), ['application/json', 'application/xml'])
         ) {
             $this->set('_serialize', true);
         }
     }
+
+    public function beforeFilter(Event $event) {
+
+        //デバッグ時はすべてのアクションにアクセス可能にする
+        if (\Cake\Core\Configure::read('debug') ) {
+            $this->Auth->allow();
+        }
+    }
+    
+    public function isAuthorized($user)
+    {
+        $Collection = new ComponentRegistry();
+        $acl = new AclComponent($Collection);
+        $controller = $this->request->controller;
+        $action     = $this->request->action;
+        return $acl->check(['Users' => ['id' => $user['id']]], "$controller/$action");
+    }    
+
 }

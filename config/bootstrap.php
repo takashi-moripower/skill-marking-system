@@ -215,3 +215,10 @@ Type::build('timestamp')
 if (Configure::read('debug')) {
     Plugin::load('DebugKit', ['bootstrap' => true]);
 }
+Plugin::load('Acl', ['bootstrap' => true]);
+
+
+
+Plugin::load('TakashiMoripower/AclManager', ['bootstrap' => true, 'routes' => true]);
+
+Plugin::load('TakashiMoripower/CakeOpauth', ['bootstrap' => false, 'routes' => true]);

@@ -24,10 +24,12 @@ class FieldsControllerTest extends IntegrationTestCase
         'app.permissions',
         'app.groups',
         'app.works',
-        'app.skills_works',
+        'app.files',
+        'app.junles',
+        'app.junles_works',
         'app.skills',
-        'app.organizations_users',
-        'app.users_organizations'
+        'app.skills_works',
+        'app.organizations_users'
     ];
 
     /**

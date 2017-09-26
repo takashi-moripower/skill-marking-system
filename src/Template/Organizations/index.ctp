@@ -10,6 +10,8 @@
         <li><?= $this->Html->link(__('New Organization'), ['action' => 'add']) ?></li>
         <li><?= $this->Html->link(__('List Fields'), ['controller' => 'Fields', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('New Field'), ['controller' => 'Fields', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Organizations Users'), ['controller' => 'OrganizationsUsers', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Organizations User'), ['controller' => 'OrganizationsUsers', 'action' => 'add']) ?></li>
         <li><?= $this->Html->link(__('List Users'), ['controller' => 'Users', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('New User'), ['controller' => 'Users', 'action' => 'add']) ?></li>
     </ul>
@@ -21,6 +23,7 @@
             <tr>
                 <th scope="col"><?= $this->Paginator->sort('id') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('name') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('parent_id') ?></th>
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
             </tr>
         </thead>
@@ -29,6 +32,7 @@
             <tr>
                 <td><?= $this->Number->format($organization->id) ?></td>
                 <td><?= h($organization->name) ?></td>
+                <td><?= $organization->has('parent_organization') ? $this->Html->link($organization->parent_organization->name, ['controller' => 'Organizations', 'action' => 'view', $organization->parent_organization->id]) : '' ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $organization->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $organization->id]) ?>

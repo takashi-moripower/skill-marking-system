@@ -20,6 +20,9 @@ class OrganizationsController extends AppController
      */
     public function index()
     {
+        $this->paginate = [
+            'contain' => ['ParentOrganizations']
+        ];
         $organizations = $this->paginate($this->Organizations);
 
         $this->set(compact('organizations'));
@@ -36,7 +39,7 @@ class OrganizationsController extends AppController
     public function view($id = null)
     {
         $organization = $this->Organizations->get($id, [
-            'contain' => ['Users', 'Fields', 'OrganizationsUsers']
+            'contain' => ['ParentOrganizations', 'Users', 'Fields', 'ChildOrganizations', 'OrganizationsUsers']
         ]);
 
         $this->set('organization', $organization);
@@ -60,8 +63,9 @@ class OrganizationsController extends AppController
             }
             $this->Flash->error(__('The organization could not be saved. Please, try again.'));
         }
+        $parentOrganizations = $this->Organizations->ParentOrganizations->find('list', ['limit' => 200]);
         $users = $this->Organizations->Users->find('list', ['limit' => 200]);
-        $this->set(compact('organization', 'users'));
+        $this->set(compact('organization', 'parentOrganizations', 'users'));
         $this->set('_serialize', ['organization']);
     }
 
@@ -86,8 +90,9 @@ class OrganizationsController extends AppController
             }
             $this->Flash->error(__('The organization could not be saved. Please, try again.'));
         }
+        $parentOrganizations = $this->Organizations->ParentOrganizations->find('list', ['limit' => 200]);
         $users = $this->Organizations->Users->find('list', ['limit' => 200]);
-        $this->set(compact('organization', 'users'));
+        $this->set(compact('organization', 'parentOrganizations', 'users'));
         $this->set('_serialize', ['organization']);
     }
 

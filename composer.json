@@ -12,7 +12,8 @@
         "cakephp/plugin-installer": "~1.0",
         "josegonzalez/dotenv": "2.*",
         "cakephp/acl": "dev-master",
-        "jcpires/cakephp3-aclmanager": "dev-master"
+        "jcpires/cakephp3-aclmanager": "dev-master",
+        "friendsofcake/search": "^4.0"
     },
     "require-dev": {
         "psy/psysh": "@stable",

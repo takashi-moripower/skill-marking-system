@@ -20,14 +20,17 @@ class OrganizationsControllerTest extends IntegrationTestCase
         'app.fields',
         'app.skills',
         'app.works',
-        'app.skills_works',
         'app.users',
         'app.aros',
         'app.acos',
         'app.permissions',
         'app.groups',
+        'app.skills_works',
         'app.organizations_users',
-        'app.users_organizations'
+        'app.users_organizations',
+        'app.files',
+        'app.junles',
+        'app.junles_works'
     ];
 
     /**

@@ -28,13 +28,16 @@ class OrganizationsTableTest extends TestCase
         'app.fields',
         'app.skills',
         'app.works',
-        'app.skills_works',
         'app.users',
         'app.aros',
         'app.acos',
         'app.permissions',
         'app.groups',
+        'app.skills_works',
         'app.organizations_users',
+        'app.files',
+        'app.junles',
+        'app.junles_works',
         'app.users_organizations'
     ];
 
@@ -78,6 +81,16 @@ class OrganizationsTableTest extends TestCase
      * @return void
      */
     public function testValidationDefault()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test buildRules method
+     *
+     * @return void
+     */
+    public function testBuildRules()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }

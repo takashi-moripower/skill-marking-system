@@ -13,8 +13,12 @@
             )
         ?></li>
         <li><?= $this->Html->link(__('List Organizations'), ['action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('List Parent Organizations'), ['controller' => 'Organizations', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Parent Organization'), ['controller' => 'Organizations', 'action' => 'add']) ?></li>
         <li><?= $this->Html->link(__('List Fields'), ['controller' => 'Fields', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('New Field'), ['controller' => 'Fields', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Organizations Users'), ['controller' => 'OrganizationsUsers', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Organizations User'), ['controller' => 'OrganizationsUsers', 'action' => 'add']) ?></li>
         <li><?= $this->Html->link(__('List Users'), ['controller' => 'Users', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('New User'), ['controller' => 'Users', 'action' => 'add']) ?></li>
     </ul>
@@ -25,6 +29,7 @@
         <legend><?= __('Edit Organization') ?></legend>
         <?php
             echo $this->Form->control('name');
+            echo $this->Form->control('parent_id', ['options' => $parentOrganizations, 'empty' => true]);
             echo $this->Form->control('users._ids', ['options' => $users]);
         ?>
     </fieldset>

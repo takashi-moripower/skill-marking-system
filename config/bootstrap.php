@@ -222,3 +222,4 @@ Plugin::load('Acl', ['bootstrap' => true]);
 Plugin::load('TakashiMoripower/AclManager', ['bootstrap' => true, 'routes' => true]);
 
 Plugin::load('TakashiMoripower/CakeOpauth', ['bootstrap' => false, 'routes' => true]);
+Plugin::load('Search');

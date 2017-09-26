@@ -18,6 +18,15 @@ $loginUser = $this->request->session()->read('Auth.User');
                             <a class="dropdown-item" href="<?=$this->Url->Build(['controller'=>'Users','action'=>'logout'])?>"><i class="fa fa-sign-out"></i>logout</a>
                         </div>
                     </div>
+                    <?php else: ?>
+                    <div class="dropdown float-right mt-2">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            GUEST
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="<?=$this->Url->Build(['controller'=>'Users','action'=>'login'])?>"><i class="fa fa-sign-in"></i>login</a>
+                        </div>
+                    </div>
                     <?php endif; ?>
                 </div>
             </div>

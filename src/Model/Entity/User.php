@@ -4,6 +4,8 @@ namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 use Cake\Auth\DefaultPasswordHasher;
+use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 
 /**
  * User Entity
@@ -69,4 +71,38 @@ class User extends Entity {
 
         return ['Groups' => ['id' => $group_id]];
     }
+
+    /*
+      protected function _getSkills(){
+      $tableW = TableRegistry::get('works');
+
+      $works = $tableW->find()
+      ->contain('Skills')
+      ->where(['user_id'=>$this->id])
+      ->toArray();
+
+      $skills = Hash::extract($works,"{n}.skills.{n}");
+      $skills = Hash::sort($skills,'{n}._joinData.level','desc');
+      $skills = Hash::sort($skills,'{n}.id','asc');
+      return $skills;
+      }
+     */
+
+    protected function _getSkills() {
+        $tableS = TableRegistry::get('skills');
+
+        $skills = $tableS->find('byUser',['user_id' =>$this->id,]);
+
+        return $skills;
+    }
+
+    protected function _getMaxSkills() {
+        $tableS = TableRegistry::get('skills');
+        
+        $skills = $tableS->find('MaxLevel',['user_id' => $this->id])
+                ->order(['level'=>'DESC','skill_id'=>'ASC'])
+;        
+        return $skills;
+    }
+
 }

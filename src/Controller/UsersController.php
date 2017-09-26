@@ -40,11 +40,13 @@ class UsersController extends AppController {
      */
     public function view($id = null) {
         $user = $this->Users->get($id, [
-            'contain' => ['Groups', 'Engineers', 'Markers']
+            'contain' => ['Groups','Organizations']
         ]);
 
         $this->set('user', $user);
         $this->set('_serialize', ['user']);
+        
+        $this->viewBuilder()->layout('bootstrap');
     }
 
     /**
@@ -149,5 +151,5 @@ class UsersController extends AppController {
         $this->viewBuilder()->layout('bootstrap');
         $this->render('/Common/debug');
     }
-
+    
 }

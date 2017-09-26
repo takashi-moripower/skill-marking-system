@@ -29,4 +29,16 @@ class Skill extends Entity
         '*' => true,
         'id' => false
     ];
+    
+    protected function _getLabel(){
+        $result = $this->name;
+        
+        if( isset($this->_joinData->level)){
+            $result .= "-".$this->_joinData->level;
+        }elseif( isset($this->level)){
+            $result .= "-".$this->level;
+        }
+        
+        return $result;
+    }
 }

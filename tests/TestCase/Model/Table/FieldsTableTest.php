@@ -32,10 +32,12 @@ class FieldsTableTest extends TestCase
         'app.permissions',
         'app.groups',
         'app.works',
+        'app.files',
+        'app.junles',
+        'app.junles_works',
+        'app.skills',
         'app.skills_works',
-        'app.organizations_users',
-        'app.users_organizations',
-        'app.skills'
+        'app.organizations_users'
     ];
 
     /**
@@ -88,6 +90,26 @@ class FieldsTableTest extends TestCase
      * @return void
      */
     public function testBuildRules()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test createFromArray method
+     *
+     * @return void
+     */
+    public function testCreateFromArray()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test findUsable method
+     *
+     * @return void
+     */
+    public function testFindUsable()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }

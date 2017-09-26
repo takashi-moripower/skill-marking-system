@@ -1,10 +1,15 @@
 <?php
+
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use Cake\Utility\Hash;
+use App\Model\Entity\Skill;
+use App\Defines\Defines;
 
 /**
  * Skills Model
@@ -20,8 +25,7 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Skill[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Skill findOrCreate($search, callable $callback = null, $options = [])
  */
-class SkillsTable extends Table
-{
+class SkillsTable extends Table {
 
     /**
      * Initialize method
@@ -29,8 +33,7 @@ class SkillsTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         parent::initialize($config);
 
         $this->setTable('skills');
@@ -54,16 +57,15 @@ class SkillsTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
-    {
+    public function validationDefault(Validator $validator) {
         $validator
-            ->integer('id')
-            ->allowEmpty('id', 'create');
+                ->integer('id')
+                ->allowEmpty('id', 'create');
 
         $validator
-            ->scalar('name')
-            ->requirePresence('name', 'create')
-            ->notEmpty('name');
+                ->scalar('name')
+                ->requirePresence('name', 'create')
+                ->notEmpty('name');
 
         return $validator;
     }
@@ -75,10 +77,93 @@ class SkillsTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules)
-    {
+    public function buildRules(RulesChecker $rules) {
         $rules->add($rules->existsIn(['field_id'], 'Fields'));
 
         return $rules;
     }
+
+    public function createFromArray($src) {
+        foreach ($src as $fieldName => $skills) {
+            $field = $this->Fields->find()
+                    ->where(['name' => $fieldName])
+                    ->first();
+
+            $fieldId = Hash::get($field, 'id', null);
+            foreach ($skills as $skillName) {
+                $newEntity = new Skill;
+                $newEntity->name = $skillName;
+                $newEntity->field_id = $fieldId;
+
+                $this->save($newEntity);
+            }
+        }
+    }
+
+    /**
+     * あるユーザーが利用可能なスキルを取得　配列を渡された場合はAND
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
+    public function findUsable($query, $options) {
+        if (isset($options['group_id']) && $options['group_id'] == Defines::GROUP_ADMIN) {
+            return $query;
+        }
+
+
+        if (isset($options['user_id'])) {
+            $user_id = $options['user_id'];
+
+            $fields = $this->Fields->find('usable', ['user_id' => $user_id])
+                    ->select('id');
+
+            $query->where([$this->aliasField('field_id') . ' IN' => $fields]);
+            return $query;
+        }
+
+        if (isset($options['user_ids'])) {
+            $user_ids = $options['user_ids'];
+
+            $fields = $this->Fields->find('usable', ['user_ids' => $user_ids])
+                    ->select('id');
+
+            $query->where([$this->aliasField('field_id') . ' IN' => $fields]);
+
+            return $query;
+        }
+    }
+
+    public function findMaxLevel($query, $options) {
+
+        $user_id = $options['user_id'];
+
+        $tableW = TableRegistry::get('works');
+        $tableSW = TableRegistry::get('skills_works');
+        
+        
+
+        $SW1 = $tableSW->find()
+                ->select(['skill_id'=>'skill_id','max_level' => 'max(level)'])
+                ->leftJoin('works','works.id = skills_works.work_id')
+                ->where(['works.user_id' => $user_id])
+                ->group(['skills_works.skill_id'])
+                ;
+                
+        $SW2 = $tableSW->find()
+                ->leftJoin('works' , 'works.id = '.$tableSW->aliasField('work_id'))
+                ->innerJoin([ 'SW1' => $SW1 ],[ 'SW1.max_level = '.$tableSW->aliasField('level') , 'SW1.skill_id ='.$tableSW->aliasField('skill_id')])
+                ->where([$tableW->aliasField('user_id') => $user_id ])
+                ->select(['skill_id'=>'skills_works.skill_id' , 'level'=>'skills_works.level']);
+        
+        $query
+                ->innerJoin(['SW2' => $SW2 ],['SW2.skill_id = skills.id'])
+                ->group('SW2.skill_id')
+                ->select($this)
+                ->select(['level'=>'SW2.level']);
+
+
+        return $query;
+    }
+
 }

@@ -139,8 +139,8 @@ class DummyDataComponent extends Component {
     }
 
     public function truncateJunles() {
-        $this->_truncate('junlses');
-        $this->_truncate('junses_works');
+        $this->_truncate('junles');
+        $this->_truncate('junles_works');
     }
 
     public function createDummyFields() {
@@ -268,7 +268,15 @@ class DummyDataComponent extends Component {
             'Youtubeで大ブレイクの予感！',
             'テストプレイで失神者続出！',
             '80%のお客様が　弊社従来製品より「よく落ちる」と回答',
+            'おかげでおじいちゃんの腰痛が治りました',
+            'おかげで宝くじに当たりました',
+            'おかげで彼女ができました',
         ];
+        
+        $note .= $text1[rand(0,3)];
+        $note .= $text2[rand(0,3)];
+        $note .= "\r";
+        $note .= $text3[rand(0,10)];
 
         
 
@@ -310,7 +318,7 @@ class DummyDataComponent extends Component {
                     ->select('id');
             foreach ($markers as $marker) {
                 $skills = $tableS
-                        ->find('usable', ['user_id' => [$marker->id, $work->user_id]])
+                        ->find('usable', ['user_ids' => [$marker->id, $work->user_id]])
                         ->toArray();
 
                 $skillIds = Hash::extract($skills, '{n}.id');

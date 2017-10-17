@@ -1,36 +1,34 @@
-<?php
-/**
-  * @var \App\View\AppView $this
-  */
+<?php 
+use App\Defines\Defines;
+$group = $this->getLoginUser('group_id');
+$empty = ($group == Defines::GROUP_ADMIN);
 ?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Form->postLink(
-                __('Delete'),
-                ['action' => 'delete', $field->id],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $field->id)]
-            )
-        ?></li>
-        <li><?= $this->Html->link(__('List Fields'), ['action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('List Organizations'), ['controller' => 'Organizations', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Organization'), ['controller' => 'Organizations', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Parent Fields'), ['controller' => 'Fields', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Parent Field'), ['controller' => 'Fields', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Skills'), ['controller' => 'Skills', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Skill'), ['controller' => 'Skills', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="fields form large-9 medium-8 columns content">
-    <?= $this->Form->create($field) ?>
-    <fieldset>
-        <legend><?= __('Edit Field') ?></legend>
-        <?php
-            echo $this->Form->control('name');
-            echo $this->Form->control('organization_id', ['options' => $organizations, 'empty' => true]);
-            echo $this->Form->control('parent_id', ['options' => $parentFields, 'empty' => true]);
-        ?>
-    </fieldset>
-    <?= $this->Form->button(__('Submit')) ?>
-    <?= $this->Form->end() ?>
-</div>
+<h2 class="mb-2">
+    スキル分野　<?= ($this->request->action == 'edit') ? '編集' : '新規作成'; ?>
+</h2>
+<?= $this->Form->create($field) ?>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th>名称</th>
+            <td><?= $this->Form->text('name') ?></td>
+        </tr>
+        <tr>
+            <th>親スキル分野</th>
+            <td><?= $this->Form->control('parent_id', ['options' => $parentFields, 'empty' => true, 'label' => false]); ?></td>
+        </tr>
+        <tr>
+            <th>組織</th>
+            <td><?= $this->Form->control('organization_id', ['options' => $organizations, 'empty' => true, 'label' => false]); ?></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div  class="text-right" >
+                    <?= $this->Form->button('保存', ['class' => 'btn btn-primary']) ?>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<?= $this->Form->end ?>

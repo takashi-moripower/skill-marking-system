@@ -36,8 +36,10 @@ class HomeController extends AppController {
                 return $this->render('admin');
 
             case Defines::GROUP_MARKER:
-            case Defines::GROUP_ORGANIZATION_ADMIN:
                 return $this->_marker();
+                
+            case Defines::GROUP_ORGANIZATION_ADMIN:
+                return $this->_org_admin();
 
             case Defines::GROUP_ENGINEER:
                 return $this->render('engineer');
@@ -74,6 +76,38 @@ class HomeController extends AppController {
         $this->set(compact('orgs', 'collections'));
 
         return $this->render('marker');
+    }
+
+    protected function _org_admin() {
+        $user = $this->Auth->user();
+
+        $tableOrgs = TableRegistry::get('organizations');
+        $tableWorks = TableRegistry::get('works');
+
+        $orgs = $tableOrgs->find('user', ['user_id' => $user->id,'relation'=>'children']);
+
+
+        $collections = [];
+        foreach ($orgs as $org) {
+            $collections[$org->id] = [
+                'all' => $tableWorks
+                        ->find('Organization', ['organization_id' => $org->id])
+                        ->count(),
+                'marked' => $tableWorks
+                        ->find('Organization', ['organization_id' => $org->id])
+                        ->find('Mark', ['mark-state' => Defines::MARK_STATE_MARKED])
+                        ->count(),
+                'unmarked' => $tableWorks
+                        ->find('Organization', ['organization_id' => $org->id])
+                        ->find('Mark', ['mark-state' => Defines::MARK_STATE_UNMARKED])
+                        ->count(),
+            ];
+        }
+
+
+        $this->set(compact('orgs', 'collections'));
+
+        return $this->render('orgAdmin');
     }
 
 }

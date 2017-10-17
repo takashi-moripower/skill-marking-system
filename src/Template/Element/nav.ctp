@@ -7,22 +7,31 @@ $group_id = $this->getLoginUser('group_id');
 
 $NAV_TEMPLATES = [
     Defines::GROUP_ADMIN => [
-        'Home' => ['controller' => 'Home', 'action' => 'index'],
-        'Users' => ['controller' => 'users', 'action' => 'index'],
-        'Groups' => ['plugin' => 'TakashiMoripower/AclManager', 'controller' => 'groups', 'action' => 'index'],
-        'Organizations' => ['controller' => 'Organizations', 'action' => 'index'],
-        'Fields' => ['controller' => 'Fields', 'action' => 'index'],
-        'Skills' => ['controller' => 'Skills', 'action' => 'index'],
-        'Junles' => ['controller' => 'Junles', 'action' => 'index'],
-        'Works' => ['controller' => 'Works', 'action' => 'index'],
-        'Engineers'=>['controller'=>'Engineers','action'=>'index'],
+        Defines::NAV_ID_HOME,
+        Defines::NAV_ID_USERS,
+        Defines::NAV_ID_GROUPS,
+        Defines::NAV_ID_ORGANIZATIONS,
+        Defines::NAV_ID_FIELDS,
+        Defines::NAV_ID_SKILLS,
+        Defines::NAV_ID_JUNLES,
+        Defines::NAV_ID_WORKS,
+        Defines::NAV_ID_ENGINEERS,
+    ],
+    Defines::GROUP_ORGANIZATION_ADMIN => [
+        Defines::NAV_ID_HOME,
+        Defines::NAV_ID_WORKS,
+        Defines::NAV_ID_SKILLS,
+        Defines::NAV_ID_ORGANIZATIONS,
+        Defines::NAV_ID_ENGINEERS,
     ],
     Defines::GROUP_MARKER => [
-        'Home' => ['controller' => 'Home', 'action' => 'index'],
-        'Works' => ['controller' => 'Works', 'action' => 'index'],
+        Defines::NAV_ID_HOME,
+        Defines::NAV_ID_WORKS,
+        Defines::NAV_ID_ENGINEERS,
     ],
     Defines::GROUP_ENGINEER =>[
-        'Home' => ['controller' => 'Home', 'action' => 'index'],
+        Defines::NAV_ID_HOME,
+        Defines::NAV_ID_WORKS,
     ],
 ];
 
@@ -37,8 +46,10 @@ if( empty($navs)){
         <div class="row">
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
                 <ul class="nav">
-                    <?php foreach ($navs as $lavel => $url): ?>
+                    <?php foreach ($navs as $nav_id): ?>
                         <?php
+                        $label = Hash::get(Defines::NAV_TEMPLATES,"{$nav_id}.label");
+                        $url = Hash::get(Defines::NAV_TEMPLATES,"{$nav_id}.url");
                         if (Hash::get($url, 'controller') == $this->name) {
                             $class = "nav-link active";
                         } else {
@@ -46,7 +57,7 @@ if( empty($navs)){
                         }
                         ?>
                         <li class="nav-item">
-                            <?= $this->Html->link($lavel, $url, ['class' => $class]) ?>
+                            <?= $this->Html->link($label, $url, ['class' => $class]) ?>
                         </li>
                     <?php endforeach ?>
                 </ul>

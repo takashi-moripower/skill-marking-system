@@ -1,7 +1,10 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use Cake\ORM\TableRegistry;
+use App\Defines\Defines;
 
 /**
  * Skill Entity
@@ -13,8 +16,7 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\Field $field
  * @property \App\Model\Entity\Work[] $works
  */
-class Skill extends Entity
-{
+class Skill extends Entity {
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -29,16 +31,16 @@ class Skill extends Entity
         '*' => true,
         'id' => false
     ];
-    
-    protected function _getLabel(){
+
+    protected function _getLabel() {
         $result = $this->name;
-        
-        if( isset($this->_joinData->level)){
-            $result .= "-".$this->_joinData->level;
-        }elseif( isset($this->level)){
-            $result .= "-".$this->level;
+
+        if (isset($this->_joinData->level)) {
+            $result .= "-" . $this->_joinData->level;
+        } elseif (isset($this->level)) {
+            $result .= "-" . $this->level;
         }
-        
+
         return $result;
     }
 }

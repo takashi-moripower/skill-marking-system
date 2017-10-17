@@ -117,14 +117,14 @@ class DebugController extends AppController {
         $tableS = TableRegistry::get('skills');
         $tableW = TableRegistry::get('works');
         $tableSW = TableRegistry::get('skills_works');
+        $tableO = TableRegistry::get('Organizations');
+        $tableF = TableRegistry::get('Fields');
 
+        
 
-        $user_id = 22;
-
-        $data = $tableS->find('byUser', ['user_id' => 22])->toArray();
-
-
-
+        $data = $tableF->find('usable',['user_ids'=>[10,17]])
+                ->toArray();
+                
         $this->set('data', $data);
         $this->render('/Common/debug');
     }

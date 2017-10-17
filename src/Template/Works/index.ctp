@@ -68,11 +68,13 @@ $loginUserGroup = $this->getLoginUser('group_id');
                     </div>
                 </td>
                 <td class="text-nowrap py-0 align-middle">
+                    <?= $this->Html->link('閲覧', ['controller' => 'works', 'action' => 'view', $work->id], ['class' => 'btn btn-outline-primary btn-sm']) ?> 
                     <?php if (in_array($loginUserGroup, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN, Defines::GROUP_MARKER])): ?>
                         <?= $this->Html->link('採点', ['controller' => 'works', 'action' => 'mark', $work->id], ['class' => 'btn btn-outline-primary btn-sm']) ?> 
                     <?php endif; ?>
-                    <?php if (in_array($loginUserGroup, [Defines::GROUP_ADMIN, Defines::GROUP_ENGINEER])): ?>
+                    <?php if (in_array($loginUserGroup, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN, Defines::GROUP_ENGINEER])): ?>
                         <?= $this->Html->link('編集', ['controller' => 'works', 'action' => 'edit', $work->id], ['class' => 'btn btn-outline-primary btn-sm']) ?> 
+                        <?= $this->Html->link('削除', ['controller' => 'works', 'action' => 'delete', $work->id], ['class' => 'btn btn-outline-danger btn-sm', 'role' => 'delete']) ?> 
                     <?php endif; ?>
                 </td>
             </tr>
@@ -80,16 +82,14 @@ $loginUserGroup = $this->getLoginUser('group_id');
     </tbody>
 </table>
 
-<div class="paginator">
-    <ul class="pagination justify-content-center">
-        <?= $this->Paginator->first('<i class="fa fa-angle-double-left"></i>',['escape'=>false]) ?>
-        <?= $this->Paginator->prev('<i class="fa fa-angle-left"></i>',['escape'=>false]) ?>
-        <?= $this->Paginator->numbers() ?>
-        <?= $this->Paginator->next('<i class="fa fa-angle-right"></i>',['escape'=>false]) ?>
-        <?= $this->Paginator->last('<i class="fa fa-angle-double-right"></i>',['escape'=>false]) ?>
-    </ul>
-    <p class="text-right">
-        <?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?>
-    </p>
-</div>
+<?= $this->Element('paginator') ?>
 
+<?php $this->append('script'); ?>
+<script>
+$(function(){
+    $(document).on('click','a.btn[role="delete"]',function(){
+        return confirm('realy delete?');
+    });
+});
+</script>
+<?php $this->end(); ?>

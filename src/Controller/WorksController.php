@@ -17,9 +17,11 @@ use App\Defines\Defines;
  * @method \App\Model\Entity\Work[] paginate($object = null, array $settings = [])
  */
 class WorksController extends AppController {
+
     public $helpers = [
         'Paginator' => ['templates' => 'paginator-templates']
     ];
+
     public function initialize() {
         parent::initialize();
         $this->loadComponent('Search.Prg', [
@@ -57,13 +59,10 @@ class WorksController extends AppController {
 
         //検索フォーム用データ
         $organizations = $this->Works->Users->Organizations
-                ->find('list', ['keyField' => 'id', 'valueField' => 'name'])
-        ;
+                ->find('list', ['keyField' => 'id', 'valueField' => 'name']);
 
         if ($loginUserGroup == Defines::GROUP_MARKER || $loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
-            $organizations
-                    ->leftJoin(['OU' => 'organizations_users'], 'OU.organization_id = Organizations.id')
-                    ->where(['OU.user_id' => $loginUserId]);
+            $organizations->find('user', ['user_id' => $loginUserId, 'relation' => 'children']);
         }
 
         $organizations = ['' => 'すべて'] + $organizations->toArray();
@@ -85,11 +84,17 @@ class WorksController extends AppController {
      */
     public function view($id = null) {
         $work = $this->Works->get($id, [
-            'contain' => ['Users', 'Junles', 'Skills', 'Files']
+            'contain' => [
+                'Users',
+                'Junles',
+                'Files',
+                'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'conditions' => [], 'fields' => ['id', 'name', 'SkillsWorks.level', 'SkillsWorks.work_id']],
+            ]
         ]);
 
         $this->set('work', $work);
         $this->set('_serialize', ['work']);
+        $this->viewBuilder()->layout('bootstrap');
     }
 
     /**
@@ -100,10 +105,30 @@ class WorksController extends AppController {
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function delete($id = null) {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['post', 'delete' , 'get']);
         $work = $this->Works->get($id);
         if ($this->Works->delete($work)) {
             $this->Flash->success(__('The work has been deleted.'));
+            
+            $tableJW = TableRegistry::get('junles_works');
+            $tableJW->find()
+                    ->delete()
+                    ->where(['work_id'=>$id])
+                    ->execute();
+            
+            $tableSW = TableRegistry::get('skills_works');
+            $tableSW->find()
+                    ->delete()
+                    ->where(['work_id'=>$id])
+                    ->execute();
+            
+            $tableF = TableRegistry::get('files');
+            $tableF->find()
+                    ->delete()
+                    ->where(['work_id'=>$id])
+                    ->execute();
+            
+            
         } else {
             $this->Flash->error(__('The work could not be deleted. Please, try again.'));
         }
@@ -124,6 +149,7 @@ class WorksController extends AppController {
                     'Users' => ['fields' => ['Users.id', 'name']],
                     'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'conditions' => [], 'fields' => ['id', 'name', 'SkillsWorks.level', 'SkillsWorks.work_id']],
                     'Files',
+                    'Junles',
                 ])
                 ->first();
 
@@ -132,9 +158,9 @@ class WorksController extends AppController {
         $skillsUsed = Hash::extract($work, "skills.{n}.id");
 
         $skillsToSet = $this->Works->Skills
-                        ->find('usable', ['user_ids' => [$markerId, $creatorId]])
-                        ->where([$this->Works->Skills->aliasField('id') . ' NOT IN' => $skillsUsed])
-                        ->find('list', ['keyField' => 'id', 'valueField' => 'name']);
+                ->find('usable', ['user_ids' => [$markerId, $creatorId]])
+                ->where([$this->Works->Skills->aliasField('id') . ' NOT IN' => $skillsUsed])
+                ->find('list', ['keyField' => 'id', 'valueField' => 'name']);
 
         $skillsToSet = ['0' => '-'] + $skillsToSet->toArray();
 

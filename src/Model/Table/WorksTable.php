@@ -48,7 +48,7 @@ class WorksTable extends Table {
             'fields' => ['id', 'name'],
         ]);
         $this->hasMany('Files', [
-            'foreignKey' => 'work_id'
+            'foreignKey' => 'work_id',
         ]);
         $this->belongsToMany('Junles', [
             'foreignKey' => 'work_id',
@@ -122,36 +122,35 @@ class WorksTable extends Table {
      * @return type
      */
     public function findOrganization($query, $options) {
-
-        $tableOU = TableRegistry::get('organizations_users');
-
         if (isset($options['organization_id'])) {
             $org_id = $options['organization_id'];
-            $subquery = $tableOU->find()
-                    ->select('id')
-                    ->where([
-                $tableOU->aliasField('organization_id') => $org_id,
-                $tableOU->aliasField('user_id') . ' = ' . $this->aliasField('user_id')
+            
+            $query->join([
+                'OU'=>[
+                    'table'=>'organizations_users',
+                    'type'=>'left',
+                    'conditions' => ['OU.user_id ='.$this->aliasField('user_id')]
+                ]
             ]);
+            $query->where(['OU.organization_id'=>$org_id]);
         }
-
+        
+        
         if (isset($options['organization_ids'])) {
             $org_ids = $options['organization_ids'];
-            $subquery = $tableOU->find()
-                    ->select('id')
-                    ->where([
-                $tableOU->aliasField('organization_id') . ' IN' => $org_ids,
-                $tableOU->aliasField('user_id') . ' = ' . $this->aliasField('user_id')
+            
+            $query->join([
+                'OU'=>[
+                    'table'=>'organizations_users',
+                    'type'=>'left',
+                    'conditions' => ['OU.user_id ='.$this->aliasField('user_id')]
+                ]
             ]);
+            $query->where(['OU.organization_id IN'=>$org_ids]);
         }
-
-        $query
-                ->where(function($exp, $q) use ($subquery) {
-                    return $exp->exists($subquery);
-                });
-
         return $query;
     }
+
 
     /**
      * 絞り込み検索用　所属ジャンル
@@ -232,18 +231,25 @@ class WorksTable extends Table {
                             ->where(['user_id' => $options['user_id']]);
         }
 
-        //採点者、組織管理者は　自分の担当組織の作品を閲覧可能
-        if (in_array($options['group_id'], [Defines::GROUP_MARKER, Defines::GROUP_ORGANIZATION_ADMIN])) {
+        //組織管理者は　自分の関連組織　および子組織に所属するユーザーの作品を閲覧可能
+        if ($options['group_id'] == Defines::GROUP_ORGANIZATION_ADMIN) {
             $tableOrg = TableRegistry::get('organizations');
-            $orgIds = $tableOrg->find('user', ['user_id' => $options['user_id']])
+            $orgIds = $tableOrg->find('user', ['user_id' => $options['user_id'], 'relation' => 'children'])
                     ->select('id');
-            
-            $query->find('Organization',['organization_ids'=>$orgIds]);
 
+            $query->find('Organization', ['organization_ids' => $orgIds]);
             return $query;
         }
 
+        //採点者は　自分の関連組織に所属するユーザーの作品を閲覧可能
+        if ($options['group_id'] == Defines::GROUP_MARKER) {
+            $tableOrg = TableRegistry::get('organizations');
+            $orgIds = $tableOrg->find('user', ['user_id' => $options['user_id'], 'relation' => 'match'])
+                    ->select('id');
+
+            $query->find('Organization', ['organization_ids' => $orgIds]);
+            return $query;
+        }
         return $query;
     }
-
 }

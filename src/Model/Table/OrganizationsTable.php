@@ -7,6 +7,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
+use Cake\Utility\Hash;
 
 /**
  * Organizations Model
@@ -42,6 +43,7 @@ class OrganizationsTable extends Table {
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Tree');
+        $this->addBehavior('Depth');
 
         $this->belongsTo('ParentOrganizations', [
             'className' => 'Organizations',
@@ -93,23 +95,82 @@ class OrganizationsTable extends Table {
     }
 
     /**
-     * そのユーザーが所属する組織を返す
+     * そのユーザーが所属する組織　及びその親/子組織を返す
      * @param type $query
      * @param type $options
      * @return type
      */
     public function findUser($query, $options) {
-        $tableOU = TableRegistry::get('organizations_users');
+        $user_id = Hash::get($options, 'user_id', 0);
+        $relation = Hash::get($options, 'relation', 'parents');
 
-        $user_id = $options['user_id'];
+        $orgs = TableRegistry::get('organizations_users')
+                ->find()
+                ->where(['user_id' => $user_id])
+                ->select('organization_id');
 
-        $endOrgs = $this->find()
-                ->leftJoin('organizations_users', 'organizations_users.organization_id = ' . $this->aliasField('id'))
-                ->where(['organizations_users.user_id' => $user_id]);
+        if ($relation == 'parents') {
+            $query->find('parents', ['ids' => $orgs]);
+        } elseif ($relation == 'children') {
+            $query->find('children', ['ids' => $orgs]);
+        } else {
+            $query->where([$this->aliasField('id') . ' IN' => $orgs]);
+        }
 
-        foreach ($endOrgs as $endOrg) {
-            $query
-                    ->orWhere(['and' => [$this->aliasField('lft') . ' >=' => $endOrg->lft, $this->aliasField('rght') . ' <=' => $endOrg->rght]]);
+        return $query;
+    }
+
+    /**
+     * 指定した organizationの子孫＋自身を検索
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
+    public function findChildren($query, $options) {
+        $parent_id = Hash::get($options, 'organization_id', Hash::get($options, 'id'));
+        $parent_ids = Hash::get($options, 'organization_ids', Hash::get($options, 'ids'));
+
+        $query->join(['descendants' => [
+                'table' => 'organizations',
+                'type' => 'LEFT',
+                'conditions' => ['descendants.lft <= ' . $this->aliasField('lft'), 'descendants.rght >= ' . $this->aliasField('rght')]
+        ]]);
+
+        if ($parent_id) {
+            $query->where(['descendants.id' => $parent_id]);
+        }
+
+        if ($parent_ids) {
+            $query->where(['descendants.id IN' => $parent_ids])
+                    ->group($this->aliasField('id'));
+        }
+
+        return $query;
+    }
+
+    /**
+     * 指定した organizationの祖先＋自身を検索
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
+    public function findParents($query, $options) {
+        $child_id = Hash::get($options, 'organization_id', Hash::get($options, 'id'));
+        $child_ids = Hash::get($options, 'organization_ids', Hash::get($options, 'ids'));
+
+        $query->join(['ancestors' => [
+                'table' => 'organizations',
+                'type' => 'LEFT',
+                'conditions' => ['ancestors.lft >= ' . $this->aliasField('lft'), 'ancestors.rght <= ' . $this->aliasField('rght')]
+        ]]);
+
+        if ($child_id) {
+            $query->where(['ancestors.id' => $child_id]);
+        }
+
+        if ($child_ids) {
+            $query->where(['ancestors.id IN' => $child_ids])
+                    ->group($this->aliasField('id'));
         }
 
         return $query;

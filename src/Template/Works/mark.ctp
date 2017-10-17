@@ -3,9 +3,11 @@
 use App\Defines\Defines;
 
 $loginUserId = $this->getLoginUser('id');
+$loginUserGroup = $this->getLoginUser('group_id');
 
 $LEVELS = range(1, Defines::SKILL_LEVEL_MAX);
 $LEVELS = array_combine($LEVELS, $LEVELS);
+
 ?>
 
 <table class="table table-bordered">
@@ -15,18 +17,27 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
             <td><?= h($work->name) ?></td>
         </tr>
         <tr>
+            <th>ジャンル</th>
+            <td>
+                <?php foreach ($work->junles as $junle): ?>
+                    <?= h($junle->name) ?>
+                    <?= ($junle !== end($work->junles)) ? ',' : '' ?>
+                <?php endforeach; ?>
+            </td>
+        </tr>
+        <tr>
             <th>投稿者</th>
             <td><?= h($work->user->name) ?></td>
         </tr>
         <tr>
             <th>解説</th>
-            <td><?= h($work->note) ?></td>
+            <td><?= nl2br(h($work->note)) ?></td>
         </tr>
         <tr>
             <th>添付ファイル</th>
             <td>
-                <?php foreach ( $work->files as $file): ?>
-                <?= $this->Element('files/thumbnail',['file'=>$file]) ?>
+                <?php foreach ($work->files as $file): ?>
+                    <?= $this->Element('files/thumbnail', ['file' => $file]) ?>
                 <?php endforeach; ?>
             </td>
         </tr>
@@ -78,6 +89,13 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
     </tbody>
 </table>
 
+<div class="text-right">
+    <?php
+    if (in_array($loginUserGroup, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN, Defines::GROUP_MARKER])) {
+        echo $this->Html->Link('作品一覧へ', ['controller' =>'works','action'=>'index'],['class'=>'btn btn-outline-primary']);
+    }
+    ?>
+</div>
 <?php $this->append('script'); ?>
 <script>
     $(function () {

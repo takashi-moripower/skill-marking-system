@@ -8,6 +8,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use Cake\Utility\Hash;
+use App\Defines\Defines;
 
 /**
  * Fields Model
@@ -43,6 +44,7 @@ class FieldsTable extends Table {
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Tree');
+        $this->addBehavior('Depth');
 
         $this->belongsTo('Organizations', [
             'foreignKey' => 'organization_id'
@@ -115,7 +117,7 @@ class FieldsTable extends Table {
      * 配列渡されたときはAND
      */
 
-    public function findUsable($query, $options) {
+    public function findUsable0($query, $options) {
         $tableOU = TableRegistry::get('organizations_users');
 
         $user_id = Hash::get($options, 'user_id');
@@ -135,6 +137,69 @@ class FieldsTable extends Table {
 
             $query->where(['or' => [$this->aliasField('organization_id') . ' IS' => NULL, $this->aliasField('organization_id') . ' IN' => $orgs]]);
             return $query;
+        }
+
+        return $query;
+    }
+
+    public function findUsable($query, $options) {
+        $user_id = Hash::get($options, 'user_id');
+        $user_ids = Hash::get($options, 'user_ids');
+
+
+        if ($user_id) {
+            $user_id = $options['user_id'];
+            $group_id = TableRegistry::get('users')->get($user_id)->group_id;
+
+            switch ($group_id) {
+                case Defines::GROUP_ADMIN:
+                    return $query;
+
+                default:
+                    $parents = $this->Organizations->find('user', ['user_id' => $user_id, 'relation' => 'parents'])
+                            ->select($this->Organizations->aliasField('id'));
+
+                    $children = $this->Organizations->find('user', ['user_id' => $user_id, 'relation' => 'children'])
+                            ->select($this->Organizations->aliasField('id'));
+
+
+                    $query->where(['or' => [
+                            $this->aliasField('organization_id') . ' in' => $parents,
+                            $this->aliasField('organization_id') . ' IN' => $children,
+                            $this->aliasField('organization_id') . ' IS' => null
+                    ]]);
+                    return $query;
+            }
+
+            return $query;
+        }
+        
+        if( $user_ids ){
+            foreach( $user_ids as $user_id ){
+                $query->find('usable',['user_id'=>$user_id]);
+            }
+            return $query;
+        }
+    }
+
+    public function findEditable($query, $options) {
+        $user_id = $options['user_id'];
+        $group_id = TableRegistry::get('users')->get($user_id)->group_id;
+
+
+        switch ($group_id) {
+            case Defines::GROUP_ADMIN:
+                return $query;
+
+            default:
+                $children = $this->Organizations->find('user', ['user_id' => $user_id, 'relation' => 'children'])
+                        ->select($this->Organizations->aliasField('id'));
+
+
+                $query->where(['or' => [
+                        $this->aliasField('organization_id') . ' IN' => $children,
+                ]]);
+                return $query;
         }
 
         return $query;

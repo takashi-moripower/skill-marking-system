@@ -111,7 +111,6 @@ class SkillsTable extends Table {
             return $query;
         }
 
-
         if (isset($options['user_id'])) {
             $user_id = $options['user_id'];
 
@@ -124,11 +123,17 @@ class SkillsTable extends Table {
 
         if (isset($options['user_ids'])) {
             $user_ids = $options['user_ids'];
+            
+            $cases = [];
+            foreach( $user_ids as $user_id){
+                $fields = $this->Fields->find('usable', ['user_id' => $user_id])
+                        ->select('id');
+                
+                $cases[] = [$this->aliasField('field_id') . ' IN' => $fields];
+            }
 
-            $fields = $this->Fields->find('usable', ['user_ids' => $user_ids])
-                    ->select('id');
 
-            $query->where([$this->aliasField('field_id') . ' IN' => $fields]);
+            $query->where(['and'=>$cases]);
 
             return $query;
         }

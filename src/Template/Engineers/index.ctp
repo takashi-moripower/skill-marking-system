@@ -47,27 +47,31 @@ $loginUser = $this->request->session()->read('Auth.User');
 <table class="table table-bordered mt-2">
     <thead>
         <tr class="">
-            <th class="">ID</th>
-            <th class="">名称</th>
-            <th class="">自己評価</th>
+            <th class="" rowspan="2">ID</th>
+            <th class="w-15" rowspan="2">名称</th>
+            <th class="bg-light">自己評価</th>
+            <th class="" rowspan="2">操作</th>
+        </tr>
+        <tr>
             <th class="">他者評価</th>
-            <th class="">操作</th>
         </tr>
     </thead>
     <tbody>
         <?php foreach ($users as $user): ?>
             <tr>
-                <th><?= h($user->id) ?></th>
-                <td><?= h($user->name) ?></th>
-                <td class="p-0 align-middle"><?= $this->Element('skills', ['skills' => $user->self_skills]); ?></th>
-                <td class="p-0 align-middle"><?= $this->Element('skills', ['skills' => $user->max_skills]); ?></th>
-                <td class="py-0 align-middle">
+                <th rowspan="2"><?= h($user->id) ?></th>
+                <td rowspan="2"><?= h($user->name) ?></th>
+                <td class="p-0 align-middle bg-light"><?= $this->Element('skills', ['skills' => $user->self_skills,'cardClass'=>'']); ?></th>
+                <td rowspan="2" class="py-0 align-middle">
                     <?= $this->Html->link('閲覧', ['controller' => 'engineers', 'action' => 'view', $user->id], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>
                     <?php if (in_array($loginUser->group_id, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN])): ?>
                         <?= $this->Html->link('編集', ['controller' => 'engineers', 'action' => 'edit', $user->id], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>
                     <?php endif; ?>
                     <?= $this->Html->link('評価', ['controller' => 'engineers', 'action' => 'view', $user->id], ['class' => 'btn btn-sm btn-secondary py-0 disabled']); ?>
                 </td>
+            </tr>
+            <tr>
+                <td class="p-0 align-middle"><?= $this->Element('skills', ['skills' => $user->max_skills]); ?></th>
             </tr>
         <?php endforeach; ?>
     </tbody>

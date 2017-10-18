@@ -59,8 +59,8 @@ $loginUser = $this->request->session()->read('Auth.User');
             <tr>
                 <th><?= h($user->id) ?></th>
                 <td><?= h($user->name) ?></th>
-                <td class="p-0 align-middle"><?= $this->Element('engineers/skills', ['skills' => $user->self_skills]); ?></th>
-                <td class="p-0 align-middle"><?= $this->Element('engineers/skills', ['skills' => $user->max_skills]); ?></th>
+                <td class="p-0 align-middle"><?= $this->Element('skills', ['skills' => $user->self_skills]); ?></th>
+                <td class="p-0 align-middle"><?= $this->Element('skills', ['skills' => $user->max_skills]); ?></th>
                 <td class="py-0 align-middle">
                     <?= $this->Html->link('閲覧', ['controller' => 'engineers', 'action' => 'view', $user->id], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>
                     <?php if (in_array($loginUser->group_id, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN])): ?>

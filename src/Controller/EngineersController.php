@@ -73,7 +73,7 @@ class EngineersController extends AppController {
 
         $user = $tableU->find()
                 ->where(['id' => $user_id])
-                ->contain(['Organizations','Works' => ['Skills']])
+                ->contain(['Organizations', 'Works' => ['Skills']])
                 ->first();
 
         $this->set(compact('user'));
@@ -103,11 +103,11 @@ class EngineersController extends AppController {
         $this->viewBuilder()->layout('bootstrap');
         $this->render('edit');
     }
-    
-    public function edit($user_id){
+
+    public function edit($user_id) {
         $tableU = TableRegistry::get('users');
 
-        $user = $tableU->get($user_id,['contain'=>'organizations']);
+        $user = $tableU->get($user_id, ['contain' => 'organizations']);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $user = $tableU->patchEntity($user, $this->request->getData());
             if ($tableU->save($user)) {
@@ -119,13 +119,15 @@ class EngineersController extends AppController {
         }
 
         $organizations = TableRegistry::get('organizations')
-                ->find('user', ['user_id' => $this->Auth->user()->id, 'relation' => 'children'])
                 ->find('list');
+        if ($this->Auth->user()->group_id != Defines::GROUP_ADMIN) {
+            $organizations
+            ->find('user', ['user_id' => $this->Auth->user()->id, 'relation' => 'children']);
+        }
 
         $this->set(compact('user', 'organizations'));
         $this->viewBuilder()->layout('bootstrap');
         $this->render('edit');
-        
     }
 
 }

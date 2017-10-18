@@ -47,8 +47,11 @@ class UsersTable extends Table {
         $this->hasMany('Works', [
             'foreignKey' => 'user_id'
         ]);
-        $this->hasMany('SkillsWorks', [
-            'foreignKey' => 'marker_id'
+        
+        $this->hasMany('MaxSkills',[
+            'className'=>'Skills',
+            'finder' => 'MaxSkills',
+            'foreignKey' => 'user_id',
         ]);
 
         $this->belongsToMany('Organizations');

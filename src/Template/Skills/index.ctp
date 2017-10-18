@@ -12,9 +12,9 @@ $loginUser = $this->request->session()->read('Auth.User');
     <thead>
         <tr>
             <th>ID</th>
-            <th>名称</th>
-            <th>スキル分野</th>
             <th>管轄組織</th>
+            <th>スキル分野</th>
+            <th>名称</th>
             <th>action</th>
         </tr>
     </thead>
@@ -23,13 +23,13 @@ $loginUser = $this->request->session()->read('Auth.User');
             <tr>
                 <td class="text-right"><?= $skill->id ?></td>
                 <td>
-                    <?= h($skill->name) ?>
-                </td>
-                <td>
-                    <?= h($skill->field->name) ?>
-                </td>
-                <td>
                     <?= Hash::get($skill, 'field.organization.name', '共通') ?>
+                </td>
+                <td>
+                    <?= h($skill->path) ?>
+                </td>
+                <td>
+                    <?= h($skill->name) ?>
                 </td>
                 <td class="pt-0 pb-0 align-middle">
                     <?php if ($loginUser->group_id == Defines::GROUP_ADMIN || ($loginUser->group_id == Defines::GROUP_ORGANIZATION_ADMIN && $skill->field->organization_id != null)): ?>

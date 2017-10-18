@@ -58,12 +58,12 @@ $loginUserGroup = $this->getLoginUser('group_id');
                 <td class="text-nowrap"><?= h($work->name) ?></td>
                 <td class="text-nowrap"><?= h($work->user->name) ?></td>
                 <td>
-                    <div class="text-truncate" style="width:20rem">
+                    <div class="" style="width:20rem">
                         <?= h(implode(',', Hash::extract($work->junles, '{n}.name'))) ?>
                     </div>
                 </td>
                 <td>
-                    <div class="text-truncate" style="width:20rem">
+                    <div class="" style="width:20rem">
                         <?= $this->Element('skills', ['skills' => $work->getSkillsBest(3)]); ?>
                     </div>
                 </td>

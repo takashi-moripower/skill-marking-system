@@ -42,10 +42,18 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
             </td>
         </tr>
         <tr>
+            <th>スキル<br/>作者による評価)</th>
+            <td>
+                <?php
+                echo $this->Element('skills', ['skills' => $skillsBySelf]);
+                ?>
+            </td>
+        </tr>
+        <tr>
             <th>スキル<br/>（<?= h($this->getLoginUser('name')) ?> 以外による評価)</th>
             <td>
                 <?php
-                echo $this->Element('skills', ['skills' => $work->getSkillsByOther($loginUserId)]);
+                echo $this->Element('skills', ['skills' => $skillsByOther]);
                 ?>
             </td>
         </tr>
@@ -53,18 +61,19 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
             <th>スキル<br/>（<?= h($this->getLoginUser('name')) ?> による評価)</th>
             <td>
                 <?php
-                $skills = $work->getSkillsBySelf($loginUserId);
+                $skills = $skillsByMe;
                 foreach ($skills as $skill):
                     ?>
                     <div class="card bg-light mb-1">
                         <div class="card-body p-1">
-                            <?= $this->Form->create(null, ['class' => 'form-inline clearfix form-edit', 'level-old' => $skill->_joinData->level]); ?>
+                            <?= $this->Form->create(null, ['class' => 'form-inline clearfix form-edit', 'level-old' => $skill->level]); ?>
                             <?= $this->Form->hidden('user_id', ['value' => $loginUserId]); ?>
                             <?= $this->Form->hidden('work_id', ['value' => $work->id]); ?>
                             <?= $this->Form->hidden('skill_id', ['value' => $skill->id]); ?>
 
+                            <?= $skill->path ?> > 
                             <?= $skill->name ?> - 
-                            <?= $this->Form->select('level', $LEVELS, ['value' => $skill->_joinData->level, 'class' => 'align-middle']) ?>
+                            <?= $this->Form->select('level', $LEVELS, ['value' => $skill->level, 'class' => 'align-middle']) ?>
                             <?= $this->Form->button('修正', ['class' => 'btn btn-outline-dark disabled btn-sm ml-auto', 'disabled' => 'disabled', 'type' => 'submit', 'name' => 'action', 'value' => 'set']) ?>
                             <?= $this->Form->button('削除', ['class' => 'btn btn-outline-danger btn-sm ml-1', 'type' => 'submit', 'name' => 'action', 'value' => 'delete']) ?>
                             <?= $this->Form->end() ?>

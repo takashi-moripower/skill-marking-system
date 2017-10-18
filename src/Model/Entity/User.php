@@ -72,36 +72,24 @@ class User extends Entity {
         return ['Groups' => ['id' => $group_id]];
     }
 
-    /*
-      protected function _getSkills(){
-      $tableW = TableRegistry::get('works');
-
-      $works = $tableW->find()
-      ->contain('Skills')
-      ->where(['user_id'=>$this->id])
-      ->toArray();
-
-      $skills = Hash::extract($works,"{n}.skills.{n}");
-      $skills = Hash::sort($skills,'{n}._joinData.level','desc');
-      $skills = Hash::sort($skills,'{n}.id','asc');
-      return $skills;
-      }
-     */
-
-    protected function _getSkills() {
+    protected function _getMaxSkills() {
         $tableS = TableRegistry::get('skills');
 
-        $skills = $tableS->find('byUser',['user_id' =>$this->id,]);
+        $skills = $tableS
+                ->find('byEngineer', ['engineer_id' => $this->id])
+                ->find('byMarker',['marker_id'=>$this->id,'except'=>true])
+                ->find('maxSkills');
 
         return $skills;
     }
 
-    protected function _getMaxSkills() {
+    protected function _getSelfSkills() {
         $tableS = TableRegistry::get('skills');
-        
-        $skills = $tableS->find('MaxLevel',['user_id' => $this->id])
-                ->order(['level'=>'DESC','skill_id'=>'ASC'])
-;        
+
+        $skills = $tableS
+                ->find('byEngineer', ['engineer_id' => $this->id])
+                ->find('byMarker',['marker_id'=>$this->id]);
+
         return $skills;
     }
 

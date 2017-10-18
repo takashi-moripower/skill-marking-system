@@ -49,7 +49,8 @@ $loginUser = $this->request->session()->read('Auth.User');
         <tr class="">
             <th class="">ID</th>
             <th class="">名称</th>
-            <th class="">技能</th>
+            <th class="">自己評価</th>
+            <th class="">他者評価</th>
             <th class="">操作</th>
         </tr>
     </thead>
@@ -58,6 +59,7 @@ $loginUser = $this->request->session()->read('Auth.User');
             <tr>
                 <th><?= h($user->id) ?></th>
                 <td><?= h($user->name) ?></th>
+                <td class="p-0 align-middle"><?= $this->Element('engineers/skills', ['skills' => $user->self_skills]); ?></th>
                 <td class="p-0 align-middle"><?= $this->Element('engineers/skills', ['skills' => $user->max_skills]); ?></th>
                 <td class="py-0 align-middle">
                     <?= $this->Html->link('閲覧', ['controller' => 'engineers', 'action' => 'view', $user->id], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>

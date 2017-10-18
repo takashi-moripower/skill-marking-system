@@ -45,7 +45,7 @@ class WorksController extends AppController {
             'contain' => [
                 'Users' => ['fields' => ['id', 'name']],
                 'Junles' => ['sort' => ['Junles.id' => 'ASC']],
-                'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'conditions' => [], 'fields' => ['name', 'SkillsWorks.level', 'SkillsWorks.work_id']],
+                'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'conditions' => [], 'fields' => ['name','field_id', 'SkillsWorks.level', 'SkillsWorks.work_id']],
             ]
         ];
 
@@ -105,30 +105,28 @@ class WorksController extends AppController {
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function delete($id = null) {
-        $this->request->allowMethod(['post', 'delete' , 'get']);
+        $this->request->allowMethod(['post', 'delete', 'get']);
         $work = $this->Works->get($id);
         if ($this->Works->delete($work)) {
             $this->Flash->success(__('The work has been deleted.'));
-            
+
             $tableJW = TableRegistry::get('junles_works');
             $tableJW->find()
                     ->delete()
-                    ->where(['work_id'=>$id])
+                    ->where(['work_id' => $id])
                     ->execute();
-            
+
             $tableSW = TableRegistry::get('skills_works');
             $tableSW->find()
                     ->delete()
-                    ->where(['work_id'=>$id])
+                    ->where(['work_id' => $id])
                     ->execute();
-            
+
             $tableF = TableRegistry::get('files');
             $tableF->find()
                     ->delete()
-                    ->where(['work_id'=>$id])
+                    ->where(['work_id' => $id])
                     ->execute();
-            
-            
         } else {
             $this->Flash->error(__('The work could not be deleted. Please, try again.'));
         }
@@ -141,13 +139,15 @@ class WorksController extends AppController {
             $this->_postMark($workId);
         }
 
+        $tableSW = TableRegistry::get('skills_works');
+        $tableS = TableRegistry::get('skills');
+
         $markerId = $this->Auth->user('id');
 
         $work = $this->Works->find()
                 ->where(['Works.id' => $workId])
                 ->contain([
                     'Users' => ['fields' => ['Users.id', 'name']],
-                    'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'conditions' => [], 'fields' => ['id', 'name', 'SkillsWorks.level', 'SkillsWorks.work_id']],
                     'Files',
                     'Junles',
                 ])
@@ -155,17 +155,48 @@ class WorksController extends AppController {
 
         $creatorId = $work->user_id;
 
-        $skillsUsed = Hash::extract($work, "skills.{n}.id");
+        $skills = $tableS->find()
+                ->leftJoin($tableSW->getAlias(), [$tableSW->aliasField('skill_id') . '=' . $tableS->aliasField('id')])
+                ->where([$tableSW->aliasField('work_id') => $workId])
+                ->select($tableS)
+                ->select(['level' => $tableSW->aliasField('level')])
+                ->order([$tableSW->aliasField('level') => 'DESC'])
+        ;
+
+        $skillsByMe = $skills->cleanCopy()
+                ->where([$tableSW->aliasField('user_id') => $markerId])
+        ;
+
+        $skillsBySelf = $skills->cleanCopy()
+                ->where([$tableSW->aliasField('user_id') => $work->user_id])
+        ;
+
+        $skillsByOther = $skills->cleanCopy()
+                ->where([$tableSW->aliasField('user_id') . ' NOT IN' => [$work->user_id, $markerId]])
+        ;
+
+
+        $usedIds = $tableS->find()
+                ->leftJoin($tableSW->getAlias(), [$tableSW->aliasField('skill_id') . '=' . $tableS->aliasField('id')])
+                ->where([$tableSW->aliasField('work_id') => $workId])
+                ->where([$tableSW->aliasField('user_id') => $markerId])
+                ->select('id');
 
         $skillsToSet = $this->Works->Skills
                 ->find('usable', ['user_ids' => [$markerId, $creatorId]])
-                ->where([$this->Works->Skills->aliasField('id') . ' NOT IN' => $skillsUsed])
-                ->find('list', ['keyField' => 'id', 'valueField' => 'name']);
+                ->where([$this->Works->Skills->aliasField('id') . ' NOT IN' => $usedIds])
+                ->contain('Fields')
+                ->order(['Fields.lft' => 'ASC', 'Skills.id' => 'ASC'])
+        ;
 
-        $skillsToSet = ['0' => '-'] + $skillsToSet->toArray();
+        $skillsToSetlist = ['0' => '-'];
+        foreach( $skillsToSet as $skill){
+            $skillsToSetlist[$skill->id] = $skill->path . " > " . $skill->label;
+        }
 
 
-        $this->set(compact('work', 'skillsToSet'));
+        $this->set(['skillsToSet'=>$skillsToSetlist]);
+        $this->set(compact('work', 'skillsBySelf', 'skillsByOther', 'skillsByMe'));
         $this->viewBuilder()->layout('bootstrap');
     }
 

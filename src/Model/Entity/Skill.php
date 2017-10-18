@@ -5,6 +5,7 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
 use App\Defines\Defines;
+use Cake\Utility\Hash;
 
 /**
  * Skill Entity
@@ -42,5 +43,31 @@ class Skill extends Entity {
         }
 
         return $result;
+    }
+    
+    protected function _getPath(){
+        $tableF = TableRegistry::get('fields');
+        
+        
+        $roots = $tableF->find()
+                ->leftJoin(['parent' => 'fields'],['parent.id'=>$this->field_id])
+                ->where([$tableF->aliasField('lft').' <= parent.lft' , $tableF->aliasField('rght').' >= parent.rght'])
+                ->order([$tableF->aliasField('lft') => 'ASC']);
+        $path = '';
+        
+        foreach( $roots as $root){
+            $path .= $root->name;
+            
+            if( $root !== end( $roots )){
+                $path .= " > ";
+            }
+        }
+        
+        $pathes = Hash::extract($roots->toArray(),'{n}.name');
+        
+        $path = implode( ' > ' , $pathes);
+        
+        return $path;
+        
     }
 }

@@ -94,8 +94,7 @@ class DebugController extends AppController {
         $this->DummyData->createDummyMarks();
         return $this->redirect(['controller' => 'debug', 'action' => 'index']);
     }
-    
-    
+
     public function loginAs($user_id = null) {
         $tableU = TableRegistry::get('Users');
         if (isset($user_id)) {
@@ -120,11 +119,9 @@ class DebugController extends AppController {
         $tableO = TableRegistry::get('Organizations');
         $tableF = TableRegistry::get('Fields');
 
-        
+        $skill = $tableS->get(5);
 
-        $data = $tableF->find('usable',['user_ids'=>[10,17]])
-                ->toArray();
-                
+        $data = $skill->path;
         $this->set('data', $data);
         $this->render('/Common/debug');
     }

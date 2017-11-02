@@ -47,9 +47,9 @@ class UsersTable extends Table {
         $this->hasMany('Works', [
             'foreignKey' => 'user_id'
         ]);
-        
-        $this->hasMany('MaxSkills',[
-            'className'=>'Skills',
+
+        $this->hasMany('MaxSkills', [
+            'className' => 'Skills',
             'finder' => 'MaxSkills',
             'foreignKey' => 'user_id',
         ]);
@@ -152,7 +152,8 @@ class UsersTable extends Table {
         /** @var \Search\Manager $searchManager */
         $searchManager = $this->behaviors()->Search->searchManager();
         $searchManager
-                ->finder('skill_id', ['finder' => 'Skills'])
+                ->finder('skill', ['finder' => 'Skills'])
+                ->finder('organization_id' , ['finder' => 'RootOrganization'])
         ;
 
 
@@ -160,12 +161,11 @@ class UsersTable extends Table {
     }
 
     public function findSkills($query, $options) {
-        foreach ($options['skill_id'] as $index => $skill_id) {
 
-            $query->find('skill', [
-                'skill_id' => $skill_id,
-                'skill_level' => Hash::get($options, 'search.skill_level.' . $index)
-            ]);
+        foreach ($options['skill'] as $skill) {
+            if ($skill['id']) {
+                $query->find('skill', ['skill' => $skill]);
+            }
         }
 
         return $query;
@@ -173,8 +173,8 @@ class UsersTable extends Table {
 
     public function findSkill($query, $options) {
 
-        $skill_id = Hash::get($options, 'skill_id', Hash::get($options, 'search.skill_id'));
-        $skill_level = Hash::get($options, 'skill_level', Hash::get($options, 'search.skill_level'));
+        $skill_id = Hash::get($options, 'skill.id');
+        $skill_level = Hash::get($options, 'skill.level');
 
         if (empty($skill_id) || empty($skill_level)) {
             return $query;
@@ -183,21 +183,35 @@ class UsersTable extends Table {
         $tableSW = TableRegistry::get('skills_works');
         $tableW = TableRegistry::get('works');
 
-        $work_ids = $tableSW->find()
-                ->select($tableSW->aliasField('work_id'))
-                ->where([
-            $tableSW->aliasField('skill_id') => $skill_id,
-            $tableSW->aliasField('level') . ' IN' => $skill_level
-        ]);
-
-
         $user_ids = $tableW->find()
-                ->where([$tableW->aliasField('id') . ' IN' => $work_ids])
-                ->select($tableW->aliasField('user_id'));
+                ->LeftJoin('skills_works', ['skills_works.work_id = works.id'])
+                ->where([
+                    'skills_works.skill_id' => $skill_id,
+                    'skills_works.level IN' => $skill_level,
+                    'skills_works.user_id != works.user_id' 
+                ])
+                ->select('user_id');
 
         $query->where([$this->aliasField('id') . ' IN' => $user_ids]);
 
-
+        return $query;
+    }
+    
+    public function findRootOrganization( $query , $options ){
+        $root_id = Hash::get($options,'organization_id');
+        
+        $EndOrgs = TableRegistry::get('EndOrgs',['table'=>'organizations'])
+                ->find()
+                ->leftJoin(['RootOrgs'=>'organizations'],['RootOrgs.lft <= EndOrgs.lft','RootOrgs.rght >= EndOrgs.rght'])
+                ->leftJoin('organizations_users','organizations_users.organization_id = EndOrgs.id')
+                ->where(['RootOrgs.id' => $root_id])
+                ->select('organizations_users.user_id')
+                ->group('organizations_users.user_id');
+        
+        
+                $query->where([$this->aliasField('id').' IN' => $EndOrgs]);
+        
+        
         return $query;
     }
 

@@ -1,34 +1,60 @@
-<h2 class="mb-2">
-    技術者　<?= ($this->request->action == 'edit') ? '編集' : '新規作成'; ?>
-</h2>
-<?= $this->Form->create($user) ?>
-<table class="table table-bordered">
-    <tbody>
-        <tr>
-            <th>名称</th>
-            <td><?= $this->Form->control('name', ['label' => false]); ?></td>
-        </tr>
-        <tr>
-            <th>email</th>
-            <td><?= $this->Form->control('email', ['label' => false]); ?></td>
-        </tr>
-        <tr>
-            <th>password</th>
-            <td><?= $this->Form->control('password', ['label' => false , 'value'=>'']); ?></td>
-        </tr>
-        <tr>
-            <th>組織</th>
-            <td><?= $this->Form->control('organizations._ids', ['options' => $organizations, 'empty' => false, 'label' => false, 'multiple' => true,]);?></td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <div  class="text-right" >
-                    <?= $this->Form->button('保存', ['class' => 'btn btn-primary']) ?>
-                    <?= $this->Html->link('一覧に戻る', ['controller' => 'engineers', 'action' => 'index'], ['class' => 'btn btn-secondary']) ?>
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table>
+<?php
 
+use App\Defines\Defines;
+
+$loginUserGroup = $this->getLoginUser('group_id');
+?>
+<?= $this->Form->create($user) ?>
+
+<div class="card">
+    <div class="card-header">    
+        技術者情報　<?= ($this->request->action == 'edit') ? '編集' : '新規作成'; ?>
+    </div>
+    <div class="card-body p-0">
+        <table class="table mb-0">
+            <tbody>
+                <tr>
+                    <th class="w-20 border-top-0">名称</th>
+                    <td class="border-top-0"><?= $this->Form->control('name', ['label' => false]); ?></td>
+                </tr>
+                <tr>
+                    <th>email</th>
+                    <td><?= $this->Form->control('email', ['label' => false]); ?></td>
+                </tr>
+                <tr>
+                    <th>password</th>
+                    <td><?= $this->Form->control('password', ['label' => false, 'value' => '']); ?></td>
+                </tr>
+                <?php if ($loginUserGroup != Defines::GROUP_ENGINEER): ?>
+                    <tr>
+                        <th>組織</th>
+                        <td>
+                            <?= $this->Form->control('organizations._ids', ['options' => $organizations, 'empty' => false, 'label' => false, 'multiple' => true,]); ?>
+                        </td>
+                    </tr>
+                <?php endif; ?>
+                <tr>
+                    <th>自己アピール</th>
+                    <td><?= $this->Form->control('note', ['label' => false]) ?></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div  class="text-right" >
+                            <?= $this->Form->button('保存', ['class' => 'btn btn-primary']) ?>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 <?= $this->Form->end ?>
+<div class="text-right mt-1">
+    <?php
+    if ($loginUserGroup != Defines::GROUP_ENGINEER) {
+        echo $this->Html->Link('一覧', ['controller' => 'engineers', 'action' => 'index'], ['class' => 'btn btn-outline-primary ml-1']);
+    }
+    echo $this->Html->Link('閲覧', ['controller' => 'engineers', 'action' => 'view', $user->id], ['class' => 'btn btn-outline-primary ml-1']);
+    ?>
+</div>
+

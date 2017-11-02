@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Event\Event;
 
 /**
  * Junles Controller
@@ -10,16 +12,19 @@ use App\Controller\AppController;
  *
  * @method \App\Model\Entity\Junle[] paginate($object = null, array $settings = [])
  */
-class JunlesController extends AppController
-{
+class JunlesController extends AppController {
+
+    public function beforeFilter(Event $event) {
+        parent::beforeFilter($event);
+        $this->viewBuilder()->layout('bootstrap');
+    }
 
     /**
      * Index method
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
-    {
+    public function index() {
         $junles = $this->paginate($this->Junles);
 
         $this->set(compact('junles'));
@@ -33,8 +38,7 @@ class JunlesController extends AppController
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
-    {
+    public function view($id = null) {
         $junle = $this->Junles->get($id, [
             'contain' => ['Works']
         ]);
@@ -48,8 +52,7 @@ class JunlesController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add()
-    {
+    public function add() {
         $junle = $this->Junles->newEntity();
         if ($this->request->is('post')) {
             $junle = $this->Junles->patchEntity($junle, $this->request->getData());
@@ -72,8 +75,7 @@ class JunlesController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         $junle = $this->Junles->get($id, [
             'contain' => ['Works']
         ]);
@@ -98,8 +100,7 @@ class JunlesController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         $this->request->allowMethod(['post', 'delete']);
         $junle = $this->Junles->get($id);
         if ($this->Junles->delete($junle)) {
@@ -110,4 +111,5 @@ class JunlesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
 }

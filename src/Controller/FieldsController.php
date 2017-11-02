@@ -24,7 +24,9 @@ class FieldsController extends AppController {
             'order' => ['lft' => 'ASC',]
         ];
         
-        $query =$this->Fields->find('depth')
+        $query =$this->Fields
+                ->find('countSkills')
+                ->find('depth')
                 ->select( $this->Fields )
                 ->select( $this->Fields->Organizations )
                 ;

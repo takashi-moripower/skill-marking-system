@@ -5,21 +5,26 @@ use Cake\Collection\Collection;
 use App\Defines\Defines;
 
 $loginUserGroup = $this->getLoginUser('group_id');
+
+$searchFormOpen = !empty($this->request->data);
+
+$displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
 ?>
 <div class="card mt-2 border-primary">
     <div class="card-body py-2">
-        <?= $this->Form->create(null, ['valueSources' => 'query']); ?>
+        <?= $this->Form->create(null, ['valueSources' => 'data']); ?>
         <div class="form-group row mb-0">
-            <label class="col-2 col-form-label">Keyword</label>
+            <label class="col-2 col-form-label">キーワード</label>
             <div class="col-4">
-                <?= $this->Form->text('keyword', ['class' => 'form-control']) ?>
+                <?= $this->Form->text('keyword', ['class' => 'form-control', 'placeHolder' => 'keyword']) ?>
             </div>
             <div class="col-6 text-right">
-                <button class="btn btn-primary mr-2" type="submit"><i class="fa fa-search"></i></button>
+                <button class="btn btn-primary mr-2" type="submit"><i class="fa fa-search"></i> 検索 </button>
+                <a href="<?= $this->Url->build(['controller' => 'works', 'action' => 'index', 'clear' => true]) ?>" class="btn btn-outline-primary mr-2">クリア</a>
                 <button class="btn btn-outline-primary ml-auto" type="button" data-toggle="collapse" data-target="#searchExtends" area-expanded="true" aria-controls="searchExtends"><i class="fa fa-caret-down"></i></button>
             </div>
         </div>
-        <div class="collapse" id="searchExtends">
+        <div id="searchExtends" class="collapse <?= $searchFormOpen ? 'show' : '' ?>" >
             <div class="form-group row mt-3">
                 <label class="col-2 col-form-label">所属組織</label>
                 <div class="col-4">
@@ -44,11 +49,13 @@ $loginUserGroup = $this->getLoginUser('group_id');
     <thead>
         <tr class="">
             <th class="">ID</th>
-            <th class="">Name</th>
-            <th class="">User</th>
-            <th class="w-30">Junle</th>
-            <th class="w-30">Skill</th>
-            <th class="">Action</th>
+            <th class="">作品名</th>
+            <?php if ($displayName): ?> 
+                <th class="">作者</th>
+            <?php endif; ?>
+            <th class="w-30">ジャンル</th>
+            <th class="w-30">スキル</th>
+            <th class="">操作</th>
         </tr>
     </thead>
     <tbody>
@@ -56,7 +63,9 @@ $loginUserGroup = $this->getLoginUser('group_id');
             <tr>
                 <th class="text-nowrap text-right"><?= h($work->id) ?></th>
                 <td class="text-nowrap"><?= h($work->name) ?></td>
-                <td class="text-nowrap"><?= h($work->user->name) ?></td>
+                <?php if ($displayName): ?> 
+                    <td class="text-nowrap"><?= h($work->user->name) ?></td>
+                <?php endif; ?>
                 <td>
                     <div class="" style="width:20rem">
                         <?= h(implode(',', Hash::extract($work->junles, '{n}.name'))) ?>
@@ -86,10 +95,10 @@ $loginUserGroup = $this->getLoginUser('group_id');
 
 <?php $this->append('script'); ?>
 <script>
-$(function(){
-    $(document).on('click','a.btn[role="delete"]',function(){
-        return confirm('realy delete?');
+    $(function () {
+        $(document).on('click', 'a.btn[role="delete"]', function () {
+            return confirm('realy delete?');
+        });
     });
-});
 </script>
 <?php $this->end(); ?>

@@ -44,8 +44,11 @@ class Skill extends Entity {
 
         return $result;
     }
-    
-    protected function _getPath(){
+
+    protected function _getPath($value){
+        if( $value ){
+            return $value;
+        }
         $tableF = TableRegistry::get('fields');
         
         

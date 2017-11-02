@@ -1,3 +1,6 @@
+<?php
+use App\Defines\Defines;
+?>
 <div class="text-right mb-2">
     <?= $this->Html->link('新組織作成', ['controller' => 'organizations', 'action' => 'add'], ['class' => 'btn btn-outline-primary']); ?>
 </div>
@@ -7,6 +10,7 @@
         <tr>
             <th>ID</th>
             <th>名称</th>
+            <th>所属人数</th>
             <th>action</th>
         </tr>
     </thead>
@@ -22,6 +26,13 @@
                         <?php endif ?>
                     <?php endfor; ?>
                     <?= h($org->name) ?>
+                </td>
+                <td>
+                    <?= $org->count_org_admin ?>/
+                    <?= $org->count_marker ?>/
+                    <a href="<?= $this->Url->build(['controller'=>'engineers','action'=>'index','organization_id'=>$org->id,'clear'=>true]) ?>">
+                    <?= $org->count_engineer ?>
+                    </a>
                 </td>
                 <td>
                     <?= $this->Html->link('編集', ['controller' => 'organizations', 'action' => 'edit', $org->id], ['class' => 'btn btn-sm btn-outline-primary py-0']) ?>

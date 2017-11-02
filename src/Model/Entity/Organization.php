@@ -2,7 +2,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
-
+use Cake\ORM\TableRegistry;
 /**
  * Organization Entity
  *
@@ -33,4 +33,14 @@ class Organization extends Entity
         '*' => true,
         'id' => false
     ];
+    
+    protected function _getCount(){
+        $count = TableRegistry::get('organizations_users')
+                ->find()
+                ->where(['organization_id' => $this->id])
+                ->select(['count' => 'count(user_id)'])
+                ->first();
+        
+        return $count->count;
+    }
 }

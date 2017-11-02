@@ -24,11 +24,8 @@ class WorksController extends AppController {
 
     public function initialize() {
         parent::initialize();
-        $this->loadComponent('Search.Prg', [
-            'emptyValues' => [
-                'mark-state' => 0
-            ]
-        ]);
+
+        $this->LoadComponent('SearchSession', []);
     }
 
     /**
@@ -37,6 +34,7 @@ class WorksController extends AppController {
      * @return \Cake\Http\Response|void
      */
     public function index() {
+
         $loginUserId = $this->Auth->user('id');
         $loginUserGroup = $this->Auth->user('group_id');
 
@@ -45,27 +43,24 @@ class WorksController extends AppController {
             'contain' => [
                 'Users' => ['fields' => ['id', 'name']],
                 'Junles' => ['sort' => ['Junles.id' => 'ASC']],
-                'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'conditions' => [], 'fields' => ['name','field_id', 'SkillsWorks.level', 'SkillsWorks.work_id']],
+                'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'conditions' => [], 'fields' => ['name', 'field_id', 'SkillsWorks.level', 'SkillsWorks.work_id']],
             ]
         ];
 
         $query = $this->Works
                 ->find('user', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup])
-                ->find('search', ['search' => $this->request->query]);
-
-
+                ->find('search', ['search' => $this->request->data]);
 
         $works = $this->paginate($query);
 
         //検索フォーム用データ
-        $organizations = $this->Works->Users->Organizations
-                ->find('list', ['keyField' => 'id', 'valueField' => 'name']);
+        $organizations = $this->Works->Users->Organizations;
 
         if ($loginUserGroup == Defines::GROUP_MARKER || $loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
             $organizations->find('user', ['user_id' => $loginUserId, 'relation' => 'children']);
         }
 
-        $organizations = ['' => 'すべて'] + $organizations->toArray();
+        $organizations = ['' => 'すべて'] + $this->Works->Users->Organizations->getSelectorFromQuery($organizations);
 
         $junles = ['' => 'すべて'] + $this->Works->Junles
                         ->find('list', ['keyField' => 'id', 'valueField' => 'name'])
@@ -88,7 +83,7 @@ class WorksController extends AppController {
                 'Users',
                 'Junles',
                 'Files',
-                'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'conditions' => [], 'fields' => ['id', 'name', 'SkillsWorks.level', 'SkillsWorks.work_id']],
+                'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'conditions' => [], 'fields' => ['id', 'name' , 'field_id' , 'SkillsWorks.level', 'SkillsWorks.work_id']],
             ]
         ]);
 
@@ -190,12 +185,12 @@ class WorksController extends AppController {
         ;
 
         $skillsToSetlist = ['0' => '-'];
-        foreach( $skillsToSet as $skill){
+        foreach ($skillsToSet as $skill) {
             $skillsToSetlist[$skill->id] = $skill->path . " > " . $skill->label;
         }
 
 
-        $this->set(['skillsToSet'=>$skillsToSetlist]);
+        $this->set(['skillsToSet' => $skillsToSetlist]);
         $this->set(compact('work', 'skillsBySelf', 'skillsByOther', 'skillsByMe'));
         $this->viewBuilder()->layout('bootstrap');
     }

@@ -3,6 +3,8 @@
 namespace App\Defines;
 
 class Defines {
+    const TITLE = "スキル認定システム";
+    
     /*
      * 数値設定
      */
@@ -53,6 +55,9 @@ class Defines {
     const NAV_ID_JUNLES = 6;
     const NAV_ID_WORKS = 7;
     const NAV_ID_ENGINEERS = 8;
+    const NAV_ID_ENG_WORKS = 101;
+    const NAV_ID_ENG_NEW_WORK = 102;
+    const NAV_ID_ENG_MARKS = 103;
     const NAV_TEMPLATES = [
         self::NAV_ID_HOME => ['label' => 'Home', 'url' => ['controller' => 'Home', 'action' => 'index']],
         self::NAV_ID_USERS => ['label' => 'ユーザ', 'url' => ['controller' => 'users', 'action' => 'index']],
@@ -63,6 +68,39 @@ class Defines {
         self::NAV_ID_JUNLES => ['label' => 'ジャンル', 'url' => ['controller' => 'Junles', 'action' => 'index']],
         self::NAV_ID_WORKS => ['label' => '作品', 'url' => ['controller' => 'Works', 'action' => 'index']],
         self::NAV_ID_ENGINEERS => ['label' => 'クリエイター', 'url' => ['controller' => 'Engineers', 'action' => 'index']],
+        self::NAV_ID_ENG_WORKS => ['label' => '作品一覧', 'url' => ['controller' => 'Works', 'action' => 'index']],
+        self::NAV_ID_ENG_NEW_WORK => ['label' => '新規投稿', 'url' => ['controller' => 'Works', 'action' => 'add']],
+        self::NAV_ID_ENG_MARKS => ['label' => '評価', 'url' => ['controller' => 'home', 'action' => 'index']],
+    ];
+    const NAV_GROUP_TEMPLATES = [
+        self::GROUP_ADMIN => [
+            self::NAV_ID_HOME,
+            self::NAV_ID_USERS,
+            self::NAV_ID_GROUPS,
+            self::NAV_ID_ORGANIZATIONS,
+            self::NAV_ID_FIELDS,
+            self::NAV_ID_SKILLS,
+            self::NAV_ID_JUNLES,
+            self::NAV_ID_WORKS,
+            self::NAV_ID_ENGINEERS,
+        ],
+        self::GROUP_ORGANIZATION_ADMIN => [
+            self::NAV_ID_HOME,
+            self::NAV_ID_WORKS,
+            self::NAV_ID_SKILLS,
+            self::NAV_ID_ORGANIZATIONS,
+            self::NAV_ID_ENGINEERS,
+        ],
+        self::GROUP_MARKER => [
+            self::NAV_ID_HOME,
+            self::NAV_ID_WORKS,
+            self::NAV_ID_ENGINEERS,
+        ],
+        self::GROUP_ENGINEER => [
+            self::NAV_ID_ENG_WORKS,
+            self::NAV_ID_ENG_NEW_WORK,
+            self::NAV_ID_ENG_MARKS
+        ],
     ];
 
 }

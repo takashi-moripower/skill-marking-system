@@ -1,7 +1,10 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 
 /**
  * Field Entity
@@ -18,8 +21,7 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\Field[] $child_fields
  * @property \App\Model\Entity\Skill[] $skills
  */
-class Field extends Entity
-{
+class Field extends Entity {
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -34,4 +36,35 @@ class Field extends Entity
         '*' => true,
         'id' => false
     ];
+
+    protected function _getPath($value) {
+
+        if ($value) {
+            return $value;
+        }
+        
+        $tableF = TableRegistry::get('fields');
+
+
+        $roots = $tableF->find()
+                ->leftJoin(['branch' => 'fields'], ['branch.id' => $this->id])
+                ->where([$tableF->aliasField('lft') . ' <= branch.lft', $tableF->aliasField('rght') . ' >= branch.rght'])
+                ->order([$tableF->aliasField('lft') => 'ASC']);
+        $path = '';
+
+        foreach ($roots as $root) {
+            $path .= $root->name;
+
+            if ($root !== end($roots)) {
+                $path .= " > ";
+            }
+        }
+
+        $pathes = Hash::extract($roots->toArray(), '{n}.name');
+
+        $path = implode(' > ', $pathes);
+
+        return $path;
+    }
+
 }

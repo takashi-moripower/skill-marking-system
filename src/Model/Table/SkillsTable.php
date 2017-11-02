@@ -36,14 +36,18 @@ class SkillsTable extends Table {
     public function initialize(array $config) {
         parent::initialize($config);
 
+        $this->addBehavior('Search.Search');
+
         $this->setTable('skills');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
         $this->belongsTo('Fields', [
             'foreignKey' => 'field_id',
-            'joinType' => 'INNER'
+            'joinType' => 'INNER',
         ]);
+
+
         $this->belongsToMany('Works', [
             'foreignKey' => 'skill_id',
             'targetForeignKey' => 'work_id',
@@ -81,6 +85,20 @@ class SkillsTable extends Table {
         $rules->add($rules->existsIn(['field_id'], 'Fields'));
 
         return $rules;
+    }
+
+    /**
+     * @return \Search\Manager
+     */
+    public function searchManager() {
+        /** @var \Search\Manager $searchManager */
+        $searchManager = $this->behaviors()->Search->searchManager();
+        $searchManager
+                ->value('field_id')
+        ;
+
+
+        return $searchManager;
     }
 
     public function createFromArray($src) {
@@ -233,7 +251,7 @@ class SkillsTable extends Table {
             $query
                     ->where(['skills_works.user_id' => $marker_id]);
         }
-        
+
         return $query;
     }
 
@@ -245,6 +263,28 @@ class SkillsTable extends Table {
         $query
                 ->select(['level' => 'max(skills_works.level)'])
                 ->group($this->aliasField('id'));
+
+        return $query;
+    }
+
+    public function findFieldPath($query, $options) {
+        $tableF = TableRegistry::get('Fields');
+
+        $fieldPath = $tableF->find('PathName')
+                ->select(['id' => 'id']);
+
+        $query
+                ->join([
+                    'path' => [
+                        'table' => $fieldPath,
+                        'type' => 'left',
+                        'conditions' => [
+                            $this->aliasField('field_id') . ' = path.id'
+                        ]
+                    ]
+                ])
+                ->select(['field_path' => 'path.path']);
+
 
         return $query;
     }

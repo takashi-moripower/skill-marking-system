@@ -12,6 +12,7 @@ use Cake\Utility\Hash;
             <th>ID</th>
             <th>管轄組織</th>
             <th>名称</th>
+            <th>スキル</th>
             <th>action</th>
         </tr>
     </thead>
@@ -28,6 +29,11 @@ use Cake\Utility\Hash;
                         <?php endif ?>
                     <?php endfor; ?>
                     <?= h($field->name) ?>
+                </td>
+                <td class="text-right">
+                    <a href="<?= $this->Url->build(['controller'=>'skills','action'=>'index','organization_id'=>$field->organization_id,'field_id'=>$field->id])?>">
+                    <?= $field->skill_count?>
+                    </a>
                 </td>
                 <td>
                     <?= $this->Html->link('編集', ['controller' => 'fields', 'action' => 'edit', $field->id], ['class' => 'btn btn-sm btn-outline-primary py-0']) ?>

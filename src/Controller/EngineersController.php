@@ -23,8 +23,7 @@ class EngineersController extends AppController {
 
     public function initialize() {
         parent::initialize();
-        $this->loadComponent('Search.Prg', [
-        ]);
+        $this->loadComponent('SearchSession', []);
     }
 
     public function beforeFilter(Event $event) {
@@ -42,6 +41,7 @@ class EngineersController extends AppController {
         $loginUserGroup = $this->Auth->user('group_id');
 
         $tableU = TableRegistry::get('users');
+        $tableO = TableRegistry::get('Organizations');
 
         $this->paginate = [
             'order' => ['id' => 'ASC'],
@@ -50,21 +50,36 @@ class EngineersController extends AppController {
         $query = $tableU
                 ->find()
                 ->where(['group_id' => Defines::GROUP_ENGINEER])
-                ->find('search', ['search' => $this->request->query]);
+                ->find('search', ['search' => $this->request->data]);
 
         $users = $this->paginate($query);
 
 
         //検索フォーム用
-        $skills = $tableU->works->skills->find('usable', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup])
-                ->find('list');
+        $skills = [];
+        $skillQuery = $tableU->works->skills->find('usable', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup])
+                ->contain('Fields')
+                ->order(['Fields.lft' => 'ASC', 'Skills.id' => 'ASC']);
+        foreach ($skillQuery as $skill) {
+            $skills[$skill->id] = $skill->path . " > " . $skill->name;
+        }
 
-        $skills = [0 => '-'] + $skills->toArray();
+        $skills = [0 => '-'] + $skills;
 
         $levels = array_combine(range(1, Defines::SKILL_LEVEL_MAX), range(1, Defines::SKILL_LEVEL_MAX));
 
+        //検索フォーム用データ
 
-        $this->set(compact('users', 'skills', 'levels'));
+        $organizations = $tableO->find();
+
+        if ($loginUserGroup == Defines::GROUP_MARKER || $loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
+            $organizations->find('user', ['user_id' => $loginUserId, 'relation' => 'children']);
+        }
+
+        $organizations = ['' => 'すべて'] + $tableO->getSelectorFromQuery($organizations);
+
+
+        $this->set(compact('users', 'skills', 'levels','organizations'));
         $this->viewBuilder()->layout('bootstrap');
     }
 
@@ -119,10 +134,15 @@ class EngineersController extends AppController {
         }
 
         $organizations = TableRegistry::get('organizations')
-                ->find('list');
+                ->find()
+                ->select('id')
+                ->order('lft')
+                ->find('pathName')
+                ->find('list',['keyField'=>'id','valueField'=>'path'])
+                ;
         if ($this->Auth->user()->group_id != Defines::GROUP_ADMIN) {
             $organizations
-            ->find('user', ['user_id' => $this->Auth->user()->id, 'relation' => 'children']);
+                    ->find('user', ['user_id' => $this->Auth->user()->id, 'relation' => 'children']);
         }
 
         $this->set(compact('user', 'organizations'));

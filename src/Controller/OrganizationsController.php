@@ -33,8 +33,10 @@ class OrganizationsController extends AppController {
             'order' => ['lft' => 'ASC',]
         ];
 
-        $query = $this->Organizations->find('depth');
-
+        $query = $this->Organizations->find('depth')
+                ->find('countUsers')
+                ->select( $this->Organizations )
+        ;
         if ($group == Defines::GROUP_ORGANIZATION_ADMIN) {
             $query->find('user', ['user_id' => $user->id, 'relation' => 'children']);
         }

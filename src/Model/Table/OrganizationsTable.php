@@ -8,6 +8,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use Cake\Utility\Hash;
+use App\Defines\Defines;
 
 /**
  * Organizations Model
@@ -44,6 +45,7 @@ class OrganizationsTable extends Table {
 
         $this->addBehavior('Tree');
         $this->addBehavior('Depth');
+        $this->addBehavior('Path');
 
         $this->belongsTo('ParentOrganizations', [
             'className' => 'Organizations',
@@ -127,23 +129,37 @@ class OrganizationsTable extends Table {
      * @return type
      */
     public function findChildren($query, $options) {
-        $parent_id = Hash::get($options, 'organization_id', Hash::get($options, 'id'));
-        $parent_ids = Hash::get($options, 'organization_ids', Hash::get($options, 'ids'));
+        $parent_id = Hash::get($options, 'organization_id', Hash::get($options, 'id', null));
+        $parent_ids = Hash::get($options, 'organization_ids', Hash::get($options, 'ids', []));
 
-        $query->join(['descendants' => [
+        $tableParents = TableRegistry::get('Parents', ['table' => 'organizations']);
+
+        $parents = $tableParents->find();
+
+        if (!empty($parent_id)) {
+            $parents->where([$tableParents->aliasField('id') => $parent_id]);
+        }
+
+        if (!empty($parent_ids)) {
+            $parents->where([$tableParents->aliasField('id') . ' IN' => $parent_ids]);
+        }
+
+        $parents->join(['Descendants' => [
                 'table' => 'organizations',
-                'type' => 'LEFT',
-                'conditions' => ['descendants.lft <= ' . $this->aliasField('lft'), 'descendants.rght >= ' . $this->aliasField('rght')]
+                'type' => 'inner',
+                'conditions' => [
+                    'Descendants.lft >= Parents.lft',
+                    'Descendants.rght <= Parents.rght',
+                ]
         ]]);
 
-        if ($parent_id) {
-            $query->where(['descendants.id' => $parent_id]);
-        }
 
-        if ($parent_ids) {
-            $query->where(['descendants.id IN' => $parent_ids])
-                    ->group($this->aliasField('id'));
-        }
+        $descendants = $parents
+                ->select(['Descendants_id' => 'Descendants.id'])
+                ->group('Descendants_id');
+
+        $query->where([$this->aliasField('id') . ' IN' => $descendants]);
+
 
         return $query;
     }
@@ -155,23 +171,123 @@ class OrganizationsTable extends Table {
      * @return type
      */
     public function findParents($query, $options) {
-        $child_id = Hash::get($options, 'organization_id', Hash::get($options, 'id'));
-        $child_ids = Hash::get($options, 'organization_ids', Hash::get($options, 'ids'));
+        $child_id = Hash::get($options, 'organization_id', Hash::get($options, 'id', null));
+        $child_ids = Hash::get($options, 'organization_ids', Hash::get($options, 'ids', []));
 
-        $query->join(['ancestors' => [
+        $tableChildren = TableRegistry::get('Children', ['table' => 'organizations']);
+
+        $children = $tableChildren->find();
+
+        if (!empty($child_id)) {
+            $children->where([$tableChildren->aliasField('id') => $child_id]);
+        }
+
+        if (!empty($child_ids)) {
+            $children->where([$tableChildren->aliasField('id') . ' IN' => $child_ids]);
+        }
+
+        $children->join(['Ancestors' => [
                 'table' => 'organizations',
-                'type' => 'LEFT',
-                'conditions' => ['ancestors.lft >= ' . $this->aliasField('lft'), 'ancestors.rght <= ' . $this->aliasField('rght')]
+                'type' => 'inner',
+                'conditions' => [
+                    'Ancestors.lft <= Children.lft',
+                    'Ancestors.rght >= Children.rght',
+                ]
         ]]);
 
-        if ($child_id) {
-            $query->where(['ancestors.id' => $child_id]);
+        $ancestors = $children
+                ->select(['Ancestror_id' => 'Ancestors.id'])
+                ->group('Ancestror_id');
+
+        $query->where([$this->aliasField('id') . ' IN' => $ancestors]);
+
+
+        return $query;
+    }
+
+    /*
+      public function findParents($query, $options) {
+      $child_id = Hash::get($options, 'organization_id', Hash::get($options, 'id'));
+      $child_ids = Hash::get($options, 'organization_ids', Hash::get($options, 'ids'));
+
+      $query->join(['ancestors' => [
+      'table' => 'organizations',
+      'type' => 'LEFT',
+      'conditions' => ['ancestors.lft >= ' . $this->aliasField('lft'), 'ancestors.rght <= ' . $this->aliasField('rght')]
+      ]]);
+
+      if ($child_id) {
+      $query->where(['ancestors.id' => $child_id]);
+      }
+
+      if ($child_ids) {
+      $query->where(['ancestors.id IN' => $child_ids])
+      ->group($this->aliasField('id'));
+      }
+
+      return $query;
+      }
+     */
+
+    /**
+     * フォーム用選択肢を返す
+     * @param type $query
+     * @return string
+     */
+    public function getSelectorFromQuery($query) {
+        $list = $query->find('depth')
+                ->select($this)
+                ->order($this->aliasField('lft'));
+
+        $result = [];
+
+        foreach ($list as $org) {
+            $prefix = "";
+            for ($i = 0; $i < $org->depth; $i++) {
+                $prefix .= '　';
+                if ($i == $org->depth - 1) {
+                    $prefix .= '↳';
+                }
+            }
+            $result[$org->id] = $prefix . $org->name;
         }
 
-        if ($child_ids) {
-            $query->where(['ancestors.id IN' => $child_ids])
-                    ->group($this->aliasField('id'));
-        }
+        return $result;
+    }
+
+    /**
+     */
+    public function findCountUsers($query, $options) {
+
+        $tableOA = TableRegistry::get('OA', ['table' => 'users']);
+
+        $OA = $tableOA->find()
+                ->leftJoin('organizations_users', [$tableOA->aliasField('id') . '= organizations_users.user_id'])
+                ->where([$tableOA->aliasField('group_id') => Defines::GROUP_ORGANIZATION_ADMIN])
+                ->where([$this->aliasField('id') . ' = organizations_users.organization_id'])
+                ->select(['count' => 'count(OA.id)']);
+
+        $tableMK = TableRegistry::get('MK', ['table' => 'users']);
+        $MK = $tableMK->find()
+                ->leftJoin('organizations_users', [$tableMK->aliasField('id') . '= organizations_users.user_id'])
+                ->where([$tableMK->aliasField('group_id') => Defines::GROUP_MARKER])
+                ->where([$this->aliasField('id') . ' = organizations_users.organization_id'])
+                ->select(['count' => 'count(MK.id)']);
+
+        $tableEG = TableRegistry::get('EG', ['table' => 'users']);
+        $EG = $tableEG->find()
+                ->leftJoin('organizations_users', [$tableEG->aliasField('id') . '= organizations_users.user_id'])
+                ->where([$tableEG->aliasField('group_id') => Defines::GROUP_ENGINEER])
+                ->where([$this->aliasField('id') . ' = organizations_users.organization_id'])
+                ->select(['count' => 'count(EG.id)']);
+
+
+        $query
+                ->select(['count_org_admin' => $OA])
+                ->select(['count_marker' => $MK])
+                ->select(['count_engineer' => $EG])
+        ;
+
 
         return $query;
     }

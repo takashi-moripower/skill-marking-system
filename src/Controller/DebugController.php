@@ -119,9 +119,15 @@ class DebugController extends AppController {
         $tableO = TableRegistry::get('Organizations');
         $tableF = TableRegistry::get('Fields');
 
-        $skill = $tableS->get(5);
+        
+        
+        $query = $tableO->find('parents',['organization_ids'=>[6]]);
+        
+        
+        
 
-        $data = $skill->path;
+        $data = $query->toArray();
+
         $this->set('data', $data);
         $this->render('/Common/debug');
     }

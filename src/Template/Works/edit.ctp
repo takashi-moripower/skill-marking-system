@@ -1,7 +1,7 @@
 <?php
-if( $this->request->action == 'add' ){
+if ($this->request->action == 'add') {
     $title = "作品　新規作成";
-}else{
+} else {
     $title = "作品　編集";
 }
 ?>
@@ -10,64 +10,69 @@ if( $this->request->action == 'add' ){
     <div class="card-header">
         <?= $title ?>
     </div>
-    <div class="card-body">
+    <div class="card-body p-0">
         <?= $this->Form->create($work, ['method' => 'post', 'enctype' => 'multipart/form-data']) ?>
         <?= $this->Form->hidden('id') ?>
         <?= $this->Form->hidden('user_id') ?>
-        <div class="form-group">
-            <?= $this->Form->input('name', ['class' => 'form-control', 'label' => '題名']) ?>
-        </div>
-        <div class="form-group">
-            <label>ジャンル</label>
-            <div class="junles">
-                <?= $this->element('works/junles') ?>
-            </div>
-        </div>
-        <div class="form-group">
-            <?= $this->Form->input('note', ['class' => 'form-control', 'label' => '解説', 'type' => 'textArea']) ?>
-        </div>
-        <div class="form-group">
-            <label>添付ファイル</label>
-            <div class="files">
-                <?php foreach ($work->files as $fileNo => $file): ?>
-                    <div class="input-group mb-2 file">
-                        <div class="form-control">
-                            <?= $this->Element('files/thumbnail', ['file' => $file]) ?>
-                        </div>
-                        <label class="mb-0">
-                            <span class="input-group-addon del-file">ファイルを削除</span>
-                        </label>
-                        <?= $this->Form->hidden("file_to_remove[]", ['value' => $file->id, 'disabled' => 'disabled']) ?>
-                    </div>
-                <?php endforeach; ?>
-                <div class="new-files">
+        <table class="table mb-0">
+            <tbody>
+                <tr>
+                    <th class="border-top-0 w-20">題名</th>
+                    <td class="border-top-0"><?= $this->Form->input('name', ['class' => 'form-control', 'label' => false]) ?></td>
+                </tr>
+                <tr>
+                    <th>ジャンル</th>
+                    <td> <?= $this->element('works/junles') ?></td>
+                </tr>
+                <tr>
+                    <th>解説</th>
+                    <td><?= $this->Form->input('note', ['class' => 'form-control', 'label' => false, 'type' => 'textArea']) ?></td>
+                </tr>
+                <tr>
+                    <th>添付ファイル</th>
+                    <td>
+                        <div class="files">
+                            <?php foreach ($work->files as $fileNo => $file): ?>
+                                <div class="input-group mb-2 file">
+                                    <div class="form-control">
+                                        <?= $this->Element('files/thumbnail', ['file' => $file]) ?>
+                                    </div>
+                                    <label class="mb-0">
+                                        <span class="input-group-addon del-file">ファイルを削除</span>
+                                    </label>
+                                    <?= $this->Form->hidden("file_to_remove[]", ['value' => $file->id, 'disabled' => 'disabled']) ?>
+                                </div>
+                            <?php endforeach; ?>
+                            <div class="new-files">
 
-                </div>
-                <div>
-                    <?= $this->Form->button('新規追加', ['class' => 'btn btn-outline-primary add-file', 'type' => 'button']) ?>
-                </div>
-            </div>
-            <div class="d-none file-template">
-                <div class="input-group mb-2">
-                    <input type="text" class="form-control" placeholder="未選択">
-                    <label class="mb-0">
-                        <span class="input-group-addon">ファイルを選択</span>
-                        <input type="file" class="d-none" name="files[]"/>
-                        <?= $this->Form->hidden('files[]["work_id"]', ['value' => $work->id]) ?>
-                    </label>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="text-right">
-                <?= $this->Form->button('保存', ['class' => 'btn btn-primary', 'type' => 'submit']) ?>
-            </div>
-        </div>
+                            </div>
+                            <div>
+                                <?= $this->Form->button('新規追加', ['class' => 'btn btn-outline-primary add-file', 'type' => 'button']) ?>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td class="text-right">
+                        <?= $this->Form->button('保存', ['class' => 'btn btn-primary', 'type' => 'submit']) ?>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
         <?= $this->Form->end() ?>
     </div>
-
 </div>
 
+<div class="text-right mt-1">
+    <?php
+    echo $this->Html->Link('一覧', ['controller' => 'works', 'action' => 'index'], ['class' => 'btn btn-outline-primary ml-1']);
+    echo $this->Html->Link('閲覧', ['controller' => 'works', 'action' => 'view', $work->id], ['class' => 'btn btn-outline-primary ml-1']);
+    echo $this->Html->Link('採点', ['controller' => 'works', 'action' => 'mark', $work->id], ['class' => 'btn btn-outline-primary ml-1']);
+    ?>
+</div>
 <?php $this->append('script'); ?>
 <script>
     $(function () {

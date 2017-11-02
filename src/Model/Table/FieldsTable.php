@@ -45,6 +45,7 @@ class FieldsTable extends Table {
 
         $this->addBehavior('Tree');
         $this->addBehavior('Depth');
+        $this->addBehavior('Path');
 
         $this->belongsTo('Organizations', [
             'foreignKey' => 'organization_id'
@@ -71,7 +72,7 @@ class FieldsTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
                 ->integer('id')
-                ->allowEmpty('id', 'create');
+                ->allowEmpty('id', 'parent_id');
 
         $validator
                 ->scalar('name')
@@ -89,9 +90,25 @@ class FieldsTable extends Table {
      */
     public function buildRules(RulesChecker $rules) {
         $rules->add($rules->existsIn(['organization_id'], 'Organizations'));
-        $rules->add($rules->existsIn(['parent_id'], 'ParentFields'));
+        $rules->add($rules->existsIn(['parent_id'], 'ParentFields', ['allowNullableNulls' => true]));
 
+        $rules->add([$this, 'isValidOrg'], 'validOrg', [
+            'errorField' => 'organization_id',
+            'message' => '親と異なる組織に属することはできません'
+        ]);
         return $rules;
+    }
+
+    public function isValidOrg($value, $context) {
+
+        if ($value->parent_id === null) {
+            return true;
+        }
+
+        $tableF = TableRegistry::get('fields');
+        $parent = $tableF->get($value->parent_id);
+
+        return ( $parent->organization_id == $value->organization_id );
     }
 
     public function createFromArray($src, $parent_id = null) {
@@ -116,31 +133,6 @@ class FieldsTable extends Table {
      * user_idから利用可能なfieldを取得
      * 配列渡されたときはAND
      */
-
-    public function findUsable0($query, $options) {
-        $tableOU = TableRegistry::get('organizations_users');
-
-        $user_id = Hash::get($options, 'user_id');
-
-        if (is_array($user_id)) {
-            foreach ($user_id as $uid) {
-                $query->find('usable', ['user_id' => $uid]);
-            }
-
-            return $query;
-        }
-
-        if (is_numeric($user_id)) {
-            $orgs = $tableOU->find()
-                    ->where([$tableOU->aliasField('user_id') => $user_id])
-                    ->select($tableOU->aliasField('organization_id'));
-
-            $query->where(['or' => [$this->aliasField('organization_id') . ' IS' => NULL, $this->aliasField('organization_id') . ' IN' => $orgs]]);
-            return $query;
-        }
-
-        return $query;
-    }
 
     public function findUsable($query, $options) {
         $user_id = Hash::get($options, 'user_id');
@@ -173,10 +165,10 @@ class FieldsTable extends Table {
 
             return $query;
         }
-        
-        if( $user_ids ){
-            foreach( $user_ids as $user_id ){
-                $query->find('usable',['user_id'=>$user_id]);
+
+        if ($user_ids) {
+            foreach ($user_ids as $user_id) {
+                $query->find('usable', ['user_id' => $user_id]);
             }
             return $query;
         }
@@ -205,4 +197,17 @@ class FieldsTable extends Table {
         return $query;
     }
 
+    public function findCountSkills($query, $options) {
+
+        $subquery = TableRegistry::get('skills')
+                ->find()
+                ->where(['field_id =' . $this->aliasField('id')])
+                ->select(['count' => 'count(skills.id)']);
+
+        $query
+                ->select(['skill_count' => $subquery]);
+        return $query;
+    }
+
+    
 }

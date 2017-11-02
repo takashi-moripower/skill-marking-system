@@ -3,43 +3,38 @@
 use App\Defines\Defines;
 
 $loginUser = $this->request->session()->read('Auth.User');
+
+$i = 0;
+$searchFormOpen = ( $this->request->getData('skill.1.id') != 0 || $this->request->getData('skill.2.id') != 0);
 ?>
+
 <div class="text-right mb-2">
     <a href="<?= $this->Url->build(['controller' => 'engineers', 'action' => 'add']) ?>" class="btn btn-outline-primary">技術者追加</a>
 </div>
 <div class="card mt-2 border-primary">
-    <div class="card-body py-2">
-        <?= $this->Form->create(null, ['valueSources' => 'query']); ?>
-        <?php for ($i = 1; $i <= 3; $i++): ?>
-            <?php
-            $skill_id = $this->request->query("skill_id.{$i}");
-            $skill_level = $this->request->query("skill_level.{$i}");
-            if ($skill_level == null) {
-                $skill_level = array();
-            }
-            ?>
-            <div class="form-group row mt-3">
-                <label class="col-2 col-form-label">スキル</label>
-                <div class="col-3 p-0">
-                    <?= $this->Form->select("skill_id[{$i}]", $skills, ['class' => 'form-control', 'value' => $skill_id]) ?>
+    <div class="card-body py-2 px-3">
+        <?= $this->Form->create(null, ['valueSources' => 'data' , 'url'=>['controller'=>'engineers', 'action'=>'index']]); ?>
+        <div class="container-fluid px-0">
+            <div class="form-group row mt-0 mb-1">
+                <div class="col-9">
+                    <?= $this->Form->select('organization_id', $organizations, ['class' => 'form-control']) ?>
                 </div>
-                <div class="col-2 pt-0 pb-0 pl-3">
-                    <?php foreach ($levels as $level): ?>
-                        <label class="d-inline-block mt-1">
-                            <?= $level ?>
-                            <?= $this->Form->checkbox("skill_level[{$i}][]", ['value' => $level, 'hiddenField' => false, 'checked' => in_array($level, $skill_level)]); ?>
-                        </label>
-                    <?php endforeach; ?>
+                <div class="col-3 text-right">
+                    <button class="btn btn-primary mr-2" type="submit"><i class="fa fa-search"></i> Search</button>
+                    <a class="btn btn-outline-primary mr-2" href="<?= $this->Url->build(['controller' => 'engineers', 'action' => 'index', 'clear' => 1]) ?>">Clear</a>
+                    <button class="btn btn-outline-primary ml-auto" type="button" data-toggle="collapse" data-target="#searchExtends" area-expanded="true" aria-controls="searchExtends"><i class="fa fa-caret-down"></i></button>
                 </div>
-                <?php if ($i == 1): ?>
-                    <div class="col-5 text-right">
-                        <button class="btn btn-primary mr-2" type="submit"><i class="fa fa-search"></i></button>
-                    </div>
-                <?php endif; ?>
             </div>
-        <?php endfor; ?>
-
-
+            <div id="searchExtends" class="collapse <?= $searchFormOpen ? 'show' : '' ?>" >
+                <div class="form-group row my-0">
+                    <div class="col-9">
+                        <?= $this->Element('engineers/skillform', ['i' => 0]) ?>
+                        <?= $this->Element('engineers/skillform', ['i' => 1]) ?>
+                        <?= $this->Element('engineers/skillform', ['i' => 2]) ?>
+                    </div>
+                </div>
+            </div>
+        </div>
         <?= $this->Form->end() ?>
     </div>
 </div>
@@ -61,7 +56,7 @@ $loginUser = $this->request->session()->read('Auth.User');
             <tr>
                 <th rowspan="2"><?= h($user->id) ?></th>
                 <td rowspan="2"><?= h($user->name) ?></th>
-                <td class="p-0 align-middle bg-light"><?= $this->Element('skills', ['skills' => $user->self_skills,'cardClass'=>'']); ?></th>
+                <td class="p-0 align-middle bg-light"><?= $this->Element('skills', ['skills' => $user->self_skills, 'cardClass' => '']); ?></th>
                 <td rowspan="2" class="py-0 align-middle">
                     <?= $this->Html->link('閲覧', ['controller' => 'engineers', 'action' => 'view', $user->id], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>
                     <?php if (in_array($loginUser->group_id, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN])): ?>

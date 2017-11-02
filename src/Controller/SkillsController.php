@@ -20,6 +20,11 @@ class SkillsController extends AppController {
         'Paginator' => ['templates' => 'paginator-templates']
     ];
 
+    public function initialize() {
+        parent::initialize();
+        $this->loadComponent('SearchSession', []);
+    }
+
     /**
      * Index method
      *
@@ -33,16 +38,30 @@ class SkillsController extends AppController {
         $this->paginate = [
             'contain' => ['Fields' => ['Organizations']]
         ];
+        
 
-        $query = $this->Skills->find();
+        $query = $this->Skills->find('fieldPath')
+                ->select(['id', 'name'])
+                ->select(['org_name'=> $this->Skills->Fields->Organizations->aliasField('name')])
+                ->find('search', ['search' => $this->request->data]);
 
         if ($group == Defines::GROUP_ORGANIZATION_ADMIN) {
             $query->find('usable', ['user_id' => $user->id, 'group_id' => $user->group_id]);
         }
         $skills = $this->paginate($query);
+        
+        
+        //検索用
+        $fields = [];
+        $fields = $this->Skills->Fields->find('pathName')
+                ->select('id')
+                ->find('list',['keyField'=>'id','valueField'=>'path'])
+                ->find('usable',['user_id'=>$user->id]);
+        
+        
 
 
-        $this->set(compact('skills', 'orgs'));
+        $this->set(compact('skills', 'fields' ));
         $this->set('_serialize', ['skills']);
         $this->viewBuilder()->layout('bootstrap');
     }
@@ -81,9 +100,7 @@ class SkillsController extends AppController {
             }
             $this->Flash->error(__('The skill could not be saved. Please, try again.'));
         }
-        $fields = $this->Skills->Fields
-                ->find('editable', ['user_id' => $user->id])
-                ->find('list', ['limit' => 200]);
+        $fields = $this->_getFieldsForEdit($user->id);
 
         $this->set(compact('skill', 'fields'));
         $this->set('_serialize', ['skill']);
@@ -112,13 +129,23 @@ class SkillsController extends AppController {
             }
             $this->Flash->error(__('The skill could not be saved. Please, try again.'));
         }
-        $fields = $this->Skills->Fields
-                ->find('editable', ['user_id' => $user->id])
-                ->find('list', ['limit' => 200]);
+        $fields = $this->_getFieldsForEdit($user->id);
 
         $this->set(compact('skill', 'fields'));
         $this->set('_serialize', ['skill']);
         $this->viewBuilder()->layout('bootstrap');
+    }
+
+    protected function _getFieldsForEdit($user_id) {
+        $fields = $this->Skills->Fields
+                ->find('editable', ['user_id' => $user_id]);
+
+        $list = [];
+        foreach ($fields as $field) {
+            $list[$field->id] = $field->path;
+        }
+
+        return $list;
     }
 
     /**
@@ -137,7 +164,7 @@ class SkillsController extends AppController {
                     ->delete()
                     ->where(['skill_id' => $id])
                     ->execute();
-            
+
             $this->Flash->success(__('The skill has been deleted.'));
         } else {
             $this->Flash->error(__('The skill could not be deleted. Please, try again.'));

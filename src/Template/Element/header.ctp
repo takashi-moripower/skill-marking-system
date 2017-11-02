@@ -1,4 +1,5 @@
 <?php
+use App\Defines\Defines;
 $loginUser = $this->request->session()->read('Auth.User');
 ?>
 <header>
@@ -7,7 +8,7 @@ $loginUser = $this->request->session()->read('Auth.User');
             <div class="row">
                 <div class="col text-white clearfix">
                     <a href="<?= $this->Url->build("/") ?>" class="text-white float-left">
-                        <h1>Skill Marking System</h1>
+                        <h1><?= Defines::TITLE ?></h1>
                     </a>
                     <?php if($loginUser): ?>
                     <div class="dropdown float-right mt-2">

@@ -1,31 +1,27 @@
-<?php
-/**
-  * @var \App\View\AppView $this
-  */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Form->postLink(
-                __('Delete'),
-                ['action' => 'delete', $junle->id],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $junle->id)]
-            )
-        ?></li>
-        <li><?= $this->Html->link(__('List Junles'), ['action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('List Works'), ['controller' => 'Works', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Work'), ['controller' => 'Works', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="junles form large-9 medium-8 columns content">
-    <?= $this->Form->create($junle) ?>
-    <fieldset>
-        <legend><?= __('Edit Junle') ?></legend>
-        <?php
-            echo $this->Form->control('name');
-            echo $this->Form->control('works._ids', ['options' => $works]);
-        ?>
-    </fieldset>
-    <?= $this->Form->button(__('Submit')) ?>
-    <?= $this->Form->end() ?>
+<?= $this->Form->create($junle) ?>
+
+<div class="card">
+    <div class="card-header">
+        ジャンル　<?= ($this->request->action == 'edit') ? '編集' : '新規作成'; ?>
+    </div>
+    <div class="card-body p-0">
+        <table class="table m-0">
+            <tbody>
+                <tr>
+                    <th class="w-20 border-top-0">名称</th>
+                    <td class="w-80 border-top-0"><?= $this->Form->control('name', ['label' => false]); ?></td>
+                </tr>
+                <tr>
+                    <th>説明</th>
+                    <td><?= $this->Form->control('note', ['label' => false, 'class' => 'w-100']); ?></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<div  class="text-right mt-2" >
+    <?= $this->Form->button('保存', ['class' => 'btn btn-primary ml-1']) ?>
+    <?= $this->Html->link('一覧に戻る', ['controller' => 'junles', 'action' => 'index'], ['class' => 'btn btn-secondary  ml-1']) ?>
+</div>
+<?= $this->Form->end ?>

@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
+
 /**
  * Organization Entity
  *
@@ -17,8 +19,7 @@ use Cake\ORM\TableRegistry;
  * @property \App\Model\Entity\Organization[] $child_organizations
  * @property \App\Model\Entity\User[] $users
  */
-class Organization extends Entity
-{
+class Organization extends Entity {
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -33,14 +34,34 @@ class Organization extends Entity
         '*' => true,
         'id' => false
     ];
-    
-    protected function _getCount(){
+
+    protected function _getCountUsers($val) {
+        if (isset($val)) {
+            return $val;
+        }
+
         $count = TableRegistry::get('organizations_users')
                 ->find()
                 ->where(['organization_id' => $this->id])
-                ->select(['count' => 'count(user_id)'])
-                ->first();
-        
-        return $count->count;
+                ->count();
+
+        $this->count_users = $count;
+        return $count;
     }
+
+    protected function _getPathName($val) {
+        if (isset($val)) {
+            return $val;
+        }
+        
+        $tableO = TableRegistry::get('Organizations');
+        
+        $org = $tableO->find('pathName')
+                ->where([$tableO->aliasField('id')=>$this->id])
+                ->first();
+          
+        $this->path_name = $org->path;
+        return $org->path;
+    }
+
 }

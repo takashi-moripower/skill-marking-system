@@ -19,8 +19,8 @@ $loginUser = $this->request->session()->read('Auth.User');
                     <?= $this->Form->select('field_id', $fields, ['class' => 'form-control' , 'empty'=>true]) ?>
                 </div>
                 <div class="col-3 text-right">
-                    <button class="btn btn-primary mr-2" type="submit"><i class="fa fa-search"></i> Search</button>
-                    <a class="btn btn-outline-primary mr-2" href="<?= $this->Url->build(['controller' => 'skills', 'action' => 'index', 'clear' => 1]) ?>">Clear</a>
+                    <button class="btn btn-primary mr-2" type="submit"><i class="fa fa-search"></i> 検索</button>
+                    <a class="btn btn-outline-primary mr-2" href="<?= $this->Url->build(['controller' => 'skills', 'action' => 'index', 'clear' => 1]) ?>">クリア</a>
                 </div>
             </div>
         </div>
@@ -52,7 +52,7 @@ $loginUser = $this->request->session()->read('Auth.User');
                     <?= h($skill->name) ?>
                 </td>
                 <td class="pt-0 pb-0 align-middle">
-                    <?php if ($loginUser->group_id == Defines::GROUP_ADMIN || ($loginUser->group_id == Defines::GROUP_ORGANIZATION_ADMIN && $skill->field->organization_id != null)): ?>
+                    <?php if ($loginUser->group_id == Defines::GROUP_ADMIN || ($loginUser->group_id == Defines::GROUP_ORGANIZATION_ADMIN && Hash::get($skill,'field.organization_id') != null)): ?>
                         <?= $this->Html->link('編集',['controller' => 'skills', 'action' => 'edit', $skill->id],['class'=>'btn btn-sm btn-outline-primary py-0']); ?>
                         <?= $this->Html->link('削除',['controller' => 'skills', 'action' => 'delete', $skill->id],['class'=>'btn btn-sm btn-outline-danger py-0','role'=>'delete']); ?>
                     <?php else: ?>

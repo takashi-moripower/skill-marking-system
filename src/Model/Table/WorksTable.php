@@ -107,7 +107,7 @@ class WorksTable extends Table {
         $searchManager
                 ->finder('organization_id', ['finder' => 'Organization'])
                 ->finder('junle_id', ['finder' => 'Junle'])
-                ->finder('mark-state', ['finder' => 'Mark'])
+                ->finder('mark-state', ['finder' => 'MarkState'])
                 ->like('keyword', ['field' => ['name', 'note', 'Users.name'], 'before' => true, 'after' => true])
         ;
 
@@ -124,33 +124,32 @@ class WorksTable extends Table {
     public function findOrganization($query, $options) {
         if (isset($options['organization_id'])) {
             $org_id = $options['organization_id'];
-            
+
             $query->join([
-                'OU'=>[
-                    'table'=>'organizations_users',
-                    'type'=>'left',
-                    'conditions' => ['OU.user_id ='.$this->aliasField('user_id')]
+                'OU' => [
+                    'table' => 'organizations_users',
+                    'type' => 'left',
+                    'conditions' => ['OU.user_id =' . $this->aliasField('user_id')]
                 ]
             ]);
-            $query->where(['OU.organization_id'=>$org_id]);
+            $query->where(['OU.organization_id' => $org_id]);
         }
-        
-        
+
+
         if (isset($options['organization_ids'])) {
             $org_ids = $options['organization_ids'];
-            
+
             $query->join([
-                'OU'=>[
-                    'table'=>'organizations_users',
-                    'type'=>'left',
-                    'conditions' => ['OU.user_id ='.$this->aliasField('user_id')]
+                'OU' => [
+                    'table' => 'organizations_users',
+                    'type' => 'left',
+                    'conditions' => ['OU.user_id =' . $this->aliasField('user_id')]
                 ]
             ]);
-            $query->where(['OU.organization_id IN'=>$org_ids]);
+            $query->where(['OU.organization_id IN' => $org_ids]);
         }
         return $query;
     }
-
 
     /**
      * 絞り込み検索用　所属ジャンル
@@ -180,28 +179,18 @@ class WorksTable extends Table {
      * @param type $options
      * @return type
      */
-    public function findMark($query, $options) {
-        $session = new Session();
-        $user_id = $sessionData = $session->read('Auth.User.id');
-        $state = $options['mark-state'];
+    public function findMarkState($query, $options) {
+        $state = Hash::get($options, 'mark-state', Defines::MARK_STATE_ALL);
 
-        $tableSW = TableRegistry::get('skills_works');
-        $subquery = $tableSW->find()
-                ->select('id')
-                ->where([$tableSW->aliasField('user_id') => $user_id, $tableSW->aliasField('work_id') . ' = ' . $this->aliasField('id')]);
 
         if ($state == Defines::MARK_STATE_MARKED) {
-            $query
-                    ->where(function($exp, $q) use ($subquery) {
-                        return $exp->exists($subquery);
-                    });
+            $query->find('mark');
+            return $query->where(['Marks.mark' => 1]);
         }
 
         if ($state == Defines::MARK_STATE_UNMARKED) {
-            $query
-                    ->where(function($exp, $q) use ($subquery) {
-                        return $exp->notExists($subquery);
-                    });
+            $query->find('mark');
+            return $query->where(['Marks.mark' => 0]);
         }
 
         return $query;
@@ -252,4 +241,41 @@ class WorksTable extends Table {
         }
         return $query;
     }
+
+    public function findMark($query, $options) {
+        $session = new Session();
+        $loginUserId = $session->read('Auth.User.id');
+        $userId = Hash::get($options, 'user_id', $loginUserId);
+
+        $subquery = TableRegistry::get('SW', ['table' => 'skills_works'])
+                ->find()
+                ->select('id')
+                ->where(function($exp, $q) {
+                    return $exp->equalFields('SW.work_id', 'Marks.id');
+                })
+                ->where(['SW.user_id' => $userId]);
+
+
+        $marks = TableRegistry::get('Marks', ['table' => 'works'])
+                ->find()
+                ->select(['id' => 'id'])
+                ->select(function($q) use ($subquery) {
+            return ['mark' => $q->newExpr()->exists($subquery)];
+        });
+
+        $query->join(['Marks' => [
+                        'table' => $marks,
+                        'type' => 'left',
+                        'conditions' => [
+                            'Marks.id = ' . $this->aliasField('id')
+                        ]]
+                ])
+                ->select(['mark' => 'Marks.mark']);
+
+
+
+
+        return $query;
+    }
+
 }

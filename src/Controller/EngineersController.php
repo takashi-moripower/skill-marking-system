@@ -24,6 +24,7 @@ class EngineersController extends AppController {
     public function initialize() {
         parent::initialize();
         $this->loadComponent('SearchSession', []);
+        $this->viewBuilder()->layout('bootstrap');
     }
 
     public function beforeFilter(Event $event) {
@@ -70,17 +71,17 @@ class EngineersController extends AppController {
 
         //検索フォーム用データ
 
-        $organizations = $tableO->find();
+        $organizations = $tableO->find()
+                ->find('pathName')
+                ->find('list',['keyField'=>'id','valueField'=>'path']);
 
         if ($loginUserGroup == Defines::GROUP_MARKER || $loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
             $organizations->find('user', ['user_id' => $loginUserId, 'relation' => 'children']);
         }
 
-        $organizations = ['' => 'すべて'] + $tableO->getSelectorFromQuery($organizations);
 
 
-        $this->set(compact('users', 'skills', 'levels','organizations'));
-        $this->viewBuilder()->layout('bootstrap');
+        $this->set(compact('users', 'skills', 'levels', 'organizations'));
     }
 
     public function view($user_id) {
@@ -92,7 +93,6 @@ class EngineersController extends AppController {
                 ->first();
 
         $this->set(compact('user'));
-        $this->viewBuilder()->layout('bootstrap');
     }
 
     public function add() {
@@ -115,7 +115,6 @@ class EngineersController extends AppController {
                 ->find('list');
 
         $this->set(compact('user', 'organizations'));
-        $this->viewBuilder()->layout('bootstrap');
         $this->render('edit');
     }
 
@@ -133,21 +132,23 @@ class EngineersController extends AppController {
             $this->Flash->error(__('The engineer could not be saved. Please, try again.'));
         }
 
-        $organizations = TableRegistry::get('organizations')
-                ->find()
-                ->select('id')
-                ->order('lft')
+        $organizations = TableRegistry::get('Organizations')
                 ->find('pathName')
-                ->find('list',['keyField'=>'id','valueField'=>'path'])
-                ;
+                ->find('list', ['keyField' => 'id', 'valueField' => 'path'])
+        ;
         if ($this->Auth->user()->group_id != Defines::GROUP_ADMIN) {
             $organizations
                     ->find('user', ['user_id' => $this->Auth->user()->id, 'relation' => 'children']);
         }
 
         $this->set(compact('user', 'organizations'));
-        $this->viewBuilder()->layout('bootstrap');
         $this->render('edit');
+    }
+
+    public function editSelf() {
+        $loginUserId = $this->Auth->user('id');
+
+        return $this->redirect(['action' => 'edit', $loginUserId]);
     }
 
 }

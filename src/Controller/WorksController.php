@@ -43,24 +43,28 @@ class WorksController extends AppController {
             'contain' => [
                 'Users' => ['fields' => ['id', 'name']],
                 'Junles' => ['sort' => ['Junles.id' => 'ASC']],
-                'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'conditions' => [], 'fields' => ['name', 'field_id', 'SkillsWorks.level', 'SkillsWorks.work_id']],
+                'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'finder' => ['fieldPath', 'notSelf'], 'fields' => ['id', 'name', 'field_id', 'SkillsWorks.level', 'SkillsWorks.work_id']],
             ]
         ];
 
         $query = $this->Works
+                ->find('mark')
                 ->find('user', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup])
-                ->find('search', ['search' => $this->request->data]);
+                ->find('search', ['search' => $this->request->data])
+                ->select($this->Works);
 
         $works = $this->paginate($query);
 
         //検索フォーム用データ
-        $organizations = $this->Works->Users->Organizations;
+        $organizations = $this->Works->Users->Organizations
+                ->find('PathName')
+                ->find('list', ['keyField' => 'id', 'valueField' => 'path']);
 
         if ($loginUserGroup == Defines::GROUP_MARKER || $loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
             $organizations->find('user', ['user_id' => $loginUserId, 'relation' => 'children']);
         }
 
-        $organizations = ['' => 'すべて'] + $this->Works->Users->Organizations->getSelectorFromQuery($organizations);
+        $organizations;
 
         $junles = ['' => 'すべて'] + $this->Works->Junles
                         ->find('list', ['keyField' => 'id', 'valueField' => 'name'])
@@ -83,7 +87,7 @@ class WorksController extends AppController {
                 'Users',
                 'Junles',
                 'Files',
-                'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'conditions' => [], 'fields' => ['id', 'name' , 'field_id' , 'SkillsWorks.level', 'SkillsWorks.work_id']],
+                'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'conditions' => [], 'fields' => ['id', 'name', 'field_id', 'SkillsWorks.level', 'SkillsWorks.work_id']],
             ]
         ]);
 
@@ -133,6 +137,7 @@ class WorksController extends AppController {
         if ($this->request->is('POST')) {
             $this->_postMark($workId);
         }
+        $loginUserId = $this->Auth->user('id');
 
         $tableSW = TableRegistry::get('skills_works');
         $tableS = TableRegistry::get('skills');
@@ -145,53 +150,28 @@ class WorksController extends AppController {
                     'Users' => ['fields' => ['Users.id', 'name']],
                     'Files',
                     'Junles',
+                    'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'finder' => ['fieldPath'], 'fields' => ['id', 'name', 'field_id', 'SkillsWorks.level', 'SkillsWorks.work_id']],
                 ])
                 ->first();
 
-        $creatorId = $work->user_id;
-
-        $skills = $tableS->find()
-                ->leftJoin($tableSW->getAlias(), [$tableSW->aliasField('skill_id') . '=' . $tableS->aliasField('id')])
-                ->where([$tableSW->aliasField('work_id') => $workId])
-                ->select($tableS)
-                ->select(['level' => $tableSW->aliasField('level')])
-                ->order([$tableSW->aliasField('level') => 'DESC'])
-        ;
-
-        $skillsByMe = $skills->cleanCopy()
-                ->where([$tableSW->aliasField('user_id') => $markerId])
-        ;
-
-        $skillsBySelf = $skills->cleanCopy()
-                ->where([$tableSW->aliasField('user_id') => $work->user_id])
-        ;
-
-        $skillsByOther = $skills->cleanCopy()
-                ->where([$tableSW->aliasField('user_id') . ' NOT IN' => [$work->user_id, $markerId]])
-        ;
 
 
-        $usedIds = $tableS->find()
-                ->leftJoin($tableSW->getAlias(), [$tableSW->aliasField('skill_id') . '=' . $tableS->aliasField('id')])
-                ->where([$tableSW->aliasField('work_id') => $workId])
-                ->where([$tableSW->aliasField('user_id') => $markerId])
-                ->select('id');
+        
+        $skillsUsed = Hash::extract( $work->getSkillsBy($loginUserId)->toArray() , '{n}.id');
 
-        $skillsToSet = $this->Works->Skills
-                ->find('usable', ['user_ids' => [$markerId, $creatorId]])
-                ->where([$this->Works->Skills->aliasField('id') . ' NOT IN' => $usedIds])
-                ->contain('Fields')
-                ->order(['Fields.lft' => 'ASC', 'Skills.id' => 'ASC'])
-        ;
-
-        $skillsToSetlist = ['0' => '-'];
-        foreach ($skillsToSet as $skill) {
-            $skillsToSetlist[$skill->id] = $skill->path . " > " . $skill->label;
+        $skillsUnUsed = $tableS->find('fieldPath')
+                ->select(['id','name'])
+                ->where([$tableS->aliasField('id') .' not IN ' => $skillsUsed]);
+        
+        $skillsToSet = [];
+        foreach( $skillsUnUsed as $skill ){
+            $skillsToSet[$skill->id] = $skill->label;
         }
 
+;
 
-        $this->set(['skillsToSet' => $skillsToSetlist]);
-        $this->set(compact('work', 'skillsBySelf', 'skillsByOther', 'skillsByMe'));
+
+        $this->set(compact('work','skillsToSet'));
         $this->viewBuilder()->layout('bootstrap');
     }
 

@@ -43,17 +43,17 @@ use Cake\Utility\Hash;
         checkJunles();
 
         $(document).on('click', 'button[role="add-junle"]', function (event) {
-console.log('add-junle');
+
             junle_id = $('select[name="new-junles"]').val();
             junle_name = ALL_JUNLES[junle_id];
 
             html = $('.junle-template').html();
             $('.junles .add-junle').before(html);
-console.log( $('.junles .add-junle') );
+
 
             newJunle = $('.junles .add-junle').prev('.card[role="junle-label"]');
 
-console.log(newJunle);
+
             newJunle.find('span[role="junle-name"]').text(junle_name);
             newJunle.find('input[type="hidden"]').removeAttr('disabled');
             newJunle.find('input[type="hidden"]').val(junle_id);

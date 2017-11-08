@@ -3,26 +3,17 @@
 use App\Defines\Defines;
 ?>
 <div class="card">
-    <div class="card-header">技術者情報　閲覧</div>
+    <div class="card-header">技術者情報</div>
     <div class="card-body p-0">
         <table class="table mb-0">
             <tbody>
                 <tr>
                     <th class="w-20 border-top-0">名称</th>
-                    <td class="border-top-0"><?= h($user->name); ?></td>
+                    <td colspan="2" class="border-top-0"><?= h($user->name); ?></td>
                 </tr>
                 <tr>
                     <th>所属</th>
-                    <td>
-                        <?php foreach ($user->organizations as $org): ?>
-                            <?= $org->name ?>
-                            <?= ($org !== end($user->organizations)) ? ',' : '' ?>
-                        <?php endforeach ?>
-                    </td>
-                </tr>
-                <tr>
-                    <th>所属</th>
-                    <td>
+                    <td colspan="2">
                         <?php foreach ($user->organizations as $org): ?>
                             <?= $org->name ?>
                             <?= ($org !== end($user->organizations)) ? ',' : '' ?>
@@ -31,17 +22,18 @@ use App\Defines\Defines;
                 </tr>
                 <tr>
                     <th>自己アピール</th>
-                    <td>
+                    <td colspan="2">
                         <?= $user->note ?>
                     </td>
                 </tr>
                 <tr>
-                    <th colspan="2" class="bg-light py-1">作品</th>
+                    <th colspan="3" class="bg-light py-1">作品</th>
                 </tr>
                 <?php foreach ($user->works as $work): ?>
                     <tr>
-                        <th><?= $this->Html->link(h($work->name), ['controller' => 'works', 'action' => 'view', $work->id]) ?></th>
+                        <th><?= h($work->name) ?></th>
                         <td><?= $this->Element('skills', ['skills' => $work->skills]); ?></td>
+                        <td><?= $this->Html->link( '採点', ['controller' => 'works', 'action' => 'mark', $work->id],['class'=>'btn btn-outline-primary btn-sm']) ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

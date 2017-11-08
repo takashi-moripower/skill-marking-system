@@ -1,13 +1,17 @@
 <?php
+
 use App\Defines\Defines;
 ?>
 <hr/>
 <h3 class="mt-4">採点状況</h3>
 <table class="table mt-4" style="width:auto">
     <thead>
-        <tr>
+        <tr class="bg-light">
             <th>
-
+                組織
+            </th>
+            <th>
+                人数
             </th>
             <th>
                 作品数
@@ -24,14 +28,17 @@ use App\Defines\Defines;
         <?php foreach ($orgs as $org): ?>
             <tr>
                 <th>
-                    <?= $this->Html->link($org->name, ['controller' => 'works', 'action' => 'index', 'organization_id' => $org->id]) ?>
+                    <?= $this->Html->link($org->path_name, ['controller' => 'works', 'action' => 'index', 'organization_id' => $org->id]) ?>
                 </th>
+                <td class="text-right">
+                    <?= $this->Html->link($org->count_users, ['controller' => 'engineers', 'action' => 'index', 'organization_id' => $org->id]) ?>
+                </td>
                 <td class="text-right"><?= $collections[$org->id]['all'] ?></td>
                 <td class="text-right">
-                    <?= $this->Html->link($collections[$org->id]['marked'], ['controller' => 'works', 'action' => 'index', 'organization_id' => $org->id , 'mark-state' => Defines::MARK_STATE_MARKED]) ?>
+                    <?= $this->Html->link($collections[$org->id]['marked'], ['controller' => 'works', 'action' => 'index', 'organization_id' => $org->id, 'mark-state' => Defines::MARK_STATE_MARKED]) ?>
                 </td>
                 <td class="text-right">
-                    <?= $this->Html->link($collections[$org->id]['unmarked'], ['controller' => 'works', 'action' => 'index', 'organization_id' => $org->id , 'mark-state' => Defines::MARK_STATE_UNMARKED]) ?>
+                    <?= $this->Html->link($collections[$org->id]['unmarked'], ['controller' => 'works', 'action' => 'index', 'organization_id' => $org->id, 'mark-state' => Defines::MARK_STATE_UNMARKED]) ?>
                 </td>
             </tr>
         <?php endforeach; ?>

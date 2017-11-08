@@ -111,21 +111,20 @@ class DebugController extends AppController {
     }
 
     public function test() {
+        $user_id = $this->Auth->user('id');
 
         $tableU = TableRegistry::get('users');
         $tableS = TableRegistry::get('skills');
-        $tableW = TableRegistry::get('works');
+        $tableW = TableRegistry::get('Works');
         $tableSW = TableRegistry::get('skills_works');
         $tableO = TableRegistry::get('Organizations');
         $tableF = TableRegistry::get('Fields');
 
-        
-        
-        $query = $tableO->find('parents',['organization_ids'=>[6]]);
-        
-        
-        
 
+        $query = $tableF
+                ->find('descendants',['id'=>8])
+                ->find('list');
+   
         $data = $query->toArray();
 
         $this->set('data', $data);

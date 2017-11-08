@@ -12,15 +12,19 @@ $loginUserId = $this->getLoginUser('id');
     <div class="card-body">
         <ul>
             <li>このシステムは、クリエイターが作品を投稿し、業界の方がスキルを評価するものです。</li>
-            <li>まずは作品投稿から、作品をアップしましょう</li>
+            <li>まずは新規投稿から、作品をアップしましょう</li>
         </ul>
 
         <div class="row">
             <div class="col-5">
                 <div class="card">
+                    <div class="card-body">
+                        <img src="<?= $this->Url->build('/img/engineers/new_work.png', 1) ?>" class="img-fluid"/>
+
+                    </div>
 
                 </div>
-                <img src="<?= $this->Url->build('/img/engineers/new_work.png', 1) ?>" class="img-fluid"/>
+
             </div>
             <div class="col-7">
                 <dl>

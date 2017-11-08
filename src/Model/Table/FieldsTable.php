@@ -148,11 +148,11 @@ class FieldsTable extends Table {
                     return $query;
 
                 default:
-                    $parents = $this->Organizations->find('user', ['user_id' => $user_id, 'relation' => 'parents'])
-                            ->select($this->Organizations->aliasField('id'));
+                    $parents = $this->Organizations->find('user', ['user_id' => $user_id, 'relation' => 'parents']);
+                    $parents->select('id');
 
-                    $children = $this->Organizations->find('user', ['user_id' => $user_id, 'relation' => 'children'])
-                            ->select($this->Organizations->aliasField('id'));
+                    $children = $this->Organizations->find('user', ['user_id' => $user_id, 'relation' => 'children']);
+                    $children->select('id');
 
 
                     $query->where(['or' => [

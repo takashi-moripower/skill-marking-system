@@ -4,6 +4,7 @@ use Cake\Utility\Hash;
 use Cake\Collection\Collection;
 use App\Defines\Defines;
 
+$loginUserName = $this->getLoginUser('name');
 $loginUserGroup = $this->getLoginUser('group_id');
 
 $searchFormOpen = !empty($this->request->data);
@@ -25,21 +26,21 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
             </div>
         </div>
         <div id="searchExtends" class="collapse <?= $searchFormOpen ? 'show' : '' ?>" >
-            <div class="form-group row mt-3">
-                <label class="col-2 col-form-label">所属組織</label>
-                <div class="col-4">
-                    <?= $this->Form->select('organization_id', $organizations, ['class' => 'form-control']) ?>
-                </div>
-                <label class="col-2 col-form-label">ジャンル</label>
-                <div class="col-4">
-                    <?= $this->Form->select('junle_id', $junles, ['class' => 'form-control']) ?>
-                </div>
-            </div>
             <div class="form-group row mb-0">
-                <label class="col-2 col-form-label">採点状況</label>
-                <div class="col-4">
+                <label class="col-2 col-form-label mt-1">採点状況</label>
+                <div class="col-4 mt-1">
                     <?= $this->Form->select('mark-state', Defines::MARK_STATES, ['class' => 'form-control']) ?>
                 </div>
+                <label class="col-2 col-form-label mt-1">ジャンル</label>
+                <div class="col-4 mt-1">
+                    <?= $this->Form->select('junle_id', $junles, ['class' => 'form-control']) ?>
+                </div>
+                <?php if ($loginUserGroup != Defines::GROUP_ENGINEER): ?>
+                    <label class="col-2 col-form-label mt-1">所属組織</label>
+                    <div class="col-4 mt-1">
+                        <?= $this->Form->select('organization_id', $organizations, ['class' => 'form-control']) ?>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
         <?= $this->Form->end() ?>
@@ -54,7 +55,8 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
                 <th class="">作者</th>
             <?php endif; ?>
             <th class="w-30">ジャンル</th>
-            <th class="w-30">スキル</th>
+            <th>採点</th>
+            <th class="w-30">スキル評価(本人以外)</th>
             <th class="">操作</th>
         </tr>
     </thead>
@@ -72,15 +74,15 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
                     </div>
                 </td>
                 <td>
+                    <?= $work->mark ? '済' : '未' ?>
+                </td>
+                <td>
                     <div class="" style="width:20rem">
                         <?= $this->Element('skills', ['skills' => $work->getSkillsBest(3)]); ?>
                     </div>
                 </td>
                 <td class="text-nowrap py-0 align-middle">
-                    <?= $this->Html->link('閲覧', ['controller' => 'works', 'action' => 'view', $work->id], ['class' => 'btn btn-outline-primary btn-sm']) ?> 
-                    <?php if (in_array($loginUserGroup, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN, Defines::GROUP_MARKER])): ?>
-                        <?= $this->Html->link('採点', ['controller' => 'works', 'action' => 'mark', $work->id], ['class' => 'btn btn-outline-primary btn-sm']) ?> 
-                    <?php endif; ?>
+                    <?= $this->Html->link('採点', ['controller' => 'works', 'action' => 'mark', $work->id], ['class' => 'btn btn-outline-primary btn-sm']) ?> 
                     <?php if (in_array($loginUserGroup, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN, Defines::GROUP_ENGINEER])): ?>
                         <?= $this->Html->link('編集', ['controller' => 'works', 'action' => 'edit', $work->id], ['class' => 'btn btn-outline-primary btn-sm']) ?> 
                         <?= $this->Html->link('削除', ['controller' => 'works', 'action' => 'delete', $work->id], ['class' => 'btn btn-outline-danger btn-sm', 'role' => 'delete']) ?> 

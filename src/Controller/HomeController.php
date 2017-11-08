@@ -37,7 +37,7 @@ class HomeController extends AppController {
 
             case Defines::GROUP_MARKER:
                 return $this->_marker();
-                
+
             case Defines::GROUP_ORGANIZATION_ADMIN:
                 return $this->_org_admin();
 
@@ -49,10 +49,13 @@ class HomeController extends AppController {
     protected function _marker() {
         $user = $this->Auth->user();
 
-        $tableOrgs = TableRegistry::get('organizations');
+        $tableOrgs = TableRegistry::get('Organizations');
         $tableWorks = TableRegistry::get('works');
+        $tableOU = TableRegistry::get('organizations_users');
 
-        $orgs = $tableOrgs->find('user', ['user_id' => $user->id]);
+        $orgs = $tableOrgs
+                ->find('user', ['user_id' => $user->id, 'relation' => 'children'])
+        ;
 
 
         $collections = [];
@@ -63,11 +66,11 @@ class HomeController extends AppController {
                         ->count(),
                 'marked' => $tableWorks
                         ->find('Organization', ['organization_id' => $org->id])
-                        ->find('Mark', ['mark-state' => Defines::MARK_STATE_MARKED])
+                        ->find('MarkState', ['mark-state' => Defines::MARK_STATE_MARKED])
                         ->count(),
                 'unmarked' => $tableWorks
                         ->find('Organization', ['organization_id' => $org->id])
-                        ->find('Mark', ['mark-state' => Defines::MARK_STATE_UNMARKED])
+                        ->find('MarkState', ['mark-state' => Defines::MARK_STATE_UNMARKED])
                         ->count(),
             ];
         }
@@ -84,7 +87,7 @@ class HomeController extends AppController {
         $tableOrgs = TableRegistry::get('organizations');
         $tableWorks = TableRegistry::get('works');
 
-        $orgs = $tableOrgs->find('user', ['user_id' => $user->id,'relation'=>'children']);
+        $orgs = $tableOrgs->find('user', ['user_id' => $user->id, 'relation' => 'children']);
 
 
         $collections = [];

@@ -22,7 +22,7 @@ if ($this->request->action == 'add') {
                 </tr>
                 <tr>
                     <th>ジャンル</th>
-                    <td> <?= $this->element('works/junles') ?></td>
+                    <td class="junles"> <?= $this->element('works/junles') ?></td>
                 </tr>
                 <tr>
                     <th>解説</th>
@@ -69,7 +69,6 @@ if ($this->request->action == 'add') {
 <div class="text-right mt-1">
     <?php
     echo $this->Html->Link('一覧', ['controller' => 'works', 'action' => 'index'], ['class' => 'btn btn-outline-primary ml-1']);
-    echo $this->Html->Link('閲覧', ['controller' => 'works', 'action' => 'view', $work->id], ['class' => 'btn btn-outline-primary ml-1']);
     echo $this->Html->Link('採点', ['controller' => 'works', 'action' => 'mark', $work->id], ['class' => 'btn btn-outline-primary ml-1']);
     ?>
 </div>

@@ -27,7 +27,7 @@ class Defines {
     const MARK_STATE_UNMARKED = 2;
     const MARK_STATES = [
         self::MARK_STATE_ALL => 'すべて',
-        self::MARK_STATE_MARKED => '採点済み',
+        self::MARK_STATE_MARKED => '採点済',
         self::MARK_STATE_UNMARKED => '未採点'
     ];
 
@@ -55,9 +55,12 @@ class Defines {
     const NAV_ID_JUNLES = 6;
     const NAV_ID_WORKS = 7;
     const NAV_ID_ENGINEERS = 8;
+    const NAV_ID_PROFILE = 9;
     const NAV_ID_ENG_WORKS = 101;
     const NAV_ID_ENG_NEW_WORK = 102;
     const NAV_ID_ENG_MARKS = 103;
+    const NAV_ID_ENG_PROFILE = 104;
+    
     const NAV_TEMPLATES = [
         self::NAV_ID_HOME => ['label' => 'Home', 'url' => ['controller' => 'Home', 'action' => 'index']],
         self::NAV_ID_USERS => ['label' => 'ユーザ', 'url' => ['controller' => 'users', 'action' => 'index']],
@@ -66,11 +69,13 @@ class Defines {
         self::NAV_ID_FIELDS => ['label' => 'スキル分野', 'url' => ['controller' => 'Fields', 'action' => 'index']],
         self::NAV_ID_SKILLS => ['label' => 'スキル', 'url' => ['controller' => 'Skills', 'action' => 'index']],
         self::NAV_ID_JUNLES => ['label' => 'ジャンル', 'url' => ['controller' => 'Junles', 'action' => 'index']],
-        self::NAV_ID_WORKS => ['label' => '作品', 'url' => ['controller' => 'Works', 'action' => 'index']],
+        self::NAV_ID_WORKS => ['label' => '作品一覧', 'url' => ['controller' => 'Works', 'action' => 'index']],
+        self::NAV_ID_PROFILE => ['label' => 'プロファイル', 'url' => ['controller' => 'Users', 'action' => 'editSelf']],
         self::NAV_ID_ENGINEERS => ['label' => 'クリエイター', 'url' => ['controller' => 'Engineers', 'action' => 'index']],
         self::NAV_ID_ENG_WORKS => ['label' => '作品一覧', 'url' => ['controller' => 'Works', 'action' => 'index']],
         self::NAV_ID_ENG_NEW_WORK => ['label' => '新規投稿', 'url' => ['controller' => 'Works', 'action' => 'add']],
         self::NAV_ID_ENG_MARKS => ['label' => '評価', 'url' => ['controller' => 'home', 'action' => 'index']],
+        self::NAV_ID_ENG_PROFILE => ['label'=>'プロファイル' , 'url'=>['controller'=>'engineers','action'=>'editSelf']],
     ];
     const NAV_GROUP_TEMPLATES = [
         self::GROUP_ADMIN => [
@@ -87,19 +92,21 @@ class Defines {
         self::GROUP_ORGANIZATION_ADMIN => [
             self::NAV_ID_HOME,
             self::NAV_ID_WORKS,
+            self::NAV_ID_FIELDS,
             self::NAV_ID_SKILLS,
             self::NAV_ID_ORGANIZATIONS,
             self::NAV_ID_ENGINEERS,
         ],
         self::GROUP_MARKER => [
-            self::NAV_ID_HOME,
             self::NAV_ID_WORKS,
             self::NAV_ID_ENGINEERS,
+            self::NAV_ID_PROFILE,
         ],
         self::GROUP_ENGINEER => [
             self::NAV_ID_ENG_WORKS,
             self::NAV_ID_ENG_NEW_WORK,
-            self::NAV_ID_ENG_MARKS
+            self::NAV_ID_ENG_PROFILE,
+//            self::NAV_ID_ENG_MARKS
         ],
     ];
 

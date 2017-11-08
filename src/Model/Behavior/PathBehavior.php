@@ -15,66 +15,74 @@ use Cake\Utility\Hash;
 class PathBehavior extends Behavior {
 
     public function findPathName($query, $options) {
-
         $separator = Hash::get($options, 'separator', ' > ');
-
         $table = $this->getTable();
-
-        $tableParents = TableRegistry::get('Parents', ['table' => $table->getTable()]);
-        $parents = $tableParents->find()
-                ->select(['parents_name' => 'name', 'parents_lft' => 'lft', 'parents_rght' => 'rght'])
-                ->order(['lft' => 'ASC'])
-        ;
-
-
-        $tablePath = TableRegistry::get('Path', ['table' => $table->getTable()]);
-        $path = $tablePath->find()
-                ->select(['path_id' => 'Path.id'])
-                ->select(['path_name' => "group_concat(parents_name separator '{$separator}')"])
-                ->join([
-                    'Parents' => [
-                        'table' => $parents,
-                        'type' => 'left',
-                        'conditions' => [
-                            'parents_lft <= Path.lft',
-                            'parents_rght >= Path.lft'
-                        ]
-                    ]
-                ])
-                ->group('path_id')
-        ;
 
 
         $query
                 ->join([
                     'Path' => [
-                        'table' => $path,
+                        'table' => $table->getTable(),
                         'type' => 'left',
                         'conditions' => [
-                            'Path.path_id = ' . $table->aliasField('id')
+                            'Path.lft <= ' . $table->aliasField('lft'),
+                            'Path.rght >= ' . $table->aliasField('rght'),
                         ]
                     ]
                 ])
-                ->select(['path' => 'path_name'])
+                ->group($table->aliasField('id'))
+                ->select(['path' => "group_concat(Path.name order by Path.lft ASC separator '{$separator}')"])
         ;
+
         return $query;
     }
 
-}
+    /**
+     * 子孫＋自身を検索
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
+    public function findDescendants($query, $options) {
+        $ids = Hash::get($options, 'ids', (array) Hash::get($options, 'id'));
+        $table = $this->getTable();
 
-/*
-select * 
-from fields as fields
-left join (
-	select path.id , group_concat(parents.name) as path_name
-	from fields as path
-	left join (
-		select * from fields
-		order by lft ASC
-	) as parents on path.lft >= parents.lft and path.rght <= parents.rght
-	group by path.id
-) as path
-on path.id = fields.id
-order by fields.lft
- * 
- *  */
+        $descendants = $table->find()
+                ->join(['Descendants' => [
+                        'table' => $table->getTable(),
+                        'type' => 'inner',
+                        'conditions' => [
+                            'Descendants.lft >=' . $table->aliasField('lft'),
+                            'Descendants.rght <=' . $table->aliasField('rght')
+                ]]])
+                ->where([$table->aliasField('id') . ' IN' => $ids])
+                ->select('Descendants.id');
+        
+        return $query->where([$table->aliasField('id') . ' IN' => $descendants]);
+    }
+
+    /**
+     * 祖先＋自身を検索
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
+    public function findAncestors($query, $options) {
+        $ids = Hash::get($options, 'ids', (array) Hash::get($options, 'id'));
+        $table = $this->getTable();
+
+        $ancestors = $table->find()
+                ->join(['Ancestors' => [
+                        'table' => $table->getTable(),
+                        'type' => 'inner',
+                        'conditions' => [
+                            'Ancestors.lft <= ' . $table->aliasField('lft'),
+                            'Ancestors.rght >= ' . $table->aliasField('rght'),
+                ]]])
+                ->where([$table->aliasField('id') . ' IN' => $ids])
+                ->select('Ancestors.id');
+
+        return $query->where([$table->aliasField('id') . ' IN' => $ancestors]);
+    }
+
+}

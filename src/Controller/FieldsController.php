@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use App\Defines\Defines;
+use Cake\Utility\Hash;
 
 /**
  * Fields Controller
@@ -19,18 +21,21 @@ class FieldsController extends AppController {
      * @return \Cake\Http\Response|void
      */
     public function index() {
+        $loginUser = $this->Auth->user();
+
         $this->paginate = [
             'contain' => ['Organizations', 'ParentFields'],
             'order' => ['lft' => 'ASC',]
         ];
-        
-        $query =$this->Fields
+
+        $query = $this->Fields
+                ->find('editable', ['user_id' => $loginUser->id])
                 ->find('countSkills')
                 ->find('depth')
-                ->select( $this->Fields )
-                ->select( $this->Fields->Organizations )
-                ;
-        
+                ->select($this->Fields)
+                ->select($this->Fields->Organizations)
+        ;
+
         $fields = $this->paginate($query);
 
         $this->set(compact('fields'));
@@ -61,24 +66,7 @@ class FieldsController extends AppController {
      */
     public function add() {
         $field = $this->Fields->newEntity();
-        if ($this->request->is('post')) {
-            $field = $this->Fields->patchEntity($field, $this->request->getData());
-            if ($this->Fields->save($field)) {
-                $this->Flash->success(__('The field has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The field could not be saved. Please, try again.'));
-        }
-
-        $organizations = $this->Fields->Organizations->find('list', ['limit' => 200]);
-        $parentFields = $this->Fields->ParentFields->find('list', ['limit' => 200]);
-        $parentFields->where([$this->Fields->ParentFields->aliasField('id') . ' is not' => $field->id]);
-
-        $this->set(compact('field', 'organizations', 'parentFields'));
-        $this->set('_serialize', ['field']);
-        $this->viewBuilder()->layout('bootstrap');
-        $this->render('edit');
+        return $this->_edit($field);
     }
 
     /**
@@ -89,9 +77,14 @@ class FieldsController extends AppController {
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
     public function edit($id = null) {
-        $field = $this->Fields->get($id, [
-            'contain' => []
-        ]);
+        $field = $this->Fields->get($id);
+        return $this->_edit($field);
+    }
+
+    protected function _edit($field) {
+        $loginUser = $this->Auth->user();
+
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             $field = $this->Fields->patchEntity($field, $this->request->getData());
             if ($this->Fields->save($field)) {
@@ -101,13 +94,40 @@ class FieldsController extends AppController {
             }
             $this->Flash->error(__('The field could not be saved. Please, try again.'));
         }
-        $organizations = $this->Fields->Organizations->find('list', ['limit' => 200]);
-        $parentFields = $this->Fields->ParentFields->find('list', ['limit' => 200]);
-        $parentFields->where([$this->Fields->ParentFields->aliasField('id') . ' is not' => $field->id]);
+
+
+        $organizations = $this->Fields->Organizations
+                ->find('pathName')
+                ->select('id')
+                ->find('list', ['keyField' => 'id', 'valueField' => 'path'])
+                ->order($this->Fields->Organizations->aliasField('lft'));
+
+        if ($loginUser->group_id == Defines::GROUP_ORGANIZATION_ADMIN) {
+            $organizations->find('user', ['user_id' => $loginUser->id]);
+        }
+
+        $parentFields = $this->Fields->ParentFields
+                ->find('editable', ['user_id' => $loginUser->id])
+                ->find('pathName')
+                ->select('id')
+                ->find('list', ['keyField' => 'id', 'valueField' => 'path'])
+                ->order($this->Fields->ParentFields->aliasField('lft'));
+
+
+
+        //自身の子孫の子孫になることはできない
+        if (!$field->isNew()) {
+            $children = $this->Fields->find('descendants', ['id' => $field->id])
+                    ->select($this->Fields->aliasField('id'));
+            $parentFields
+                    ->where([$this->Fields->ParentFields->aliasField('id') . ' not in' => $children]);
+        }
+
 
         $this->set(compact('field', 'organizations', 'parentFields'));
         $this->set('_serialize', ['field']);
         $this->viewBuilder()->layout('bootstrap');
+        $this->render('edit');
     }
 
     /**
@@ -119,9 +139,9 @@ class FieldsController extends AppController {
      */
     public function delete($id = null) {
         $this->request->allowMethod(['post', 'delete']);
-        
+
         $field = $this->Fields->get($id);
-        
+
         if ($field->rght - $field->lft > 1) {
             $this->Flash->error('下位グループを持つグループは削除できません');
             return $this->redirect(['action' => 'index']);

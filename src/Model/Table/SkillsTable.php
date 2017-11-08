@@ -271,7 +271,7 @@ class SkillsTable extends Table {
         $tableF = TableRegistry::get('Fields');
 
         $fieldPath = $tableF->find('PathName')
-                ->select(['id' => 'id']);
+                ->select(['path_id' => $tableF->aliasField('id')]);
 
         $query
                 ->join([
@@ -279,14 +279,30 @@ class SkillsTable extends Table {
                         'table' => $fieldPath,
                         'type' => 'left',
                         'conditions' => [
-                            $this->aliasField('field_id') . ' = path.id'
+                            $this->aliasField('field_id') . ' = path_id'
                         ]
                     ]
                 ])
                 ->select(['field_path' => 'path.path']);
 
-
         return $query;
     }
 
+    
+    public function findNotSelf($query , $option ){
+        $query
+                ->join([
+                    'SkillsWorks' => [
+                        'table'=>'skills_works',
+                        'conditions'=>'skills_works.skill_id = '.$this->aliasField('id')
+                    ],
+                    'Works' =>[
+                        'table'=>'works',
+                        'conditions'=>'Works.id = SkillsWorks.work_id'
+                    ]
+                ])
+                ->where(['Works.user_id <> SkillsWorks.user_id'])
+                ;
+        return $query;
+    }
 }

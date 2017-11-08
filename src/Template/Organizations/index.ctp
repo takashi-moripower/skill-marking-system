@@ -19,13 +19,7 @@ use App\Defines\Defines;
             <tr>
                 <td class="text-right"><?= $org->id ?></td>
                 <td>
-                    <?php for ($i = 0; $i < $org->depth; $i++) : ?>
-                        <i class="fa fa-fw"></i>
-                        <?php if ($i == $org->depth - 1): ?>
-                            <i class="fa fa-share fa-flip-vertical fa-fw"></i>
-                        <?php endif ?>
-                    <?php endfor; ?>
-                    <?= h($org->name) ?>
+                    <?= h($org->path) ?>
                 </td>
                 <td>
                     <?= $org->count_org_admin ?>/

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\AppController;
 use App\Defines\Defines;
 use Cake\Utility\Hash;
+use Cake\ORM\TableRegistry;
 
 /**
  * Organizations Controller
@@ -29,18 +30,18 @@ class OrganizationsController extends AppController {
         $group = Hash::get($user, 'group_id', 0);
 
         $this->paginate = [
-            'contain' => ['ParentOrganizations'],
             'order' => ['lft' => 'ASC',]
         ];
 
-        $query = $this->Organizations->find('depth')
+
+        $query = $this->Organizations
+                ->find('pathName')
                 ->find('countUsers')
-                ->select( $this->Organizations )
-        ;
+                ->select($this->Organizations);
+
         if ($group == Defines::GROUP_ORGANIZATION_ADMIN) {
             $query->find('user', ['user_id' => $user->id, 'relation' => 'children']);
         }
-
         $organizations = $this->paginate($query);
 
         $this->set(compact('organizations'));
@@ -84,7 +85,9 @@ class OrganizationsController extends AppController {
             $this->Flash->error(__('The organization could not be saved. Please, try again.'));
         }
 
-        $parentOrganizations = $this->Organizations->ParentOrganizations->find('list', ['limit' => 200]);
+        $parentOrganizations = $this->Organizations->ParentOrganizations
+                ->find('pathName')
+                ->find('list', ['keyField' => 'id', 'valueField' => 'path']);
 
         if ($group == Defines::GROUP_ORGANIZATION_ADMIN) {
             $parentOrganizations->find('user', ['user_id' => $user->id, 'relation' => 'children']);
@@ -120,12 +123,21 @@ class OrganizationsController extends AppController {
             $this->Flash->error(__('The organization could not be saved. Please, try again.'));
         }
 
-        $parentOrganizations = $this->Organizations->ParentOrganizations->find('list', ['limit' => 200]);
-        $parentOrganizations->where([$this->Organizations->ParentOrganizations->aliasField('id') . ' is not' => $organization->id]);
+        $parentOrganizations = $this->Organizations->ParentOrganizations
+                ->find('pathName')
+                ->find('list', ['keyField' => 'id', 'valueField' => 'path']);
 
+        //GROUP_ADMINは自身の管轄下の組織以外を親にできない
         if ($group == Defines::GROUP_ORGANIZATION_ADMIN) {
             $parentOrganizations->find('user', ['user_id' => $user->id, 'relation' => 'children']);
         }
+        
+        //組織は自身の子の子になることはできない
+        $children = $this->Organizations
+                ->find('descendants', ['id' => $id])
+                ->select($this->Organizations->aliasField('id'));
+        $parentOrganizations
+                ->where([$this->Organizations->ParentOrganizations->aliasField('id') . ' NOT IN' => $children]);
 
 
         $users = $this->Organizations->Users->find('list', ['limit' => 200]);

@@ -35,17 +35,11 @@ class Work extends Entity {
         'id' => false
     ];
 
-    public function getSkillsByOther($userId) {
-        $c = new Collection($this->skills);
-        return $c->filter(function($value, $key)use($userId) {
-                    return $value->_joinData->user_id != $userId;
-                });
-    }
 
-    public function getSkillsBySelf($userId) {
+    public function getSkillsBy($userId , $except = false ) {
         $c = new Collection($this->skills);
-        return $c->filter(function($value, $key)use($userId) {
-                    return $value->_joinData->user_id == $userId;
+        return $c->filter(function($value, $key)use($userId,$except) {
+                    return ($value->_joinData->user_id == $userId) ^ $except;
                 });
     }
 

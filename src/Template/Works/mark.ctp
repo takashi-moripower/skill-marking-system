@@ -49,7 +49,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                     <th>作者の採点</th>
                     <td>
                         <?php
-                        echo $this->Element('skills', ['skills' => $skillsBySelf]);
+                        echo $this->Element('skills', ['skills' => $work->getSkillsBy( $work->user_id )]);
                         ?>
                     </td>
                 </tr>
@@ -57,7 +57,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                     <th><?= h($this->getLoginUser('name')) ?> 以外の採点</th>
                     <td>
                         <?php
-                        echo $this->Element('skills', ['skills' => $skillsByOther]);
+                        echo $this->Element('skills', ['skills' => $work->getSkillsBy($loginUserId, 1)]);
                         ?>
                     </td>
                 </tr>
@@ -65,7 +65,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                     <th><?= h($this->getLoginUser('name')) ?> の採点</th>
                     <td>
                         <?php
-                        $skills = $skillsByMe;
+                        $skills = $work->getSkillsBy( $loginUserId );
                         foreach ($skills as $skill):
                             ?>
                             <div class="card bg-light mb-1">
@@ -75,7 +75,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                                     <?= $this->Form->hidden('work_id', ['value' => $work->id]); ?>
                                     <?= $this->Form->hidden('skill_id', ['value' => $skill->id]); ?>
 
-                                    <?= $skill->path ?> > 
+                                    <?= $skill->field_path ?> > 
                                     <?= $skill->name ?> - 
                                     <?= $this->Form->select('level', $LEVELS, ['value' => $skill->level, 'class' => 'align-middle']) ?>
                                     <?= $this->Form->button('修正', ['class' => 'btn btn-outline-dark disabled btn-sm ml-auto', 'disabled' => 'disabled', 'type' => 'submit', 'name' => 'action', 'value' => 'set']) ?>
@@ -111,11 +111,10 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
     <div class="text-right mt-1">
         <?php
         echo $this->Html->Link('一覧', ['controller' => 'works', 'action' => 'index'], ['class' => 'btn btn-outline-primary ml-1']);
-        
+
         if (in_array($loginUserGroup, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN, Defines::GROUP_ENGINEER])) {
             echo $this->Html->Link('編集', ['controller' => 'works', 'action' => 'edit', $work->id], ['class' => 'btn btn-outline-primary ml-1']);
         }
-        echo $this->Html->Link('閲覧', ['controller' => 'works', 'action' => 'mark', $work->id], ['class' => 'btn btn-outline-primary ml-1']);
         ?>
     </div>
 </div>

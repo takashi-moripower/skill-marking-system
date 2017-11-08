@@ -41,7 +41,7 @@ class SkillsController extends AppController {
         
 
         $query = $this->Skills->find('fieldPath')
-                ->select(['id', 'name'])
+                ->select(['Skills.id', 'Skills.name' , 'Fields.organization_id'])
                 ->select(['org_name'=> $this->Skills->Fields->Organizations->aliasField('name')])
                 ->find('search', ['search' => $this->request->data]);
 
@@ -52,14 +52,13 @@ class SkillsController extends AppController {
         
         
         //検索用
-        $fields = [];
+
         $fields = $this->Skills->Fields->find('pathName')
-                ->select('id')
+                ->select( $this->Skills->Fields->aliasField('id') )
                 ->find('list',['keyField'=>'id','valueField'=>'path'])
                 ->find('usable',['user_id'=>$user->id]);
-        
-        
 
+        
 
         $this->set(compact('skills', 'fields' ));
         $this->set('_serialize', ['skills']);

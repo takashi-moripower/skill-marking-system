@@ -33,44 +33,39 @@ class Skill extends Entity {
         'id' => false
     ];
 
-    protected function _getLabel() {
-        $result = $this->name;
-
-        if (isset($this->_joinData->level)) {
-            $result .= "-" . $this->_joinData->level;
-        } elseif (isset($this->level)) {
-            $result .= "-" . $this->level;
-        }
-
-        return $result;
-    }
-
-    protected function _getPath($value){
-        if( $value ){
+    protected function _getFieldPath($value) {
+        if( isset( $value )){
             return $value;
         }
-        $tableF = TableRegistry::get('fields');
         
+        $skill = TableRegistry::get('Skills')
+                ->find('fieldPath')
+                ->where(['Skills.id'=>$this->id])
+                ->first();
         
-        $roots = $tableF->find()
-                ->leftJoin(['parent' => 'fields'],['parent.id'=>$this->field_id])
-                ->where([$tableF->aliasField('lft').' <= parent.lft' , $tableF->aliasField('rght').' >= parent.rght'])
-                ->order([$tableF->aliasField('lft') => 'ASC']);
-        $path = '';
-        
-        foreach( $roots as $root){
-            $path .= $root->name;
-            
-            if( $root !== end( $roots )){
-                $path .= " > ";
-            }
+        $this->field_path = $skill->field_path;
+        return $skill->field_path;
+    }
+    
+    protected function _getlabel($value){
+        if( isset($value)){
+            return $value;
         }
         
-        $pathes = Hash::extract($roots->toArray(),'{n}.name');
-        
-        $path = implode( ' > ' , $pathes);
-        
-        return $path;
-        
+        $label = $this->field_path . ' > ' . $this->name;
+        $this->label = $label;
+        return $label;
     }
+    
+    protected function _getLevel( $value ){
+        if( isset($value)){
+            return $value;
+        }
+        
+        $level = Hash::get($this,'_joinData.level',Hash::get($this,'SkillsWorks.level'));
+        
+        $this->level = $level;
+        return $level;
+    }
+
 }

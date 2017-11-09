@@ -31,7 +31,7 @@ use App\Defines\Defines;
                     <?= $this->Html->link($org->path_name, ['controller' => 'works', 'action' => 'index', 'organization_id' => $org->id]) ?>
                 </th>
                 <td class="text-right">
-                    <?= $this->Html->link($org->count_users, ['controller' => 'engineers', 'action' => 'index', 'organization_id' => $org->id]) ?>
+                    <?= $this->Html->link($org->count_engineers, ['controller' => 'engineers', 'action' => 'index', 'organization_id' => $org->id]) ?>
                 </td>
                 <td class="text-right"><?= $collections[$org->id]['all'] ?></td>
                 <td class="text-right">

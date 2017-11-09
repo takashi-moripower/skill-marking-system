@@ -87,6 +87,7 @@ class OrganizationsController extends AppController {
 
         $parentOrganizations = $this->Organizations->ParentOrganizations
                 ->find('pathName')
+                ->select('id')
                 ->find('list', ['keyField' => 'id', 'valueField' => 'path']);
 
         if ($group == Defines::GROUP_ORGANIZATION_ADMIN) {
@@ -125,6 +126,7 @@ class OrganizationsController extends AppController {
 
         $parentOrganizations = $this->Organizations->ParentOrganizations
                 ->find('pathName')
+                ->select('id')
                 ->find('list', ['keyField' => 'id', 'valueField' => 'path']);
 
         //GROUP_ADMINは自身の管轄下の組織以外を親にできない
@@ -140,7 +142,6 @@ class OrganizationsController extends AppController {
                 ->where([$this->Organizations->ParentOrganizations->aliasField('id') . ' NOT IN' => $children]);
 
 
-        $users = $this->Organizations->Users->find('list', ['limit' => 200]);
         $this->set(compact('organization', 'parentOrganizations', 'users'));
         $this->set('_serialize', ['organization']);
         $this->viewBuilder()->layout('bootstrap');

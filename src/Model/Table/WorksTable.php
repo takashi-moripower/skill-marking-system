@@ -47,15 +47,15 @@ class WorksTable extends Table {
             'joinType' => 'INNER',
             'fields' => ['id', 'name'],
         ]);
-        
+
         $this->hasMany('Files', [
             'foreignKey' => 'work_id',
         ]);
-        
+
         $this->hasMany('Comments', [
             'foreignKey' => 'work_id',
         ]);
-        
+
         $this->belongsToMany('Junles', [
             'foreignKey' => 'work_id',
             'targetForeignKey' => 'junle_id',
@@ -187,7 +187,6 @@ class WorksTable extends Table {
      */
     public function findMarkState($query, $options) {
         $state = Hash::get($options, 'mark-state', Defines::MARK_STATE_ALL);
-
 
         if ($state == Defines::MARK_STATE_MARKED) {
             $query->find('mark');

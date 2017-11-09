@@ -59,6 +59,7 @@ class WorksController extends AppController {
         //検索フォーム用データ
         $organizations = $this->Works->Users->Organizations
                 ->find('PathName')
+                ->select('id')
                 ->find('list', ['keyField' => 'id', 'valueField' => 'path']);
 
         if ($loginUserGroup == Defines::GROUP_MARKER || $loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {

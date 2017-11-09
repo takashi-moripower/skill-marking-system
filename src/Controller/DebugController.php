@@ -121,11 +121,13 @@ class DebugController extends AppController {
         $tableF = TableRegistry::get('Fields');
 
 
-        $query = $tableF
-                ->find('descendants',['id'=>8])
-                ->find('list');
+        $query = $tableW
+                ->find()
+                ->select(['id','name'])
+                ->count();
    
-        $data = $query->toArray();
+//        $data = $query->toArray();
+        $data = $query;
 
         $this->set('data', $data);
         $this->render('/Common/debug');

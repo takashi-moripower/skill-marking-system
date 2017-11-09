@@ -73,7 +73,8 @@ class EngineersController extends AppController {
 
         $organizations = $tableO->find()
                 ->find('pathName')
-                ->find('list',['keyField'=>'id','valueField'=>'path']);
+                ->select($tableO->aliasField('id'))
+                ->find('list', ['keyField' => 'id', 'valueField' => 'path']);
 
         if ($loginUserGroup == Defines::GROUP_MARKER || $loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
             $organizations->find('user', ['user_id' => $loginUserId, 'relation' => 'children']);

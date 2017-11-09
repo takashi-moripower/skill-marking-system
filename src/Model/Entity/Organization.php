@@ -4,6 +4,7 @@ namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
+use App\Defines\Defines;
 
 /**
  * Organization Entity
@@ -46,6 +47,21 @@ class Organization extends Entity {
                 ->count();
 
         $this->count_users = $count;
+        return $count;
+    }
+    
+    protected function _getCountEngineers($val) {
+        if (isset($val)) {
+            return $val;
+        }
+
+        $count = TableRegistry::get('organizations_users')
+                ->find()
+                ->join(['users'=>['table'=>'users','conditions'=>['users.id = organizations_users.user_id']]])
+                ->where(['organization_id' => $this->id , 'users.group_id'=>Defines::GROUP_ENGINEER])
+                ->count();
+
+        $this->count_engineers = $count;
         return $count;
     }
 

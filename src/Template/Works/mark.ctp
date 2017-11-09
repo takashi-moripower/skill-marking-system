@@ -45,11 +45,13 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                         <?php endforeach; ?>
                     </td>
                 </tr>
+            </tbody>
+            <tbody role="skills">
                 <tr>
                     <th>作者の採点</th>
                     <td>
                         <?php
-                        echo $this->Element('skills', ['skills' => $work->getSkillsBy( $work->user_id )]);
+                        echo $this->Element('skills', ['skills' => $work->getSkillsBy($work->user_id)]);
                         ?>
                     </td>
                 </tr>
@@ -65,7 +67,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                     <th><?= h($this->getLoginUser('name')) ?> の採点</th>
                     <td>
                         <?php
-                        $skills = $work->getSkillsBy( $loginUserId );
+                        $skills = $work->getSkillsBy($loginUserId);
                         foreach ($skills as $skill):
                             ?>
                             <div class="card bg-light mb-1">
@@ -97,6 +99,29 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                                 <?= $this->Form->end() ?>
                             </div>
                         </div>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody role="comments">
+                <?php foreach ($work->comments as $comment): ?>
+                    <?= $this->Element('works/comments', compact('comment', 'loginUserId')) ?>
+                <?php endforeach ?>
+                <tr>
+                    <th>コメント</th>
+                    <td>
+                        <?= $this->Form->create(null, ['url' => ['controller' => 'comments', 'action' => 'add']]); ?>
+                        <div class="row">
+                            <div class="col-10">
+                                <?= $this->Form->textArea('comment', ['class' => 'w-100', 'style' => 'height:4rem']) ?>
+
+                            </div>
+                            <div class="col-2 text-right">
+                                <?= $this->Form->button('追加', ['class' => 'btn btn-outline-primary btn-sm']) ?>
+                            </div>
+                        </div>
+                        <?= $this->Form->hidden('user_id', ['value' => $loginUserId]) ?>
+                        <?= $this->Form->hidden('work_id', ['value' => $work->id]) ?>
+                        <?= $this->Form->end() ?>
                     </td>
                 </tr>
             </tbody>
@@ -152,6 +177,12 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                 button.removeClass('btn-outline-dark disabled');
             }
         }
+    });
+    $(function(){
+        $('tbody[role="comments"]').on('click','button[value="delete"]',function(event){
+            return confirm('realy delete?');
+        });
+        
     });
 </script>
 <?php $this->end(); ?>

@@ -150,6 +150,7 @@ class WorksController extends AppController {
                     'Users' => ['fields' => ['Users.id', 'name']],
                     'Files',
                     'Junles',
+                    'Comments'=>['Users'=>['fields'=>['name']]],
                     'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'finder' => ['fieldPath'], 'fields' => ['id', 'name', 'field_id', 'SkillsWorks.level', 'SkillsWorks.work_id']],
                 ])
                 ->first();
@@ -268,5 +269,4 @@ class WorksController extends AppController {
         $this->viewBuilder()->layout('bootstrap');
         $this->render('edit');
     }
-
 }

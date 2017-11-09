@@ -47,9 +47,15 @@ class WorksTable extends Table {
             'joinType' => 'INNER',
             'fields' => ['id', 'name'],
         ]);
+        
         $this->hasMany('Files', [
             'foreignKey' => 'work_id',
         ]);
+        
+        $this->hasMany('Comments', [
+            'foreignKey' => 'work_id',
+        ]);
+        
         $this->belongsToMany('Junles', [
             'foreignKey' => 'work_id',
             'targetForeignKey' => 'junle_id',

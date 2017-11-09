@@ -50,6 +50,16 @@ if ($this->request->action == 'add') {
                                 <?= $this->Form->button('新規追加', ['class' => 'btn btn-outline-primary add-file', 'type' => 'button']) ?>
                             </div>
                         </div>
+                        <div class="d-none file-template">
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control" placeholder="未選択">
+                                <label class="mb-0">
+                                    <span class="input-group-addon">ファイルを選択</span>
+                                    <input type="file" class="d-none" name="files[]"/>
+                                    <?= $this->Form->hidden('files[]["work_id"]', ['value' => $work->id]) ?>
+                                </label>
+                            </div>
+                        </div>                        
                     </td>
                 </tr>
             </tbody>
@@ -77,6 +87,7 @@ if ($this->request->action == 'add') {
     $(function () {
         $('button.add-file').on('click', function () {
             html = $('.file-template').html();
+            console.log(html);
 
             $('.new-files').append(html);
         });

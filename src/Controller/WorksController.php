@@ -51,7 +51,7 @@ class WorksController extends AppController {
                 ->find('mark')
                 ->find('user', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup])
                 ->find('search', ['search' => $this->request->data])
-                ->group( $this->Works->aliasField('id'))
+                ->group($this->Works->aliasField('id'))
                 ->select($this->Works);
 
         $works = $this->paginate($query);
@@ -151,29 +151,29 @@ class WorksController extends AppController {
                     'Users' => ['fields' => ['Users.id', 'name']],
                     'Files',
                     'Junles',
-                    'Comments'=>['Users'=>['fields'=>['name']]],
+                    'Comments' => ['Users' => ['fields' => ['name']]],
                     'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'finder' => ['fieldPath'], 'fields' => ['id', 'name', 'field_id', 'SkillsWorks.level', 'SkillsWorks.work_id']],
                 ])
                 ->first();
 
 
 
-        
-        $skillsUsed = Hash::extract( $work->getSkillsBy($loginUserId)->toArray() , '{n}.id');
+
+        $skillsUsed = Hash::extract($work->getSkillsBy($loginUserId)->toArray(), '{n}.id');
 
         $skillsUnUsed = $tableS->find('fieldPath')
-                ->select(['id','name'])
-                ->where([$tableS->aliasField('id') .' not IN ' => $skillsUsed]);
-        
+                ->select(['id', 'name']);
+        if (!empty($skillsUsed)) {
+            $skillsUnUsed
+                    ->where([$tableS->aliasField('id') . ' not IN ' => $skillsUsed]);
+        }
+
         $skillsToSet = [];
-        foreach( $skillsUnUsed as $skill ){
+        foreach ($skillsUnUsed as $skill) {
             $skillsToSet[$skill->id] = $skill->label;
         }
 
-;
-
-
-        $this->set(compact('work','skillsToSet'));
+        $this->set(compact('work', 'skillsToSet'));
         $this->viewBuilder()->layout('bootstrap');
     }
 
@@ -270,4 +270,5 @@ class WorksController extends AppController {
         $this->viewBuilder()->layout('bootstrap');
         $this->render('edit');
     }
+
 }

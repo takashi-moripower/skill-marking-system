@@ -92,9 +92,9 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                                 <?= $this->Form->hidden('user_id', ['value' => $loginUserId]); ?>
                                 <?= $this->Form->hidden('work_id', ['value' => $work->id]); ?>
 
-                                <?= $this->Form->select('skill_id', $skillsToSet, ['value' => 0]) ?>
+                                <?= $this->Form->select('skill_id', $skillsToSet, ['value' => 0,'empty'=>true]) ?>
                                 - 
-                                <?= $this->Form->select('level', $LEVELS, ['value' => 1, 'class' => 'align-middle']) ?>
+                                <?= $this->Form->select('level', $LEVELS, ['value' => 1, 'class' => 'align-middle' ]) ?>
                                 <?= $this->Form->button('追加', ['class' => 'btn btn-outline-dark disabled btn-sm ml-auto', 'disabled' => 'disabled', 'type' => 'submit', 'name' => 'action', 'value' => 'set']) ?>
                                 <?= $this->Form->end() ?>
                             </div>

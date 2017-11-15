@@ -43,7 +43,7 @@ class WorksController extends AppController {
             'contain' => [
                 'Users' => ['fields' => ['id', 'name']],
                 'Junles' => ['sort' => ['Junles.id' => 'ASC']],
-                'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'finder' => ['fieldPath', 'notSelf'], 'fields' => ['id', 'name', 'field_id', 'SkillsWorks.level', 'SkillsWorks.work_id']],
+                'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'finder' => ['fieldPath'], 'fields' => ['id', 'name', 'field_id', 'SkillsWorks.level', 'SkillsWorks.work_id']],
             ]
         ];
 

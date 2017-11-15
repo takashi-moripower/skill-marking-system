@@ -27,13 +27,13 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
         </div>
         <div id="searchExtends" class="collapse <?= $searchFormOpen ? 'show' : '' ?>" >
             <div class="form-group row mb-0">
-                <label class="col-2 col-form-label mt-1">採点状況</label>
-                <div class="col-4 mt-1">
-                    <?= $this->Form->select('mark-state', Defines::MARK_STATES, ['class' => 'form-control']) ?>
-                </div>
                 <label class="col-2 col-form-label mt-1">ジャンル</label>
                 <div class="col-4 mt-1">
                     <?= $this->Form->select('junle_id', $junles, ['class' => 'form-control']) ?>
+                </div>
+                <label class="col-2 col-form-label mt-1">採点状況</label>
+                <div class="col-4 mt-1">
+                    <?= $this->Form->select('mark-state', Defines::MARK_STATES, ['class' => 'form-control']) ?>
                 </div>
                 <?php if ($loginUserGroup != Defines::GROUP_ENGINEER): ?>
                     <label class="col-2 col-form-label mt-1">所属組織</label>
@@ -56,7 +56,7 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
             <?php endif; ?>
             <th class="w-30">ジャンル</th>
             <th>採点</th>
-            <th class="w-30">スキル評価(本人以外)</th>
+            <th class="w-30">スキル評価</th>
             <th class="">操作</th>
         </tr>
     </thead>
@@ -78,7 +78,21 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
                 </td>
                 <td>
                     <div class="" style="width:20rem">
-                        <?= $this->Element('skills', ['skills' => $work->getSkillsBest(3)]); ?>
+                        <?php
+                        $skillsSelf = Hash::filter($work->skills, function($skill) use( $work ) {
+                                    return ( $skill->_joinData->user_id == $work->user_id );
+                                });
+                        $skillsOther = Hash::filter($work->skills, function($skill) use($work) {
+                                    return ( $skill->_joinData->user_id != $work->user_id );
+                                });
+                        $skillsOtherMax = Hash::filter($skillsOther, function($skill) use($skillsOther) {
+                                    $maxLevel = max( Hash::extract($skillsOther,"{n}[id={$skill->id}]._joinData.level") );
+                                    return $maxLevel == $skill->_joinData->level;
+                                });
+
+                        echo $this->Element('skills', ['skills' => $skillsOtherMax]);
+                        echo $this->Element('skills', ['skills' => $skillsSelf, 'cardClass' => 'border-light bg-light']);
+                        ?>
                     </div>
                 </td>
                 <td class="text-nowrap py-0 align-middle">

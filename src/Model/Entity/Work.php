@@ -42,29 +42,4 @@ class Work extends Entity {
                     return ($value->_joinData->user_id == $userId) ^ $except;
                 });
     }
-
-    public function getSkillsBest($limit = 0) {
-        if(!isset($this->skills)){
-            $this->skills = [];
-        }
-        
-        $skills = Hash::sort($this->skills, '_joinData.level');
-        $result = [];
-        while($skills) {
-            $skill = array_shift ($skills);
-            $result[] = $skill;
-            $skills = Hash::remove($skills,"[id={$skill->id}]");
-            
-            
-            if(empty($skills)){
-                break;
-            }
-            
-            if( $limit > 0 && count($result) >= $limit ){
-                break;
-            }
-        }
-        return $result;
-    }
-
 }

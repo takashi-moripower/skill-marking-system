@@ -1,6 +1,7 @@
 <?php
 
 use App\Defines\Defines;
+use Cake\Utility\Hash;
 
 $loginUserGroup = $this->getLoginUser('group_id');
 ?>
@@ -25,14 +26,18 @@ $loginUserGroup = $this->getLoginUser('group_id');
                     <th>password</th>
                     <td><?= $this->Form->control('password', ['label' => false, 'value' => '']); ?></td>
                 </tr>
-                <?php if ($loginUserGroup != Defines::GROUP_ENGINEER): ?>
-                    <tr>
-                        <th>組織</th>
-                        <td>
+                <tr>
+                    <th>組織</th>
+                    <td>
+                        <?php if ($loginUserGroup != Defines::GROUP_ENGINEER): ?>
                             <?= $this->Form->control('organizations._ids', ['options' => $organizations, 'empty' => false, 'label' => false, 'multiple' => true,]); ?>
-                        </td>
-                    </tr>
-                <?php endif; ?>
+                        <?php else: ?>
+                            <?php foreach ($user->organizations as $org): ?>
+                                <div><?= $org->path_name ?></div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </td>
+                </tr>
                 <tr>
                     <th>自己アピール</th>
                     <td><?= $this->Form->control('note', ['label' => false]) ?></td>

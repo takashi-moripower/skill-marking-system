@@ -127,10 +127,9 @@ class EngineersController extends AppController {
             $user = $tableU->patchEntity($user, $this->request->getData());
             if ($tableU->save($user)) {
                 $this->Flash->success(__('The engineer has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+            } else {
+                $this->Flash->error(__('The engineer could not be saved. Please, try again.'));
             }
-            $this->Flash->error(__('The engineer could not be saved. Please, try again.'));
         }
 
         $organizations = TableRegistry::get('Organizations')

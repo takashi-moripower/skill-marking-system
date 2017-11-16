@@ -24,6 +24,7 @@ class EngineersController extends AppController {
     public function initialize() {
         parent::initialize();
         $this->loadComponent('SearchSession', []);
+        $this->loadComponent('UserEdit');
         $this->viewBuilder()->layout('bootstrap');
     }
 
@@ -120,29 +121,9 @@ class EngineersController extends AppController {
     }
 
     public function edit($user_id) {
-        $tableU = TableRegistry::get('users');
-
+        $tableU = TableRegistry::get('Users');
         $user = $tableU->get($user_id, ['contain' => 'organizations']);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $user = $tableU->patchEntity($user, $this->request->getData());
-            if ($tableU->save($user)) {
-                $this->Flash->success(__('The engineer has been saved.'));
-            } else {
-                $this->Flash->error(__('The engineer could not be saved. Please, try again.'));
-            }
-        }
-
-        $organizations = TableRegistry::get('Organizations')
-                ->find('pathName')
-                ->find('list', ['keyField' => 'id', 'valueField' => 'path'])
-        ;
-        if ($this->Auth->user()->group_id != Defines::GROUP_ADMIN) {
-            $organizations
-                    ->find('user', ['user_id' => $this->Auth->user()->id, 'relation' => 'children']);
-        }
-
-        $this->set(compact('user', 'organizations'));
-        $this->render('edit');
+        return $this->UserEdit->edit($user);
     }
 
     public function editSelf() {

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Event\Event;
+use App\Defines\Defines;
 
 /**
  * Users Controller
@@ -35,9 +36,21 @@ class UsersController extends AppController {
         $this->paginate = [
             'contain' => ['Groups']
         ];
-        $users = $this->paginate($this->Users);
 
-        $this->set(compact('users'));
+
+        $users = $this->Users->find();
+        
+        $loginUserId = $this->Auth->user('id');
+        $loginUserGroup = $this->Auth->user('group_id');
+
+        if ($loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
+            $users->find('editable', ['user_id' => $loginUserId]);
+        }
+        
+        $users = $this->paginate($users);
+        
+
+        $this->set(compact('users', 'organizations'));
         $this->set('_serialize', ['users']);
     }
 
@@ -90,7 +103,7 @@ class UsersController extends AppController {
     }
 
     public function edit($id) {
-        $user = $this->Users->get($id, ['contain' => 'Groups']);
+        $user = $this->Users->get($id, ['contain' => ['Groups', 'Organizations']]);
         return $this->UserEdit->edit($user);
     }
 
@@ -101,7 +114,7 @@ class UsersController extends AppController {
 
     public function editSelf() {
         $loginUserId = $this->Auth->user('id');
-        $user = $this->Users->get($loginUserId, ['contain' => 'Groups']);
+        $user = $this->Users->get($loginUserId, ['Groups', 'Organizations']);
         return $this->UserEdit->edit($user);
     }
 

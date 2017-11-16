@@ -79,19 +79,24 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
                 <td>
                     <div class="" style="width:20rem">
                         <?php
-                        $skillsSelf = Hash::filter($work->skills, function($skill) use( $work ) {
-                                    return ( $skill->_joinData->user_id == $work->user_id );
-                                });
-                        $skillsOther = Hash::filter($work->skills, function($skill) use($work) {
-                                    return ( $skill->_joinData->user_id != $work->user_id );
-                                });
-                        $skillsOtherMax = Hash::filter($skillsOther, function($skill) use($skillsOther) {
-                                    $maxLevel = max( Hash::extract($skillsOther,"{n}[id={$skill->id}]._joinData.level") );
-                                    return $maxLevel == $skill->_joinData->level;
-                                });
+                        /*
+                          $skillsSelf = Hash::filter($work->skills, function($skill) use( $work ) {
+                          return ( $skill->_joinData->user_id == $work->user_id );
+                          });
+                          $skillsOther = Hash::filter($work->skills, function($skill) use($work) {
+                          return ( $skill->_joinData->user_id != $work->user_id );
+                          });
+                          $skillsOtherMax = Hash::filter($skillsOther, function($skill) use($skillsOther) {
+                          $maxLevel = max( Hash::extract($skillsOther,"{n}[id={$skill->id}]._joinData.level") );
+                          return $maxLevel == $skill->_joinData->level;
+                          });
 
-                        echo $this->Element('skills', ['skills' => $skillsOtherMax]);
-                        echo $this->Element('skills', ['skills' => $skillsSelf, 'cardClass' => 'border-light bg-light']);
+                          echo $this->Element('skills', ['skills' => $skillsOtherMax]);
+                          echo $this->Element('skills', ['skills' => $skillsSelf, 'cardClass' => 'border-light bg-light']);
+                         * *
+                         */
+
+                        echo $this->Element('skills', ['skills' => $work->skills, 'user_id' => $work->user_id]);
                         ?>
                     </div>
                 </td>

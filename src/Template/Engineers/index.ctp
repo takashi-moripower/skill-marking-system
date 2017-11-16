@@ -43,31 +43,25 @@ $searchFormOpen = ( $this->request->getData('skill.1.id') != 0 || $this->request
 <table class="table table-bordered mt-2">
     <thead>
         <tr class="">
-            <th class="" rowspan="2">ID</th>
-            <th class="w-15" rowspan="2">名称</th>
-            <th class="bg-light">自己評価</th>
-            <th class="" rowspan="2">操作</th>
-        </tr>
-        <tr>
-            <th class="">他者評価</th>
+            <th class="" >ID</th>
+            <th class="w-15" >名称</th>
+            <th class="">評価</th>
+            <th class="">操作</th>
         </tr>
     </thead>
     <tbody>
         <?php foreach ($users as $user): ?>
             <tr>
-                <th rowspan="2"><?= h($user->id) ?></th>
-                <td rowspan="2"><?= h($user->name) ?></th>
-                <td class="p-0 align-middle bg-light"><?= $this->Element('skills', ['skills' => $user->self_skills, 'cardClass' => '']); ?></th>
-                <td rowspan="2" class="py-0 align-middle">
+                <th><?= h($user->id) ?></th>
+                <td><?= h($user->name) ?></th>
+                <td class="p-0 align-middle"><?= $this->Element('skills', ['skills' => (array)$user->skills, 'user_id'=>$user->id ]); ?></th>
+                <td class="py-0 align-middle">
                     <?= $this->Html->link('情報', ['controller' => 'engineers', 'action' => 'view', $user->id], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>
                     <?php if (in_array($loginUser->group_id, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN])): ?>
                         <?= $this->Html->link('編集', ['controller' => 'engineers', 'action' => 'edit', $user->id], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>
                     <?php endif; ?>
                     <?= $this->Html->link('評価', ['controller' => 'engineers', 'action' => 'view', $user->id], ['class' => 'btn btn-sm btn-secondary py-0 disabled']); ?>
                 </td>
-            </tr>
-            <tr>
-                <td class="p-0 align-middle"><?= $this->Element('skills', ['skills' => $user->max_skills]); ?></th>
             </tr>
         <?php endforeach; ?>
     </tbody>

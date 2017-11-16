@@ -153,7 +153,7 @@ class UsersTable extends Table {
         $searchManager = $this->behaviors()->Search->searchManager();
         $searchManager
                 ->finder('skill', ['finder' => 'Skills'])
-                ->finder('organization_id' , ['finder' => 'RootOrganization'])
+                ->finder('organization_id', ['finder' => 'RootOrganization'])
         ;
 
 
@@ -188,7 +188,7 @@ class UsersTable extends Table {
                 ->where([
                     'skills_works.skill_id' => $skill_id,
                     'skills_works.level IN' => $skill_level,
-                    'skills_works.user_id != works.user_id' 
+                    'skills_works.user_id != works.user_id'
                 ])
                 ->select('user_id');
 
@@ -196,22 +196,39 @@ class UsersTable extends Table {
 
         return $query;
     }
-    
-    public function findRootOrganization( $query , $options ){
-        $root_id = Hash::get($options,'organization_id');
-        
-        $EndOrgs = TableRegistry::get('EndOrgs',['table'=>'organizations'])
+
+    public function findRootOrganization($query, $options) {
+        $root_id = Hash::get($options, 'organization_id');
+
+        $EndOrgs = TableRegistry::get('EndOrgs', ['table' => 'organizations'])
                 ->find()
-                ->leftJoin(['RootOrgs'=>'organizations'],['RootOrgs.lft <= EndOrgs.lft','RootOrgs.rght >= EndOrgs.rght'])
-                ->leftJoin('organizations_users','organizations_users.organization_id = EndOrgs.id')
+                ->leftJoin(['RootOrgs' => 'organizations'], ['RootOrgs.lft <= EndOrgs.lft', 'RootOrgs.rght >= EndOrgs.rght'])
+                ->leftJoin('organizations_users', 'organizations_users.organization_id = EndOrgs.id')
                 ->where(['RootOrgs.id' => $root_id])
                 ->select('organizations_users.user_id')
                 ->group('organizations_users.user_id');
+
+        $query->where([$this->aliasField('id') . ' IN' => $EndOrgs]);
+
+        return $query;
+    }
+
+    /**
+     * （組織管理者が）編集可能なユーザーを取得
+     * @param type $query
+     * @param type $options
+     */
+    public function findEditable($query, $options) {
+        $user_id = Hash::get($options, 'user_id');
+
+        $orgs = TableRegistry::get('Organizations')
+                ->find('user', ['user_id' => $user_id, 'relation' => 'children'])
+                ->select('id');
         
-        
-                $query->where([$this->aliasField('id').' IN' => $EndOrgs]);
-        
-        
+        $query
+                ->leftJoin('organizations_users', ['organizations_users.user_id ='.$this->aliasField('id') ])
+                ->where(['organizations_users.organization_id IN' => $orgs]);
+
         return $query;
     }
 

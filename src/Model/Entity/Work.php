@@ -35,11 +35,11 @@ class Work extends Entity {
         'id' => false
     ];
 
-
-    public function getSkillsBy($userId , $except = false ) {
+    public function getSkillsBy($userId, $except = false) {
         $c = new Collection($this->skills);
-        return $c->filter(function($value, $key)use($userId,$except) {
+        return $c->filter(function($value, $key)use($userId, $except) {
                     return ($value->_joinData->user_id == $userId) ^ $except;
                 });
     }
+
 }

@@ -1,9 +1,17 @@
 <?php
+
 use Cake\Utility\Hash;
 ?>
 
+<?php
+if (empty($fields->toArray())) {
+    echo "編集可能なスキル分野がありません";
+    return;
+}
+?>
+
 <div class="text-right mb-2">
-    <?= $this->Html->link('新スキル分野作成', ['controller' => 'fields', 'action' => 'add'], ['class' => 'btn btn-outline-primary']); ?>
+<?= $this->Html->link('新スキル分野作成', ['controller' => 'fields', 'action' => 'add'], ['class' => 'btn btn-outline-primary']); ?>
 </div>
 
 <table class="table table-bordered table-sm">
@@ -17,10 +25,10 @@ use Cake\Utility\Hash;
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($fields as $field): ?>
+<?php foreach ($fields as $field): ?>
             <tr>
                 <td class="text-right"><?= $field->id ?></td>
-                <td><?= Hash::get($field,'organization.name','共通'); ?></td>
+                <td><?= Hash::get($field, 'organization.name', '共通'); ?></td>
                 <td>
                     <?php for ($i = 0; $i < $field->depth; $i++) : ?>
                         <i class="fa fa-fw"></i>
@@ -28,21 +36,21 @@ use Cake\Utility\Hash;
                             <i class="fa fa-share fa-flip-vertical fa-fw"></i>
                         <?php endif ?>
                     <?php endfor; ?>
-                    <?= h($field->name) ?>
+    <?= h($field->name) ?>
                 </td>
                 <td class="text-right">
-                    <a href="<?= $this->Url->build(['controller'=>'skills','action'=>'index','organization_id'=>$field->organization_id,'field_id'=>$field->id])?>">
-                    <?= $field->skill_count?>
+                    <a href="<?= $this->Url->build(['controller' => 'skills', 'action' => 'index', 'organization_id' => $field->organization_id, 'field_id' => $field->id]) ?>">
+    <?= $field->skill_count ?>
                     </a>
                 </td>
                 <td>
                     <?= $this->Html->link('編集', ['controller' => 'fields', 'action' => 'edit', $field->id], ['class' => 'btn btn-sm btn-outline-primary py-0']) ?>
                     <?= $this->Html->link('削除', ['controller' => 'fields', 'action' => 'delete', $field->id], ['class' => 'btn btn-sm btn-outline-danger py-0', 'role' => 'delete']) ?>
                     <?= $this->Form->create(null, ['method' => 'POST', 'url' => ['controller' => 'fields', 'action' => 'delete', $field->id], 'object_id' => $field->id, "role" => "delete"]) ?>
-                    <?= $this->Form->end() ?>
+    <?= $this->Form->end() ?>
                 </td>
             </tr>
-        <?php endforeach ?>
+<?php endforeach ?>
     </tbody>
 </table>
 

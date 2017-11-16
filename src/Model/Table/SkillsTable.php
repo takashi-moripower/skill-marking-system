@@ -156,60 +156,21 @@ class SkillsTable extends Table {
             return $query;
         }
     }
-
     /**
-     * あるユーザーに紐付けられたスキルの中で　最高レベルのものを返す
+     * あるユーザーが編集可能な
      * @param type $query
      * @param type $options
-     * @return type
      */
-    public function findMaxLevel_old($query, $options) {
-
-        $user_id = $options['user_id'];
-
-        $tableW = TableRegistry::get('works');
-        $tableSW = TableRegistry::get('skills_works');
-
-
-
-        $SW1 = $tableSW->find()
-                ->select(['skill_id' => 'skill_id', 'max_level' => 'max(level)'])
-                ->leftJoin('works', 'works.id = skills_works.work_id')
-                ->where(['works.user_id' => $user_id])
-                ->group(['skills_works.skill_id'])
-        ;
-
-        $SW2 = $tableSW->find()
-                ->leftJoin('works', 'works.id = ' . $tableSW->aliasField('work_id'))
-                ->innerJoin(['SW1' => $SW1], ['SW1.max_level = ' . $tableSW->aliasField('level'), 'SW1.skill_id =' . $tableSW->aliasField('skill_id')])
-                ->where([$tableW->aliasField('user_id') => $user_id])
-                ->select(['skill_id' => 'skills_works.skill_id', 'level' => 'skills_works.level']);
-
-        $query
-                ->innerJoin(['SW2' => $SW2], ['SW2.skill_id = skills.id'])
-                ->group('SW2.skill_id')
-                ->select($this)
-                ->select(['level' => 'SW2.level']);
-
-
+    public function findEditable($query,$options){
+        $user_id = Hash::get($options,'user_id');
+        $fields = TableRegistry::get('Fields')
+                ->find('editable',['user_id'=>$user_id])
+                ->select('id');
+        
+        $query->where(['field_id IN' => $fields]);
+        
+        
         return $query;
-    }
-
-    /**
-     * ある技術者に対する評価のうち同スキル内で最高点のものを返す
-     * @param type $query
-     * @param type $options
-     */
-    public function findMaxLevel($query, $options) {
-        $user_id = Hash::get($options, 'user_id', Hash::get($options, 'engineer_id'));
-        $tableW = TableRegistry::get('works');
-        $tableSW = TableRegistry::get('skills_works');
-
-
-        $max = $tableSW->find()
-                ->select(['skill_id' => 'skill_id', 'max_level' => 'max(level)', 'user_id' => 'works.user_id'])
-                ->leftJoin('works', 'works.id = skills_works.work_id')
-                ->group(['skills_works.skill_id', 'works.user_id']);
     }
 
     /**
@@ -236,37 +197,6 @@ class SkillsTable extends Table {
         return $query;
     }
 
-    /**
-     * 採点者による絞り込み
-     * findByEngineerの後に使うことを想定
-     */
-    public function findByMarker($query, $options) {
-        $marker_id = Hash::get($options, 'marker_id', Hash::get($options, 'user_id'));
-        $except = Hash::get($options, 'except', false);
-
-        if ($except) {
-            $query
-                    ->where(['skills_works.user_id IS NOT' => $marker_id]);
-        } else {
-            $query
-                    ->where(['skills_works.user_id' => $marker_id]);
-        }
-
-        return $query;
-    }
-
-    /**
-     * スキルの中で最高評価値を持つもののみを抽出
-     * findByEngineerの後に使うことを想定
-     */
-    public function findMaxSkills($query, $options) {
-        $query
-                ->select(['level' => 'max(skills_works.level)'])
-                ->group($this->aliasField('id'));
-
-        return $query;
-    }
-
     public function findFieldPath($query, $options) {
         $tableF = TableRegistry::get('Fields');
 
@@ -288,21 +218,4 @@ class SkillsTable extends Table {
         return $query;
     }
 
-    
-    public function findNotSelf($query , $option ){
-        $query
-                ->join([
-                    'SkillsWorks' => [
-                        'table'=>'skills_works',
-                        'conditions'=>'skills_works.skill_id = '.$this->aliasField('id')
-                    ],
-                    'Works' =>[
-                        'table'=>'works',
-                        'conditions'=>'Works.id = SkillsWorks.work_id'
-                    ]
-                ])
-                ->where(['Works.user_id <> SkillsWorks.user_id'])
-                ;
-        return $query;
-    }
 }

@@ -121,13 +121,18 @@ class DebugController extends AppController {
         $tableF = TableRegistry::get('Fields');
 
 
-        $query = $tableW
+        $query = $tableS
                 ->find()
-                ->select(['id','name'])
-                ->count();
-   
-//        $data = $query->toArray();
-        $data = $query;
+                ->select(['id', 'name']);
+        $query
+                ->select(['mark' => $query->newExpr()->addCase([
+                    $query->newExpr()->add(['id'=>1]),
+                    1,
+                    'integer'
+                    ])
+        ]);
+
+        $data = $query->toArray();
 
         $this->set('data', $data);
         $this->render('/Common/debug');

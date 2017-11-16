@@ -13,8 +13,12 @@
                     <td class="w-80 border-top-0"><?= $this->Form->control('name', ['label' => false]); ?></td>
                 </tr>
                 <tr>
-                    <th>フィールド</th>
+                    <th>スキル分野</th>
                     <td><?= $this->Form->control('field_id', ['options' => $fields, 'empty' => false, 'label' => false]); ?></td>
+                </tr>
+                <tr>
+                    <th>説明</th>
+                    <td><?= $this->Form->textArea('note', ['class' => 'w-100']) ?></td>
                 </tr>
             </tbody>
         </table>

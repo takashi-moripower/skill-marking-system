@@ -28,6 +28,10 @@ $org_empty = ($group == Defines::GROUP_ADMIN);
                     <td><?= $this->Form->control('organization_id', ['options' => $organizations, 'empty' => $org_empty, 'label' => false]); ?></td>
                 </tr>
                 <tr>
+                    <th>説明</th>
+                    <td><?= $this->Form->textArea('note', ['class'=>'w-100']); ?></td>
+                </tr>
+                <tr>
                     <td colspan="2">
                         <div  class="text-right" >
                             <?= $this->Form->button('保存', ['class' => 'btn btn-primary']) ?>

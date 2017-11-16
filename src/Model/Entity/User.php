@@ -71,25 +71,20 @@ class User extends Entity {
 
         return ['Groups' => ['id' => $group_id]];
     }
-
-    protected function _getMaxSkills() {
+    
+    protected function _getSkills($val){
+        if( isset($val)){
+            return $val;
+        }
+        
         $tableS = TableRegistry::get('skills');
 
         $skills = $tableS
                 ->find('byEngineer', ['engineer_id' => $this->id])
-                ->find('byMarker',['marker_id'=>$this->id,'except'=>true])
-                ->find('maxSkills');
-
-        return $skills;
-    }
-
-    protected function _getSelfSkills() {
-        $tableS = TableRegistry::get('skills');
-
-        $skills = $tableS
-                ->find('byEngineer', ['engineer_id' => $this->id])
-                ->find('byMarker',['marker_id'=>$this->id]);
-
+                ->order(['level'=>'DESC'])
+                ->toArray();
+        
+        $this->skills = $skills;
         return $skills;
     }
 

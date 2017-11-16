@@ -31,36 +31,49 @@ class SkillsController extends AppController {
      * @return \Cake\Http\Response|void
      */
     public function index() {
-        $user = $this->Auth->user();
-        $group = Hash::get($user, 'group_id', 0);
+        $loginUserId = $this->Auth->user('id');
+        $loginUserGroup = $this->Auth->user('group_id');
 
 
         $this->paginate = [
             'contain' => ['Fields' => ['Organizations']]
         ];
-        
+
 
         $query = $this->Skills->find('fieldPath')
-                ->select(['Skills.id', 'Skills.name' , 'Fields.organization_id'])
-                ->select(['org_name'=> $this->Skills->Fields->Organizations->aliasField('name')])
+                ->select(['Skills.id', 'Skills.name', 'Fields.organization_id'])
+                ->select(['org_name' => $this->Skills->Fields->Organizations->aliasField('name')])
                 ->find('search', ['search' => $this->request->data]);
 
-        if ($group == Defines::GROUP_ORGANIZATION_ADMIN) {
-            $query->find('usable', ['user_id' => $user->id, 'group_id' => $user->group_id]);
+        if ($loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
+            $query->find('usable', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup]);
         }
+
+        $skillsEditable = TableRegistry::get('SkillsEditable', ['table' => 'skills', 'className' => '\App\Model\Table\SkillsTable'])
+                ->find('editable', ['user_id' => $loginUserId])
+                ->select('id');
+
+        $query
+                ->select(['editable' => $query->newExpr()->addCase([
+                        $query->newExpr()->add(['Skills.id IN' => $skillsEditable]),
+                        1,
+                        'boolean'
+                    ])
+        ]);
+
+
         $skills = $this->paginate($query);
-        
-        
+
         //検索用
 
         $fields = $this->Skills->Fields->find('pathName')
-                ->select( $this->Skills->Fields->aliasField('id') )
-                ->find('list',['keyField'=>'id','valueField'=>'path'])
-                ->find('usable',['user_id'=>$user->id]);
+                ->select($this->Skills->Fields->aliasField('id'))
+                ->find('list', ['keyField' => 'id', 'valueField' => 'path'])
+                ->find('usable', ['user_id' => $loginUserId]);
 
-        
 
-        $this->set(compact('skills', 'fields' ));
+
+        $this->set(compact('skills', 'fields'));
         $this->set('_serialize', ['skills']);
         $this->viewBuilder()->layout('bootstrap');
     }

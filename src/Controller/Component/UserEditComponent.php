@@ -16,29 +16,31 @@ class UserEditComponent extends Component {
     }
 
     public function edit($user) {
-        
+        $controller = $this->getController();
+
         if ($this->request->is(['patch', 'post', 'put'])) {
+            
             $user = $this->Users->patchEntity($user, $this->request->getData());
             if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
+                $controller->Flash->success(__('The user has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $controller->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
+            $controller->Flash->error(__('The user could not be saved. Please, try again.'));
         }
-        
-        $controller = $this->getController();
+
         $loginUser = $controller->Auth->user();
 
         $organizations = TableRegistry::get('Organizations')
                 ->find('pathName')
+                ->select('id')
                 ->find('list', ['keyField' => 'id', 'valueField' => 'path']);
-        
-        if( $loginUser->group_id != Defines::GROUP_ADMIN){
+
+        if ($loginUser->group_id != Defines::GROUP_ADMIN) {
             $organizations
                     ->find('user', ['user_id' => $loginUser->id, 'relation' => 'children']);
-        }                
-        
+        }
+
 
         $controller->set(compact('user', 'organizations'));
         $controller->render('edit');

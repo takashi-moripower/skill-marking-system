@@ -91,6 +91,7 @@ class Defines {
         ],
         self::GROUP_ORGANIZATION_ADMIN => [
             self::NAV_ID_HOME,
+            self::NAV_ID_USERS,
             self::NAV_ID_WORKS,
             self::NAV_ID_FIELDS,
             self::NAV_ID_SKILLS,

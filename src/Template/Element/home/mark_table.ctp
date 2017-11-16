@@ -3,7 +3,7 @@
 use App\Defines\Defines;
 ?>
 <hr/>
-<h3 class="mt-4">採点状況</h3>
+<h3 class="mt-4">所属している組織の状況</h3>
 <table class="table mt-4" style="width:auto">
     <thead>
         <tr class="bg-light">
@@ -28,12 +28,14 @@ use App\Defines\Defines;
         <?php foreach ($orgs as $org): ?>
             <tr>
                 <th>
-                    <?= $this->Html->link($org->path_name, ['controller' => 'works', 'action' => 'index', 'organization_id' => $org->id]) ?>
+                    <?= $org->path_name ?>
                 </th>
                 <td class="text-right">
                     <?= $this->Html->link($org->count_engineers, ['controller' => 'engineers', 'action' => 'index', 'organization_id' => $org->id]) ?>
                 </td>
-                <td class="text-right"><?= $collections[$org->id]['all'] ?></td>
+                <td class="text-right">
+                    <?= $this->Html->link($collections[$org->id]['all'], ['controller' => 'works', 'action' => 'index', 'organization_id' => $org->id, 'mark-state' => Defines::MARK_STATE_ALL]) ?>
+                </td>
                 <td class="text-right">
                     <?= $this->Html->link($collections[$org->id]['marked'], ['controller' => 'works', 'action' => 'index', 'organization_id' => $org->id, 'mark-state' => Defines::MARK_STATE_MARKED]) ?>
                 </td>

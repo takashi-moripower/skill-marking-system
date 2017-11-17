@@ -26,11 +26,17 @@ $loginUserGroup = $this->getLoginUser('group_id');
                     <th>password</th>
                     <td><?= $this->Form->control('password', ['label' => false, 'value' => '']); ?></td>
                 </tr>
+                <?php if ($this->request->params['controller'] == 'Users'): ?>
+                    <tr>
+                        <th>権限</th>
+                        <td><?= $this->Form->select('group_id', $groups, ['label' => false]); ?></td>
+                    </tr>
+                <?php endif ?>
                 <tr>
                     <th>組織</th>
                     <td>
                         <?php
-                        if ( in_array( $loginUserGroup  , [Defines::GROUP_ADMIN , Defines::GROUP_ORGANIZATION_ADMIN ])) {
+                        if (in_array($loginUserGroup, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN])) {
                             echo $this->Form->control('organizations._ids', ['options' => $organizations, 'empty' => false, 'label' => false, 'multiple' => true,]);
 
                             $org_set = Hash::extract($user, 'organizations.{n}.id');

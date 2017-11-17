@@ -123,5 +123,4 @@ class UsersController extends AppController {
         
         return;
     }
-
 }

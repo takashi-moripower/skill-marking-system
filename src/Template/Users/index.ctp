@@ -2,6 +2,9 @@
 
 use App\Defines\Defines;
 ?>
+<div class="text-right">
+    <?= $this->Html->link('新規ユーザ',['action'=>'add']) ?>
+</div>
 <table class="table table-bordered table-sm">
     <thead>
         <tr>

@@ -40,9 +40,15 @@ class UserEditComponent extends Component {
             $organizations
                     ->find('user', ['user_id' => $loginUser->id, 'relation' => 'children']);
         }
+        
+        $groups = TableRegistry::get('Groups')->find('list');
+        
+        if ($loginUser->group_id != Defines::GROUP_ADMIN) {
+            $groups->where(['id >=' => $loginUser->group_id]);
+        }
 
 
-        $controller->set(compact('user', 'organizations'));
+        $controller->set(compact('user', 'organizations' , 'groups'));
         $controller->render('edit');
     }
 

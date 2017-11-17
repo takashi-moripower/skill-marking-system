@@ -75,13 +75,14 @@ if ($this->request->action == 'add') {
         <?= $this->Form->end() ?>
     </div>
 </div>
-
-<div class="text-right mt-1">
-    <?php
-    echo $this->Html->Link('一覧', ['controller' => 'works', 'action' => 'index'], ['class' => 'btn btn-outline-primary ml-1']);
-    echo $this->Html->Link('採点', ['controller' => 'works', 'action' => 'mark', $work->id], ['class' => 'btn btn-outline-primary ml-1']);
-    ?>
-</div>
+<?php if ($this->request->action != 'add'): ?> 
+    <div class="text-right mt-1">
+        <?php
+        echo $this->Html->Link('一覧', ['controller' => 'works', 'action' => 'index'], ['class' => 'btn btn-outline-primary ml-1']);
+        echo $this->Html->Link('採点', ['controller' => 'works', 'action' => 'mark', $work->id], ['class' => 'btn btn-outline-primary ml-1']);
+        ?>
+    </div>
+<?php endif; ?>
 <?php $this->append('script'); ?>
 <script>
     $(function () {

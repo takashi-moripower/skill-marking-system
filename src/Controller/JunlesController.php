@@ -66,6 +66,7 @@ class JunlesController extends AppController {
         $works = $this->Junles->Works->find('list', ['limit' => 200]);
         $this->set(compact('junle', 'works'));
         $this->set('_serialize', ['junle']);
+        $this->render('edit');
     }
 
     /**

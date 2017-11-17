@@ -82,7 +82,7 @@ class WorksTable extends Table {
 
         $validator
                 ->scalar('name')
-                ->allowEmpty('name');
+                ->notEmpty('name');
 
         $validator
                 ->scalar('note')
@@ -116,7 +116,6 @@ class WorksTable extends Table {
                 ->finder('mark-state', ['finder' => 'MarkState'])
                 ->like('keyword', ['field' => ['name', 'note', 'Users.name'], 'before' => true, 'after' => true])
         ;
-
 
         return $searchManager;
     }

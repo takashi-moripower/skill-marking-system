@@ -157,12 +157,11 @@ class WorksController extends AppController {
                 ])
                 ->first();
 
-
-
-
         $skillsUsed = Hash::extract($work->getSkillsBy($loginUserId)->toArray(), '{n}.id');
 
         $skillsUnUsed = $tableS->find('fieldPath')
+                ->contain(['Fields' => ['fields'=>[]]])
+                ->order('Fields.lft')
                 ->select(['id', 'name']);
         if (!empty($skillsUsed)) {
             $skillsUnUsed

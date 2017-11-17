@@ -3,13 +3,6 @@
 use Cake\Utility\Hash;
 ?>
 
-<?php
-if (empty($fields->toArray())) {
-    echo "編集可能なスキル分野がありません";
-    return;
-}
-?>
-
 <div class="text-right mb-2">
 <?= $this->Html->link('新スキル分野作成', ['controller' => 'fields', 'action' => 'add'], ['class' => 'btn btn-outline-primary']); ?>
 </div>

@@ -20,6 +20,11 @@ class OrganizationsController extends AppController {
         'Paginator' => ['templates' => 'paginator-templates']
     ];
 
+    public function initialize() {
+        parent::initialize();
+        $this->viewBuilder()->layout('bootstrap');
+    }
+
     /**
      * Index method
      *
@@ -38,6 +43,16 @@ class OrganizationsController extends AppController {
                 ->find('pathName')
                 ->find('countUsers')
                 ->select($this->Organizations);
+
+        $query
+                ->select(['deletable' => $query->newExpr()->addCase([
+                        $query->newExpr()->add(['Organizations.parent_id IS' => NULL]),
+                        $query->newExpr()->add(['(' . $this->Organizations->aliasField('rght') . '-' . $this->Organizations->aliasField('lft') . ') >' => 2]),
+                            ], [false, false, true], ['boolean', 'boolean', 'boolean']
+                    )
+        ]);
+
+
 
         if ($group == Defines::GROUP_ORGANIZATION_ADMIN) {
             $query->find('user', ['user_id' => $user->id, 'relation' => 'children']);
@@ -133,7 +148,7 @@ class OrganizationsController extends AppController {
         if ($group == Defines::GROUP_ORGANIZATION_ADMIN) {
             $parentOrganizations->find('user', ['user_id' => $user->id, 'relation' => 'children']);
         }
-        
+
         //組織は自身の子の子になることはできない
         $children = $this->Organizations
                 ->find('descendants', ['id' => $id])
@@ -163,13 +178,46 @@ class OrganizationsController extends AppController {
             return $this->redirect(['action' => 'index']);
         }
 
+        if ($organization->parent_id) {
+            $this->Organizations->transferMember($id, $organization->parent_id);
+        } else {
+            if ($this->Auth->user('goup_id') != Defines::GROUP_ADMIN) {
+                $this->Flash->error('最上位組織は削除できません');
+                return $this->redirect(['action' => 'index']);
+            }
+        }
+
         if ($this->Organizations->delete($organization)) {
             $this->Flash->success(__('The organization has been deleted.'));
         } else {
             $this->Flash->error(__('The organization could not be deleted. Please, try again.'));
         }
 
+
         return $this->redirect(['action' => 'index']);
+    }
+
+    public function setMembers($id) {
+
+        $loginUserId = $this->Auth->user('id');
+
+        $organization = $this->Organizations->get($id, ['contain' => 'Users']);
+
+        if ($this->request->is(['post', 'put', 'patch'])) {
+            $organization = $this->Organizations->patchEntity($organization, $this->request->data);
+            if ($this->Organizations->save($organization)) {
+                $this->Flash->success('メンバーは正常に変更されました');
+            }
+        }
+
+        $orgs = $this->Organizations->find('user', ['user_id' => $loginUserId, 'relation' => 'children'])
+                ->select('id');
+
+        $users = $this->Organizations->Users
+                ->find('members', ['organization_id' => $orgs])
+                ->find('list');
+
+        $this->set(compact('organization', 'users'));
     }
 
 }

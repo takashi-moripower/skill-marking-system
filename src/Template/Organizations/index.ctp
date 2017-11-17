@@ -1,4 +1,5 @@
 <?php
+
 use App\Defines\Defines;
 ?>
 <div class="text-right mb-2">
@@ -24,15 +25,20 @@ use App\Defines\Defines;
                 <td>
                     <?= $org->count_org_admin ?>/
                     <?= $org->count_marker ?>/
-                    <a href="<?= $this->Url->build(['controller'=>'engineers','action'=>'index','organization_id'=>$org->id,'clear'=>true]) ?>">
-                    <?= $org->count_engineer ?>
+                    <a href="<?= $this->Url->build(['controller' => 'engineers', 'action' => 'index', 'organization_id' => $org->id, 'clear' => true]) ?>">
+                        <?= $org->count_engineer ?>
                     </a>
                 </td>
                 <td>
                     <?= $this->Html->link('編集', ['controller' => 'organizations', 'action' => 'edit', $org->id], ['class' => 'btn btn-sm btn-outline-primary py-0']) ?>
-                    <?= $this->Html->link('削除', '' , ['class' => 'btn btn-sm btn-outline-danger py-0', 'role' => 'delete']) ?>
-                    <?= $this->Form->create(null, ['method' => 'POST', 'url' => ['controller' => 'organizations', 'action' => 'delete', $org->id], 'object_id' => $org->id, "role" => "delete"]) ?>
-                    <?= $this->Form->end() ?>
+                    <?= $this->Html->link('登録', ['controller' => 'organizations', 'action' => 'setMembers', $org->id], ['class' => 'btn btn-sm btn-outline-primary py-0']) ?>
+                    <?php if( !$org->deletable ):?>
+                        <button class="btn btn-sm btn-outline-danger py-0" disabled='disabled' >削除</button>
+                    <?php else: ?>
+                        <?= $this->Html->link('削除', '', ['class' => 'btn btn-sm btn-outline-danger py-0', 'role' => 'delete']) ?>
+                        <?= $this->Form->create(null, ['method' => 'POST', 'url' => ['controller' => 'organizations', 'action' => 'delete', $org->id], 'object_id' => $org->id, "role" => "delete"]) ?>
+                        <?= $this->Form->end() ?>
+                    <?php endif; ?>
                 </td>
             </tr>
         <?php endforeach ?>

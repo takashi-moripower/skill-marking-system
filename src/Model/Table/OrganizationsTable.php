@@ -116,7 +116,7 @@ class OrganizationsTable extends Table {
         } elseif ($relation == 'children') {
             $query->find('descendants', ['ids' => $orgs]);
         } else {
-            $query->where([$this->AliasField('id'). ' IN' => $orgs]);
+            $query->where([$this->AliasField('id') . ' IN' => $orgs]);
         }
 
 
@@ -158,6 +158,39 @@ class OrganizationsTable extends Table {
 
 
         return $query;
+    }
+
+    public function transferMember($from, $to, $remove = true) {
+
+        $tableOU = TableRegistry::get('organizations_users');
+
+        $fromMembers = $tableOU
+                ->find('list',['valueField'=>'user_id'])
+                ->where(['organization_id' => $from])
+                ->select('user_id')
+                ->toArray();
+
+        $toMembers = $tableOU
+                ->find('list',['valueField'=>'user_id'])
+                ->where(['organization_id' => $to])
+                ->select('user_id')
+                ->toArray();
+
+        $transformMembers = array_diff($fromMembers, $toMembers);
+        debug($transformMembers);
+
+        $tableOU->query()
+                ->update()
+                ->where(['user_id IN' => $transformMembers, 'organization_id' => $from])
+                ->set(['organization_id' => $to])
+                ->execute();
+
+        if ($remove) {
+            $tableOU->query()
+                    ->delete()
+                    ->where(['organization_id' => $from])
+                    ->execute();
+        }
     }
 
 }

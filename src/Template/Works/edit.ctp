@@ -54,9 +54,9 @@ if ($this->request->action == 'add') {
                             <div class="input-group mb-2">
                                 <input type="text" class="form-control" placeholder="未選択">
                                 <label class="mb-0">
-                                    <span class="input-group-addon">ファイルを選択</span>
                                     <input type="file" class="d-none" name="files[]"/>
                                     <?= $this->Form->hidden('files[]["work_id"]', ['value' => $work->id]) ?>
+                                    <span class="input-group-addon">ファイルを選択</span>
                                 </label>
                             </div>
                         </div>                        

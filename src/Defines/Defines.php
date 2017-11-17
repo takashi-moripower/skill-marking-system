@@ -63,7 +63,7 @@ class Defines {
     
     const NAV_TEMPLATES = [
         self::NAV_ID_HOME => ['label' => 'Home', 'url' => ['controller' => 'Home', 'action' => 'index']],
-        self::NAV_ID_USERS => ['label' => 'ユーザ', 'url' => ['controller' => 'users', 'action' => 'index']],
+        self::NAV_ID_USERS => ['label' => '全ユーザ', 'url' => ['controller' => 'users', 'action' => 'index']],
         self::NAV_ID_GROUPS => ['label' => '権限', 'url' => ['plugin' => 'TakashiMoripower/AclManager', 'controller' => 'groups', 'action' => 'index']],
         self::NAV_ID_ORGANIZATIONS => ['label' => '組織', 'url' => ['controller' => 'Organizations', 'action' => 'index']],
         self::NAV_ID_FIELDS => ['label' => 'スキル分野', 'url' => ['controller' => 'Fields', 'action' => 'index']],
@@ -80,23 +80,26 @@ class Defines {
     const NAV_GROUP_TEMPLATES = [
         self::GROUP_ADMIN => [
             self::NAV_ID_HOME,
-            self::NAV_ID_USERS,
-            self::NAV_ID_GROUPS,
+            self::NAV_ID_WORKS,
+            self::NAV_ID_ENGINEERS,
             self::NAV_ID_ORGANIZATIONS,
             self::NAV_ID_FIELDS,
             self::NAV_ID_SKILLS,
+            self::NAV_ID_USERS,
+            self::NAV_ID_PROFILE,
+            
+            self::NAV_ID_GROUPS,
             self::NAV_ID_JUNLES,
-            self::NAV_ID_WORKS,
-            self::NAV_ID_ENGINEERS,
         ],
         self::GROUP_ORGANIZATION_ADMIN => [
             self::NAV_ID_HOME,
-            self::NAV_ID_USERS,
             self::NAV_ID_WORKS,
+            self::NAV_ID_ENGINEERS,
+            self::NAV_ID_ORGANIZATIONS,
             self::NAV_ID_FIELDS,
             self::NAV_ID_SKILLS,
-            self::NAV_ID_ORGANIZATIONS,
-            self::NAV_ID_ENGINEERS,
+            self::NAV_ID_USERS,
+            self::NAV_ID_PROFILE,
         ],
         self::GROUP_MARKER => [
             self::NAV_ID_WORKS,

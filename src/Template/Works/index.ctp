@@ -49,7 +49,7 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
 <table class="table table-bordered mt-2">
     <thead>
         <tr class="">
-            <th class="">ID</th>
+
             <th class="">作品名</th>
             <?php if ($displayName): ?> 
                 <th class="">作者</th>
@@ -63,7 +63,7 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
     <tbody>
         <?php foreach ($works as $work): ?>
             <tr>
-                <th class="text-nowrap text-right"><?= h($work->id) ?></th>
+
                 <td class="text-nowrap"><?= h($work->name) ?></td>
                 <?php if ($displayName): ?> 
                     <td class="text-nowrap"><?= h($work->user->name) ?></td>

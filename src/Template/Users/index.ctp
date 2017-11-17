@@ -2,13 +2,13 @@
 
 use App\Defines\Defines;
 ?>
-<div class="text-right">
-    <?= $this->Html->link('新規ユーザ',['action'=>'add']) ?>
+<div class="text-right  mb-2">
+    <?= $this->Html->link('新規追加',['action'=>'add'],['class'=>'btn btn-outline-primary']) ?>
 </div>
 <table class="table table-bordered table-sm">
     <thead>
         <tr>
-            <th>ID</th>
+
             <th>名称</th>
             <th>権限</th>
             <th>操作</th>
@@ -17,7 +17,7 @@ use App\Defines\Defines;
     <tbody>
         <?php foreach ($users as $user): ?>
             <tr>
-                <th><?= $user->id ?></th>
+
                 <th><?= $user->name ?></th>
                 <td><?= $user->group->name ?></td>
                 <td class="py-0 align-middle">

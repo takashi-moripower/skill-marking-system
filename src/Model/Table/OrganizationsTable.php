@@ -177,7 +177,6 @@ class OrganizationsTable extends Table {
                 ->toArray();
 
         $transformMembers = array_diff($fromMembers, $toMembers);
-        debug($transformMembers);
 
         $tableOU->query()
                 ->update()

@@ -11,7 +11,7 @@ $loginUser = $this->request->session()->read('Auth.User');
 <table class="table table-bordered table-sm">
     <thead>
         <tr>
-            <th>ID</th>
+
             <th>名称</th>
             <th>説明</th>
             <th>action</th>
@@ -20,7 +20,7 @@ $loginUser = $this->request->session()->read('Auth.User');
     <tbody>
         <?php foreach ($junles as $junle): ?>
             <tr>
-                <th><?= $junle->id ?></th>
+
                 <td><?= $junle->name ?></td>
                 <td><?= $junle->note ?></td>
                 <td class="pt-0 pb-0 align-middle">

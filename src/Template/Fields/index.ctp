@@ -10,7 +10,7 @@ use Cake\Utility\Hash;
 <table class="table table-bordered table-sm">
     <thead>
         <tr>
-            <th>ID</th>
+
             <th>管轄組織</th>
             <th>名称</th>
             <th>スキル</th>
@@ -20,7 +20,7 @@ use Cake\Utility\Hash;
     <tbody>
 <?php foreach ($fields as $field): ?>
             <tr>
-                <td class="text-right"><?= $field->id ?></td>
+
                 <td><?= Hash::get($field, 'organization.name', '共通'); ?></td>
                 <td>
                     <?php for ($i = 0; $i < $field->depth; $i++) : ?>

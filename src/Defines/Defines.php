@@ -79,12 +79,11 @@ class Defines {
     ];
     const NAV_GROUP_TEMPLATES = [
         self::GROUP_ADMIN => [
-            self::NAV_ID_HOME,
-            self::NAV_ID_WORKS,
             self::NAV_ID_ENGINEERS,
-            self::NAV_ID_ORGANIZATIONS,
+            self::NAV_ID_WORKS,
             self::NAV_ID_FIELDS,
             self::NAV_ID_SKILLS,
+            self::NAV_ID_ORGANIZATIONS,
             self::NAV_ID_USERS,
             self::NAV_ID_PROFILE,
             
@@ -92,12 +91,12 @@ class Defines {
             self::NAV_ID_JUNLES,
         ],
         self::GROUP_ORGANIZATION_ADMIN => [
-            self::NAV_ID_HOME,
-            self::NAV_ID_WORKS,
+
             self::NAV_ID_ENGINEERS,
-            self::NAV_ID_ORGANIZATIONS,
+            self::NAV_ID_WORKS,
             self::NAV_ID_FIELDS,
             self::NAV_ID_SKILLS,
+            self::NAV_ID_ORGANIZATIONS,
             self::NAV_ID_USERS,
             self::NAV_ID_PROFILE,
         ],

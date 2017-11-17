@@ -9,22 +9,28 @@ use App\Defines\Defines;
 <table class="table table-bordered table-sm">
     <thead>
         <tr>
-            <th>ID</th>
+
             <th>名称</th>
-            <th>所属人数</th>
-            <th>action</th>
+            <th class="w-10">組織管理者</th>
+            <th class="w-10">採点者</th>
+            <th class="w-10">クリエイター</th>
+            <th>操作</th>
         </tr>
     </thead>
     <tbody>
         <?php foreach ($organizations as $org): ?>
             <tr>
-                <td class="text-right"><?= $org->id ?></td>
+
                 <td>
                     <?= h($org->path) ?>
                 </td>
-                <td>
-                    <?= $org->count_org_admin ?>/
-                    <?= $org->count_marker ?>/
+                <td class="text-right">
+                    <?= $org->count_org_admin ?>
+                </td>
+                <td class="text-right">
+                    <?= $org->count_marker ?>
+                </td>
+                <td class="text-right">
                     <a href="<?= $this->Url->build(['controller' => 'engineers', 'action' => 'index', 'organization_id' => $org->id, 'clear' => true]) ?>">
                         <?= $org->count_engineer ?>
                     </a>

@@ -7,11 +7,7 @@ $loginUser = $this->request->session()->read('Auth.User');
 $i = 0;
 $searchFormOpen = ( $this->request->getData('skill.1.id') != 0 || $this->request->getData('skill.2.id') != 0);
 ?>
-<?php if (in_array($loginUser->group_id, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN])): ?>
-    <div class="text-right mb-2">
-        <a href="<?= $this->Url->build(['controller' => 'engineers', 'action' => 'add']) ?>" class="btn btn-outline-primary">技術者追加</a>
-    </div>
-<?php endif; ?>
+
 <div class="card mt-2 border-primary">
     <div class="card-body py-2 px-3">
         <?= $this->Form->create(null, ['valueSources' => 'data', 'url' => ['controller' => 'engineers', 'action' => 'index']]); ?>
@@ -43,7 +39,7 @@ $searchFormOpen = ( $this->request->getData('skill.1.id') != 0 || $this->request
 <table class="table table-bordered mt-2">
     <thead>
         <tr class="">
-            <th class="" >ID</th>
+
             <th class="w-15" >名称</th>
             <th class="">評価</th>
             <th class="">操作</th>
@@ -52,7 +48,7 @@ $searchFormOpen = ( $this->request->getData('skill.1.id') != 0 || $this->request
     <tbody>
         <?php foreach ($users as $user): ?>
             <tr>
-                <th><?= h($user->id) ?></th>
+
                 <td><?= h($user->name) ?></th>
                 <td class="p-0 align-middle"><?= $this->Element('skills', ['skills' => (array)$user->skills, 'user_id'=>$user->id ]); ?></th>
                 <td class="py-0 align-middle">

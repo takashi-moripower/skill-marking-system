@@ -31,7 +31,7 @@ $loginUser = $this->request->session()->read('Auth.User');
 <table class="table table-bordered table-sm">
     <thead>
         <tr>
-            <th>ID</th>
+
             <th>管轄組織</th>
             <th>スキル分野</th>
             <th>名称</th>
@@ -41,7 +41,7 @@ $loginUser = $this->request->session()->read('Auth.User');
     <tbody>
         <?php foreach ($skills as $skill): ?>
             <tr>
-                <td class="text-right"><?= $skill->id ?></td>
+
                 <td>
                     <?= Hash::get($skill, 'org_name', '共通') ?>
                 </td>

@@ -34,7 +34,7 @@ class UsersController extends AppController {
      */
     public function index() {
         $this->paginate = [
-            'contain' => ['Groups']
+            'contain' => ['Groups','Organizations']
         ];
 
 

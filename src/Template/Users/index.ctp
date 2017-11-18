@@ -11,6 +11,7 @@ $loginUserId =$this->getLoginUser('id');
 
             <th>名称</th>
             <th>権限</th>
+            <th>組織</th>
             <th>操作</th>
         </tr>
     </thead>
@@ -20,6 +21,11 @@ $loginUserId =$this->getLoginUser('id');
 
                 <th><?= $user->name ?></th>
                 <td><?= $user->group->name ?></td>
+                <td>
+                    <?php foreach($user->organizations as $org): ?>
+                    <?= $org->path_name ?><br/>
+                    <?php endforeach ?>
+                </td>
                 <td class="py-0 align-middle">
                     <?= $this->Html->link('編集', ['controller' => 'users', 'action' => 'edit', $user->id], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>
                     <?php if( $loginUserId == $user->id ): ?>

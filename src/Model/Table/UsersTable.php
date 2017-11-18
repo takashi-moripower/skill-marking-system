@@ -47,11 +47,8 @@ class UsersTable extends Table {
         $this->hasMany('Works', [
             'foreignKey' => 'user_id'
         ]);
-
-        $this->hasMany('MaxSkills', [
-            'className' => 'Skills',
-            'finder' => 'MaxSkills',
-            'foreignKey' => 'user_id',
+        $this->hasMany('Comments', [
+            'foreignKey' => 'user_id'
         ]);
 
         $this->belongsToMany('Organizations');
@@ -238,16 +235,25 @@ class UsersTable extends Table {
         $orgs = TableRegistry::get('Organizations')
                 ->find('user', ['user_id' => $user_id, 'relation' => 'children'])
                 ->select('id');
-        
+
 
         $members = TableRegistry::get('organizations_users')
                 ->find()
                 ->where(['organization_id IN' => $orgs])
                 ->group('user_id')
                 ->select('user_id');
-        
-        $query->where([$this->aliasField('id').' IN' => $members]);
+
+        $query->where([$this->aliasField('id') . ' IN' => $members]);
         return $query;
+    }
+
+    public function beforeDelete($id) {
+        $tableSW = TableRegistry::get('skills_works');
+        $tableSW->query()
+                ->delete()
+                ->where(['user_id'=>$id]);
+        
+        return true;
     }
 
 }

@@ -64,11 +64,12 @@ class UsersController extends AppController {
     public function delete($id = null) {
         $this->request->allowMethod(['post', 'delete']);
         $user = $this->Users->get($id);
-        if ($this->Users->delete($user)) {
+        if ($this->Users->beforeDelete($id) && $this->Users->delete($user)) {
             $this->Flash->success(__('The user has been deleted.'));
         } else {
             $this->Flash->error(__('The user could not be deleted. Please, try again.'));
         }
+
 
         return $this->redirect(['action' => 'index']);
     }
@@ -117,10 +118,11 @@ class UsersController extends AppController {
 
     public function editSelf() {
         $loginUserId = $this->Auth->user('id');
-        $user = $this->Users->get($loginUserId,  ['contain' => ['Groups', 'Organizations']]);
-        
+        $user = $this->Users->get($loginUserId, ['contain' => ['Groups', 'Organizations']]);
+
         $this->UserEdit->edit($user);
-        
+
         return;
     }
+
 }

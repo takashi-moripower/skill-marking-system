@@ -2,7 +2,6 @@
 
 use App\Defines\Defines;
 ?>
-<hr/>
 <h3 class="mt-4">所属している組織の状況</h3>
 <table class="table mt-4" style="width:auto">
     <thead>

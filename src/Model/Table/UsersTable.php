@@ -218,6 +218,20 @@ class UsersTable extends Table {
      * @param type $query
      * @param type $options
      */
+    public function findEditable0($query, $options) {
+        $user_id = Hash::get($options, 'user_id');
+
+        $orgs = TableRegistry::get('Organizations')
+                ->find('user', ['user_id' => $user_id, 'relation' => 'children'])
+                ->select('id');
+
+        $query
+                ->leftJoin('organizations_users', ['organizations_users.user_id =' . $this->aliasField('id')])
+                ->where(['organizations_users.organization_id IN' => $orgs]);
+
+        return $query;
+    }
+
     public function findEditable($query, $options) {
         $user_id = Hash::get($options, 'user_id');
 
@@ -225,10 +239,14 @@ class UsersTable extends Table {
                 ->find('user', ['user_id' => $user_id, 'relation' => 'children'])
                 ->select('id');
         
-        $query
-                ->leftJoin('organizations_users', ['organizations_users.user_id ='.$this->aliasField('id') ])
-                ->where(['organizations_users.organization_id IN' => $orgs]);
 
+        $members = TableRegistry::get('organizations_users')
+                ->find()
+                ->where(['organization_id IN' => $orgs])
+                ->group('user_id')
+                ->select('user_id');
+        
+        $query->where([$this->aliasField('id').' IN' => $members]);
         return $query;
     }
 

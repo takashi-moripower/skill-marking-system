@@ -40,6 +40,7 @@ $loginUserId =$this->getLoginUser('id');
         <?php endforeach; ?>
     </tbody>
 </table>
+<?= $this->Element('paginator') ?>
 
 <?php $this->append('script'); ?>
 <script>

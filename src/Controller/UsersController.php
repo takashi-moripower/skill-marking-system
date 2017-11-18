@@ -14,6 +14,9 @@ use App\Defines\Defines;
  * @method \App\Model\Entity\User[] paginate($object = null, array $settings = [])
  */
 class UsersController extends AppController {
+    public $helpers = [
+        'Paginator' => ['templates' => 'paginator-templates']
+    ];
 
     public function initialize() {
         parent::initialize();

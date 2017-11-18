@@ -13,6 +13,9 @@ use Cake\Event\Event;
  * @method \App\Model\Entity\Junle[] paginate($object = null, array $settings = [])
  */
 class JunlesController extends AppController {
+    public $helpers = [
+        'Paginator' => ['templates' => 'paginator-templates']
+    ];
 
     public function beforeFilter(Event $event) {
         parent::beforeFilter($event);

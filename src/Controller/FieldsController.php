@@ -14,6 +14,9 @@ use Cake\Utility\Hash;
  * @method \App\Model\Entity\Field[] paginate($object = null, array $settings = [])
  */
 class FieldsController extends AppController {
+    public $helpers = [
+        'Paginator' => ['templates' => 'paginator-templates']
+    ];
 
     /**
      * Index method

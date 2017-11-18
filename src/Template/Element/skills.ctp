@@ -5,10 +5,17 @@ use Cake\Utility\Hash;
 if (!isset($cardClass)) {
     $cardClass = null;
 }
+$loginUserId = $this->getLoginUser('id');
 
-$drawFunc = function($skills, $cardClass = null) {
+
+
+$drawFunc = function($skills, $cardClass = null) use($loginUserId){
     foreach ($skills as $skill) {
-        echo '<div class="card d-inline-block m-1 ' . $cardClass . '"><div class="card-body px-1 py-0">';
+        if( $loginUserId == $skill->marker_id ){
+            $cardClass = 'border-dark bg-success text-white';
+        }
+        
+        echo '<div class="card d-inline-block m-1 ' . $cardClass . '" ><div class="card-body px-1 py-0">';
         echo $skill->label . '-' . $skill->level;
         echo '</div></div>';
     }
@@ -41,4 +48,4 @@ $skillsOtherMax = Hash::filter($skillsOther, function($skill) use($skillsOther) 
 
 
 $drawFunc($skillsOtherMax);
-$drawFunc($skillsSelf, 'border-dark bg-light');
+$drawFunc($skillsSelf, 'border-dark bg-warning');

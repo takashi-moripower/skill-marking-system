@@ -67,5 +67,27 @@ class Skill extends Entity {
         $this->level = $level;
         return $level;
     }
-
+    /*
+    protected function _getMarkerId( $value ){
+        if( isset($value)){
+            return $value;
+        }
+        
+        $marker_id = Hash::get($this,'_joinData.user_id',Hash::get($this,'',Hash::get($this,'SkillsWorks.user_id')));
+        
+        $this->marker_id = $marker_id;
+        return $marker_id;
+    }
+*/
+    
+    protected function _getMarkerId($value){
+        if( isset($value)){
+            return $value;
+        }
+        
+        $marker_id = Hash::get($this,'_joinData.user_id',Hash::get($this,'SkillsWorks.user_id'));
+        
+        $this->marker_id = $marker_id;
+        return $marker_id;
+    }
 }

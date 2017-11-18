@@ -251,7 +251,8 @@ class UsersTable extends Table {
         $tableSW = TableRegistry::get('skills_works');
         $tableSW->query()
                 ->delete()
-                ->where(['user_id'=>$id]);
+                ->where(['user_id'=>$id])
+                ->execute();
         
         return true;
     }

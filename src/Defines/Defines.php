@@ -9,7 +9,7 @@ class Defines {
      * 数値設定
      */
 
-    const SKILL_LEVEL_MAX = 5;
+    const SKILL_LEVEL_MAX = 4;
 
     /*
      * グループID

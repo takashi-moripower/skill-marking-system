@@ -13,7 +13,7 @@ use App\Defines\Defines;
             <th>名称</th>
             <th class="w-10">組織管理者</th>
             <th class="w-10">採点者</th>
-            <th class="w-10">クリエイター</th>
+            <th class="w-10 small"><b>クリエイター</b></th>
             <th>操作</th>
         </tr>
     </thead>

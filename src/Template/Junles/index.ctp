@@ -6,7 +6,7 @@ use App\Defines\Defines;
 $loginUser = $this->request->session()->read('Auth.User');
 ?>
 <div class="text-right mb-2">
-    <a href="<?= $this->Url->build(['controller' => 'junles', 'action' => 'add']) ?>" class="btn btn-outline-primary">新規作成</a>
+    <a href="<?= $this->Url->build(['controller' => 'junles', 'action' => 'add']) ?>" class="btn btn-outline-primary">新規追加</a>
 </div>
 <table class="table table-bordered table-sm">
     <thead>

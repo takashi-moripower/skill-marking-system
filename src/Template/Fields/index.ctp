@@ -4,7 +4,7 @@ use Cake\Utility\Hash;
 ?>
 
 <div class="text-right mb-2">
-<?= $this->Html->link('新スキル分野作成', ['controller' => 'fields', 'action' => 'add'], ['class' => 'btn btn-outline-primary']); ?>
+<?= $this->Html->link('新規追加', ['controller' => 'fields', 'action' => 'add'], ['class' => 'btn btn-outline-primary']); ?>
 </div>
 
 <table class="table table-bordered table-sm">

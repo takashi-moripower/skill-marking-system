@@ -3,7 +3,7 @@
 use App\Defines\Defines;
 ?>
 <div class="text-right mb-2">
-    <?= $this->Html->link('新組織作成', ['controller' => 'organizations', 'action' => 'add'], ['class' => 'btn btn-outline-primary']); ?>
+    <?= $this->Html->link('新規追加', ['controller' => 'organizations', 'action' => 'add'], ['class' => 'btn btn-outline-primary']); ?>
 </div>
 
 <table class="table table-bordered table-sm">

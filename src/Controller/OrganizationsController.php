@@ -200,6 +200,7 @@ class OrganizationsController extends AppController {
     public function setMembers($id) {
 
         $loginUserId = $this->Auth->user('id');
+        $loginUserGroup = $this->Auth->user('group_id');
 
         $organization = $this->Organizations->get($id, ['contain' => 'Users']);
 
@@ -210,12 +211,18 @@ class OrganizationsController extends AppController {
             }
         }
 
-        $orgs = $this->Organizations->find('user', ['user_id' => $loginUserId, 'relation' => 'children'])
-                ->select('id');
 
-        $users = $this->Organizations->Users
-                ->find('members', ['organization_id' => $orgs])
-                ->find('list');
+        $users_query = $this->Organizations->Users
+                ->find()
+                ->contain(['Organizations']);
+        if( $loginUserGroup != Defines::GROUP_ADMIN ){
+            $orgs = $this->Organizations->find('user', ['user_id' => $loginUserId, 'relation' => 'children'])
+                ->select('id');
+            $users_query
+                ->find('members', ['organization_id' => $orgs]);
+        }
+        
+        $users = $this->paginate( $users_query );
 
         $this->set(compact('organization', 'users'));
     }

@@ -248,12 +248,16 @@ class UsersTable extends Table {
     }
 
     public function beforeDelete($id) {
-        $tableSW = TableRegistry::get('skills_works');
-        $tableSW->query()
-                ->delete()
-                ->where(['user_id'=>$id])
-                ->execute();
         
+        
+        /*
+        そのユーザーが採点したスキル情報を削除する処理　現在停止中
+          $tableSW = TableRegistry::get('skills_works');
+          $tableSW->query()
+          ->delete()
+          ->where(['user_id'=>$id])
+          ->execute();
+         */
         return true;
     }
 

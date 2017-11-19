@@ -113,7 +113,7 @@ class DebugController extends AppController {
     public function test() {
         $user_id = $this->Auth->user('id');
 
-        $tableU = TableRegistry::get('users');
+        $tableU = TableRegistry::get('Users');
         $tableS = TableRegistry::get('skills');
         $tableW = TableRegistry::get('Works');
         $tableSW = TableRegistry::get('skills_works');
@@ -121,16 +121,10 @@ class DebugController extends AppController {
         $tableF = TableRegistry::get('Fields');
 
 
-        $query = $tableS
-                ->find()
-                ->select(['id', 'name']);
-        $query
-                ->select(['mark' => $query->newExpr()->addCase([
-                    $query->newExpr()->add(['id'=>1]),
-                    1,
-                    'integer'
-                    ])
-        ]);
+        $query = $tableU->find()
+                ->contain(['Organizations'=>['finder'=>'pathName','fields'=>['OrganizationsUsers.user_id']]])
+                ->where([1]);
+        
 
         $data = $query->toArray();
 

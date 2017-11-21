@@ -5793,3 +5793,9 @@ img.thumbnail {
 
 .bg-weak-white {
   background-color: white; }
+
+.bg-skill-owner {
+  background-color: #F8DD55; }
+
+.bg-skill-loginuser {
+  background-color: #AAD88E; }

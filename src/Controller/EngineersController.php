@@ -53,9 +53,9 @@ class EngineersController extends AppController {
                 ->find()
                 ->where(['group_id' => Defines::GROUP_ENGINEER])
                 ->find('search', ['search' => $this->request->data]);
-        
-        if( $loginUserGroup != Defines::GROUP_ADMIN ){
-            $query->find('editable',['user_id'=>$loginUserId]);
+
+        if ($loginUserGroup != Defines::GROUP_ADMIN) {
+            $query->find('editable', ['user_id' => $loginUserId]);
         }
 
         $users = $this->paginate($query);
@@ -84,8 +84,6 @@ class EngineersController extends AppController {
         if ($loginUserGroup == Defines::GROUP_MARKER || $loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
             $organizations->find('user', ['user_id' => $loginUserId, 'relation' => 'children']);
         }
-
-
 
         $this->set(compact('users', 'skills', 'levels', 'organizations'));
     }

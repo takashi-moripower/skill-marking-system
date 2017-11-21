@@ -1,55 +1,48 @@
 <?php
 
+isset($user_id);
+
 use Cake\Utility\Hash;
+use App\Model\Entity\Skill;
 
-if (!isset($cardClass)) {
-    $cardClass = null;
-}
 $loginUserId = $this->getLoginUser('id');
+$ownerId = isset($user_id) ? $user_id : 0;
 
 
-if( !is_array( $skills) ){
-    $skills = $skills->toArray();
-}
-
-
-$drawFunc = function($skills, $cardClass = null) use($loginUserId){
-    foreach ($skills as $skill) {
-        if( $loginUserId == $skill->marker_id ){
-            $cardClass = 'border-dark bg-success text-white';
-        }
-        
-        echo '<div class="card d-inline-block m-1 ' . $cardClass . '" ><div class="card-body px-1 py-0">';
-        echo $skill->label . '-' . $skill->level;
-        echo '</div></div>';
-    }
-};
-
-
-if (!isset($user_id)) {
-    return $drawFunc($skills, $cardClass);
-}
-
-
-$skillsSelf = Hash::filter($skills, function($skill) use($user_id) {
-            $marker_id = Hash::get($skill, '_joinData.user_id', Hash::get($skill, 'marker_id'));
-            return ( $marker_id == $user_id );
+$skillsByOwner = Hash::filter($skills, function($skill) use($ownerId) {
+            $markerId = Skill::getMarkerId($skill);
+            return ($markerId == $ownerId);
         });
-$skillsOther = Hash::filter($skills, function($skill) use($user_id) {
-            $marker_id = Hash::get($skill, '_joinData.user_id', Hash::get($skill, 'marker_id'));
-            return ( $marker_id != $user_id );
+
+$skillsByOther = Hash::filter($skills, function($skill) use( $ownerId) {
+            $markerId = Skill::getMarkerId($skill);
+            return ($markerId != $ownerId);
         });
-$skillsOtherMax = Hash::filter($skillsOther, function($skill) use($skillsOther) {
+
+$skillsByOtherMax = Hash::filter($skillsByOther, function($skill) use($skillsByOther) {
+
             $levels = [0];
-            $levels = array_merge($levels, Hash::extract($skillsOther, "{n}[id={$skill->id}]._joinData.level"));
-            $levels = array_merge($levels, Hash::extract($skillsOther, "{n}[id={$skill->id}].level"));
+            $levels = array_merge($levels, Hash::extract($skillsByOther, "{n}[id={$skill->id}]._joinData.level"));
+            $levels = array_merge($levels, Hash::extract($skillsByOther, "{n}[id={$skill->id}].level"));
 
             $maxLevel = max($levels);
 
             return $maxLevel == Hash::get($skill, '_joinData.level', Hash::get($skill, 'level'));
         });
-        
 
+foreach ($skillsByOtherMax as $skill) {
 
-$drawFunc($skillsOtherMax);
-$drawFunc($skillsSelf, 'border-dark bg-warning');
+    if (Skill::getMarkerId($skill) == $loginUserId) {
+        $class = "bg-skill-loginuser border-dark";
+    } else {
+        $class = "border-dark";
+    }
+    echo $this->Element('skills/skill', compact('skill', 'class'));
+}
+
+foreach ($skillsByOwner as $skill) {
+        $class = "bg-skill-owner border-dark";
+
+        echo $this->Element('skills/skill', compact('skill', 'class'));
+}
+?>

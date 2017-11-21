@@ -13,3 +13,9 @@ img.thumbnail{
 .bg-weak-white{
     background-color:white;
 }
+
+$color-skill-owner:#F8DD55;
+$color-skill-loginuser:#AAD88E;
+
+.bg-skill-owner{     background-color:$color-skill-owner; }
+.bg-skill-loginuser{  background-color:$color-skill-loginuser;   }

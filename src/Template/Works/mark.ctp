@@ -46,10 +46,16 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                     </td>
                 </tr>
             </tbody>
+        </table>
+    </div>
+</div>
+<div class="card mt-1">
+    <div class="card-body p-0">
+        <table class="table mb-0">
             <tbody role="skills">
                 <tr>
-                    <th>作者の採点</th>
-                    <td>
+                    <th class="w-20 border-top-0">作者の採点</th>
+                    <td class=" border-top-0">
                         <?php
                         echo $this->Element('skills', ['skills' => $work->getSkillsBy($work->user_id) ,'user_id'=>$work->user_id]);
                         ?>
@@ -70,7 +76,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                         $skills = $work->getSkillsBy($loginUserId);
                         foreach ($skills as $skill):
                             ?>
-                            <div class="card bg-success text-white border-dark mb-1">
+                            <div class="card bg-skill-loginuser border-dark mb-1">
                                 <div class="card-body p-1">
                                     <?= $this->Form->create(null, ['class' => 'form-inline clearfix form-edit', 'level-old' => $skill->level]); ?>
                                     <?= $this->Form->hidden('user_id', ['value' => $loginUserId]); ?>
@@ -86,7 +92,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                                 </div>
                             </div>
                         <?php endforeach ?>
-                        <div class="card bg-success border-dark text-white mb-1">
+                        <div class="card bg-skill-loginuser border-dark mb-1">
                             <div class="card-body p-1">
                                 <?= $this->Form->create(null, ['class' => 'form-inline clearfix form-add']); ?>
                                 <?= $this->Form->hidden('user_id', ['value' => $loginUserId]); ?>
@@ -102,13 +108,20 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                     </td>
                 </tr>
             </tbody>
+        </table>
+    </div>
+</div>
+<div class="card mt-1">
+    
+<div class="card-boty p-0">
+        <table class="table mb-0">
             <tbody role="comments">
                 <?php foreach ($work->comments as $comment): ?>
                     <?= $this->Element('works/comments', compact('comment', 'loginUserId')) ?>
                 <?php endforeach ?>
                 <tr>
-                    <th>コメント</th>
-                    <td>
+                    <th class="w-20 border-top-0">コメント</th>
+                    <td class="border-top-0">
                         <?= $this->Form->create(null, ['url' => ['controller' => 'comments', 'action' => 'add']]); ?>
                         <div class="row">
                             <div class="col-10">
@@ -121,7 +134,6 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                         </div>
                         <?= $this->Form->hidden('user_id', ['value' => $loginUserId]) ?>
                         <?= $this->Form->hidden('work_id', ['value' => $work->id]) ?>
-                        <?= $this->Form->end() ?>
                     </td>
                 </tr>
             </tbody>
@@ -129,6 +141,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
     </div>
 </div>
 
+                        <?= $this->Form->end() ?>
 
 
 <div class="text-right">

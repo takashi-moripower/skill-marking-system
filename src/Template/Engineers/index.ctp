@@ -56,7 +56,9 @@ $searchFormOpen = ( $this->request->getData('skill.1.id') != 0 || $this->request
             <tr>
 
                 <td><?= h($user->name) ?></th>
-                <td class="p-0 align-middle"><?= $this->Element('skills', ['skills' => (array) $user->skills, 'user_id' => $user->id]); ?></th>
+                <td class="p-0 align-middle">
+                    <?= $this->Element('skills', ['skills' => (array) $user->skills, 'user_id' => $user->id]); ?>
+                </td>
                 <td class="py-0 align-middle">
                     <?= $this->Html->link('情報', ['controller' => 'engineers', 'action' => 'view', $user->id], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>
                     <?php if (in_array($loginUser->group_id, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN])): ?>

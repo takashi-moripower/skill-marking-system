@@ -8,6 +8,10 @@ if (!isset($cardClass)) {
 $loginUserId = $this->getLoginUser('id');
 
 
+if( !is_array( $skills) ){
+    $skills = $skills->toArray();
+}
+
 
 $drawFunc = function($skills, $cardClass = null) use($loginUserId){
     foreach ($skills as $skill) {

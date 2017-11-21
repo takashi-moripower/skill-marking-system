@@ -41,7 +41,13 @@ $searchFormOpen = ( $this->request->getData('skill.1.id') != 0 || $this->request
         <tr class="">
 
             <th class="w-15" >名称</th>
-            <th class="">評価</th>
+            <th class="">
+                スキル評価
+                <button type="button" class="btn btn-outline-primary hint btn-sm py-0" data-toggle="tooltip" data-html="true" title="<div class='text-left'>各スキルで最大レベルのみ表示</div>">
+                    <i class="fa fa-question"></i>
+                </button>
+
+            </th>
             <th class="">操作</th>
         </tr>
     </thead>
@@ -50,7 +56,7 @@ $searchFormOpen = ( $this->request->getData('skill.1.id') != 0 || $this->request
             <tr>
 
                 <td><?= h($user->name) ?></th>
-                <td class="p-0 align-middle"><?= $this->Element('skills', ['skills' => (array)$user->skills, 'user_id'=>$user->id ]); ?></th>
+                <td class="p-0 align-middle"><?= $this->Element('skills', ['skills' => (array) $user->skills, 'user_id' => $user->id]); ?></th>
                 <td class="py-0 align-middle">
                     <?= $this->Html->link('情報', ['controller' => 'engineers', 'action' => 'view', $user->id], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>
                     <?php if (in_array($loginUser->group_id, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN])): ?>
@@ -65,3 +71,10 @@ $searchFormOpen = ( $this->request->getData('skill.1.id') != 0 || $this->request
 
 <?= $this->Element('paginator'); ?>
 
+<?php $this->append('script') ?>
+<script>
+    $(function () {
+        $('.hint').tooltip();
+    });
+</script>
+<?php $this->end() ?>

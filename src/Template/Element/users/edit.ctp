@@ -9,7 +9,7 @@ $loginUserGroup = $this->getLoginUser('group_id');
 <?= $this->Form->create($user) ?>
 <div class="card">
     <div class="card-header">    
-        <?= Hash::get($user, 'group.name', 'ユーザー') ?>情報　<?= (!$this->request->action == 'add') ? '編集' : '新規作成'; ?>
+        <?= Hash::get($user, 'group.name', 'ユーザー') ?>情報　<?= ($user->isNew() ? '新規作成' : '編集'); ?>
     </div>
     <div class="card-body p-0">
         <table class="table mb-0">

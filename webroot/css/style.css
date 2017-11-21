@@ -5790,3 +5790,6 @@ a.text-dark:focus, a.text-dark:hover {
 
 img.thumbnail {
   max-height: 5rem; }
+
+.bg-weak-white {
+  background-color: white; }

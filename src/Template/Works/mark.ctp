@@ -51,7 +51,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                     <th>作者の採点</th>
                     <td>
                         <?php
-                        echo $this->Element('skills', ['skills' => $work->getSkillsBy($work->user_id)]);
+                        echo $this->Element('skills', ['skills' => $work->getSkillsBy($work->user_id) ,'user_id'=>$work->user_id]);
                         ?>
                     </td>
                 </tr>
@@ -70,7 +70,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                         $skills = $work->getSkillsBy($loginUserId);
                         foreach ($skills as $skill):
                             ?>
-                            <div class="card bg-light mb-1">
+                            <div class="card bg-success text-white border-dark mb-1">
                                 <div class="card-body p-1">
                                     <?= $this->Form->create(null, ['class' => 'form-inline clearfix form-edit', 'level-old' => $skill->level]); ?>
                                     <?= $this->Form->hidden('user_id', ['value' => $loginUserId]); ?>
@@ -80,13 +80,13 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                                     <?= $skill->field_path ?> > 
                                     <?= $skill->name ?> - 
                                     <?= $this->Form->select('level', $LEVELS, ['value' => $skill->level, 'class' => 'align-middle']) ?>
-                                    <?= $this->Form->button('修正', ['class' => 'btn btn-outline-dark disabled btn-sm ml-auto', 'disabled' => 'disabled', 'type' => 'submit', 'name' => 'action', 'value' => 'set']) ?>
-                                    <?= $this->Form->button('削除', ['class' => 'btn btn-outline-danger btn-sm ml-1', 'type' => 'submit', 'name' => 'action', 'value' => 'delete']) ?>
+                                    <?= $this->Form->button('修正', ['class' => 'btn btn-outline-dark disabled btn-sm ml-auto bg-weak-white', 'disabled' => 'disabled', 'type' => 'submit', 'name' => 'action', 'value' => 'set']) ?>
+                                    <?= $this->Form->button('削除', ['class' => 'btn btn-outline-danger btn-sm ml-1 bg-weak-white', 'type' => 'submit', 'name' => 'action', 'value' => 'delete']) ?>
                                     <?= $this->Form->end() ?>
                                 </div>
                             </div>
                         <?php endforeach ?>
-                        <div class="card bg-light mb-1">
+                        <div class="card bg-success border-dark text-white mb-1">
                             <div class="card-body p-1">
                                 <?= $this->Form->create(null, ['class' => 'form-inline clearfix form-add']); ?>
                                 <?= $this->Form->hidden('user_id', ['value' => $loginUserId]); ?>
@@ -95,7 +95,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                                 <?= $this->Form->select('skill_id', $skillsToSet, ['value' => 0,'empty'=>true]) ?>
                                 - 
                                 <?= $this->Form->select('level', $LEVELS, ['value' => 1, 'class' => 'align-middle' ]) ?>
-                                <?= $this->Form->button('追加', ['class' => 'btn btn-outline-dark disabled btn-sm ml-auto', 'disabled' => 'disabled', 'type' => 'submit', 'name' => 'action', 'value' => 'set']) ?>
+                                <?= $this->Form->button('追加', ['class' => 'btn btn-outline-dark disabled btn-sm ml-auto bg-weak-white', 'disabled' => 'disabled', 'type' => 'submit', 'name' => 'action', 'value' => 'set']) ?>
                                 <?= $this->Form->end() ?>
                             </div>
                         </div>

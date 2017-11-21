@@ -14,11 +14,14 @@ $loginUser = $this->request->session()->read('Auth.User');
     <div class="card-body py-2 px-3">
         <?= $this->Form->create(null, ['valueSources' => 'data' , 'url'=>['controller'=>'skills', 'action'=>'index']]); ?>
         <div class="container-fluid px-0">
-            <div class="form-group row mt-0 mb-1">
-                <div class="col-9">
-                    <?= $this->Form->select('field_id', $fields, ['class' => 'form-control' , 'empty'=>true]) ?>
+            <div class="form-group row my-0">
+                <div class="col-5 mb-0">
+                    <?= $this->Form->select('organization_id', $organizations, ['class' => 'form-control' , 'empty'=>'管轄組織']) ?>
                 </div>
-                <div class="col-3 text-right">
+                <div class="col-5 mb-0">
+                    <?= $this->Form->select('field_id', $fields, ['class' => 'form-control' , 'empty'=>'スキル分野']) ?>
+                </div>
+                <div class="col-2 mb-0 px-0 text-right">
                     <button class="btn btn-primary mr-2" type="submit"><i class="fa fa-search"></i> 検索</button>
                     <a class="btn btn-outline-primary mr-2" href="<?= $this->Url->build(['controller' => 'skills', 'action' => 'index', 'clear' => 1]) ?>">クリア</a>
                 </div>

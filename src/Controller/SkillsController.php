@@ -69,11 +69,21 @@ class SkillsController extends AppController {
         $fields = $this->Skills->Fields->find('pathName')
                 ->select($this->Skills->Fields->aliasField('id'))
                 ->find('list', ['keyField' => 'id', 'valueField' => 'path'])
-                ->find('usable', ['user_id' => $loginUserId]);
+                ->find('usable', ['user_id' => $loginUserId])
+                ->order('Fields.lft');
+        
+        $organizations = $this->Skills->Fields->Organizations->find('pathName')
+                ->find('list',['keyField'=>'id','valueField'=>'path'])
+                ->select('Organizations.id')
+                ->order('Organizations.lft');
+        
+        if ($loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
+            $organizations->find('user',['user_id'=>$loginUserId,'relation'=>'children']);
+        }
 
 
 
-        $this->set(compact('skills', 'fields'));
+        $this->set(compact('skills', 'fields','organizations'));
         $this->set('_serialize', ['skills']);
         $this->viewBuilder()->layout('bootstrap');
     }

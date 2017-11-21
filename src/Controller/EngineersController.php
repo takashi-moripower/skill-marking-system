@@ -42,7 +42,7 @@ class EngineersController extends AppController {
         $loginUserId = $this->Auth->user('id');
         $loginUserGroup = $this->Auth->user('group_id');
 
-        $tableU = TableRegistry::get('users');
+        $tableU = TableRegistry::get('Users');
         $tableO = TableRegistry::get('Organizations');
 
         $this->paginate = [
@@ -53,6 +53,10 @@ class EngineersController extends AppController {
                 ->find()
                 ->where(['group_id' => Defines::GROUP_ENGINEER])
                 ->find('search', ['search' => $this->request->data]);
+        
+        if( $loginUserGroup != Defines::GROUP_ADMIN ){
+            $query->find('editable',['user_id'=>$loginUserId]);
+        }
 
         $users = $this->paginate($query);
 

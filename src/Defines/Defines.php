@@ -101,8 +101,8 @@ class Defines {
             self::NAV_ID_PROFILE,
         ],
         self::GROUP_MARKER => [
-            self::NAV_ID_WORKS,
             self::NAV_ID_ENGINEERS,
+            self::NAV_ID_WORKS,
             self::NAV_ID_PROFILE,
         ],
         self::GROUP_ENGINEER => [

@@ -9,6 +9,11 @@ $loginUserId = $this->getLoginUser('id');
 $ownerId = isset($user_id) ? $user_id : 0;
 
 
+if (!is_array($skills)) {
+    $skills = $skills->toArray();
+}
+
+
 $skillsByOwner = Hash::filter($skills, function($skill) use($ownerId) {
             $markerId = Skill::getMarkerId($skill);
             return ($markerId == $ownerId);
@@ -41,8 +46,8 @@ foreach ($skillsByOtherMax as $skill) {
 }
 
 foreach ($skillsByOwner as $skill) {
-        $class = "bg-skill-owner border-dark";
+    $class = "bg-skill-owner border-dark";
 
-        echo $this->Element('skills/skill', compact('skill', 'class'));
+    echo $this->Element('skills/skill', compact('skill', 'class'));
 }
 ?>

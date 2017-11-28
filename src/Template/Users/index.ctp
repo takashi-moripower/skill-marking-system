@@ -4,7 +4,7 @@ $loginUserId =$this->getLoginUser('id');
 ?>
 <div class="text-right  mb-2">
     <?= $this->Html->link('新規追加',['action'=>'add'],['class'=>'btn btn-outline-primary']) ?>
-    <?= $this->Html->link('一括追加',['action'=>'add'],['class'=>'btn btn-outline-primary']) ?>
+    <?= $this->Html->link('一括追加',['action'=>'import'],['class'=>'btn btn-outline-primary']) ?>
 </div>
 <table class="table table-bordered table-sm">
     <thead>

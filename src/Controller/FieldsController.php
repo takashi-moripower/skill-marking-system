@@ -34,7 +34,7 @@ class FieldsController extends AppController {
         $query = $this->Fields
                 ->find('editable', ['user_id' => $loginUser->id])
                 ->find('countSkills')
-                ->find('depth')
+                ->find('pathName')
                 ->select($this->Fields)
                 ->select($this->Fields->Organizations)
         ;

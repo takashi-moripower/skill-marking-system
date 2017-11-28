@@ -25,7 +25,7 @@ $loginUserGroup = $this->getLoginUser('group');
                     </td>
                 </tr>
                 <tr>
-                    <th>自己アピール</th>
+                    <th>ユーザ紹介</th>
                     <td colspan="3">
                         <?= $user->note ?>
                     </td>

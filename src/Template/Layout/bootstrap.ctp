@@ -29,7 +29,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 
         <script src="https://use.fontawesome.com/763feb1343.js"></script>
-        <?= $this->Html->css('style.css') ?>
+        <?= $this->Html->css('style.css?v='.$this->TimeStamp->TimeStamp('css/style.css')) ?>
 
         <?= $this->fetch('meta') ?>
         <?= $this->fetch('css') ?>

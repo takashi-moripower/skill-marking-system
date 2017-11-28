@@ -54,6 +54,9 @@ $loginUser = $this->request->session()->read('Auth.User');
                 <td>
                     <?= h($skill->name) ?>
                 </td>
+                <td>
+                    <?= h($skill->note) ?>
+                </td>
                 <td class="pt-0 pb-0 align-middle">
                     <?php if( $skill->editable ): ?>
                         <?= $this->Html->link('編集',['controller' => 'skills', 'action' => 'edit', $skill->id],['class'=>'btn btn-sm btn-outline-primary py-0']); ?>

@@ -41,7 +41,7 @@ class SkillsController extends AppController {
 
 
         $query = $this->Skills->find('fieldPath')
-                ->select(['Skills.id', 'Skills.name', 'Fields.organization_id'])
+                ->select(['Skills.id', 'Skills.name' , 'Skills.note' , 'Fields.organization_id'])
                 ->select(['org_name' => $this->Skills->Fields->Organizations->aliasField('name')])
                 ->find('search', ['search' => $this->request->data]);
 

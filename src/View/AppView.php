@@ -37,7 +37,8 @@ class AppView extends View {
      * @return void
      */
     public function initialize() {
-        
+        parent::initialize();
+        $this->loadHelper('TimeStamp');
     }
 
     public function bodyClass() {
@@ -49,17 +50,17 @@ class AppView extends View {
 
     public function getLoginUser($key = null, $default = null) {
         if (isset($key)) {
-            $key = 'Auth.User.'.$key;
-        }else{
+            $key = 'Auth.User.' . $key;
+        } else {
             $key = 'Auth.User';
         }
 
         $result = $this->request->session()->read($key);
-        
-        if( $result === null ){
+
+        if ($result === null) {
             return $default;
         }
-        
+
         return $result;
     }
 

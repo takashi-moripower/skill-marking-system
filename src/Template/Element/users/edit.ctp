@@ -54,7 +54,7 @@ $loginUserGroup = $this->getLoginUser('group_id');
                     </td>
                 </tr>
                 <tr>
-                    <th>自己アピール</th>
+                    <th>ユーザ紹介</th>
                     <td><?= $this->Form->control('note', ['label' => false, 'class' => 'w-100']) ?></td>
                 </tr>
                 <tr>

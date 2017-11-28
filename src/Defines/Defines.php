@@ -112,5 +112,10 @@ class Defines {
 //            self::NAV_ID_ENG_MARKS
         ],
     ];
+    
+    const ENCODING = [
+        'SJIS-win',
+        'UTF-8',
+    ];
 
 }

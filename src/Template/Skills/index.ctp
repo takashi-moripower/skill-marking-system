@@ -38,7 +38,8 @@ $loginUser = $this->request->session()->read('Auth.User');
             <th>管轄組織</th>
             <th>スキル分野</th>
             <th>名称</th>
-            <th>action</th>
+            <th>説明</th>
+            <th>操作</th>
         </tr>
     </thead>
     <tbody>

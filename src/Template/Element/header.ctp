@@ -17,7 +17,8 @@ $loginUser = $this->request->session()->read('Auth.User');
                                 <?= $loginUser->name ?>(<?= $loginUser->Groups['name'] ?>)
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="<?= $this->Url->Build(['controller' => 'Users', 'action' => 'logout']) ?>"><i class="fa fa-sign-out"></i>logout</a>
+                                <a class="dropdown-item" href="<?= $this->Url->Build(['controller' => 'Users', 'action' => 'editSelf']) ?>"><i class="fa fa-user"></i> profile</a>
+                                <a class="dropdown-item" href="<?= $this->Url->Build(['controller' => 'Users', 'action' => 'logout']) ?>"><i class="fa fa-sign-out"></i> logout</a>
                             </div>
                         </div>
                     <?php else: ?>

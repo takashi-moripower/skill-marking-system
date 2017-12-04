@@ -101,7 +101,6 @@ class Defines {
             self::NAV_ID_SKILLS,
             self::NAV_ID_ENGINEERS,
             self::NAV_ID_WORKS,
-            self::NAV_ID_PROFILE,
             
             self::NAV_ID_GROUPS,
             self::NAV_ID_JUNLES,
@@ -114,17 +113,14 @@ class Defines {
             self::NAV_ID_SKILLS,
             self::NAV_ID_ENGINEERS,
             self::NAV_ID_WORKS,
-            self::NAV_ID_PROFILE,
         ],
         self::GROUP_MARKER => [
             self::NAV_ID_ENGINEERS,
             self::NAV_ID_WORKS,
-            self::NAV_ID_PROFILE,
         ],
         self::GROUP_ENGINEER => [
             self::NAV_ID_ENG_WORKS,
             self::NAV_ID_ENG_NEW_WORK,
-            self::NAV_ID_ENG_PROFILE,
 //            self::NAV_ID_ENG_MARKS
         ],
     ];

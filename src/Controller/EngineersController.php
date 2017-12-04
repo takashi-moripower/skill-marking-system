@@ -23,6 +23,8 @@ class EngineersController extends AppController {
 
     public function initialize() {
         parent::initialize();
+        
+        
         $this->loadComponent('SearchSession', []);
         $this->loadComponent('UserEdit');
         $this->viewBuilder()->layout('bootstrap');
@@ -51,6 +53,7 @@ class EngineersController extends AppController {
 
         $query = $tableU
                 ->find()
+                ->contain(['Engineers'])
                 ->where(['group_id' => Defines::GROUP_ENGINEER])
                 ->find('search', ['search' => $this->request->data]);
 
@@ -63,14 +66,16 @@ class EngineersController extends AppController {
 
         //検索フォーム用
         $skills = [];
-        $skillQuery = $tableU->works->skills->find('usable', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup])
-                ->contain('Fields')
-                ->order(['Fields.lft' => 'ASC', 'Skills.id' => 'ASC']);
-        foreach ($skillQuery as $skill) {
-            $skills[$skill->id] = $skill->path . " > " . $skill->name;
+        $skillsQuery = $tableU->works->skills->find('usable', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup])
+                ->find('fieldPath')
+                ->select('Skills.name')
+                ->select('Skills.id')
+                ->toArray();
+        
+        foreach( $skillsQuery as $skill ){
+            $skills[ $skill->id ] = $skill->field_path . " > ". $skill->name;
         }
 
-        $skills = [0 => '-'] + $skills;
 
         $levels = array_combine(range(1, Defines::SKILL_LEVEL_MAX), range(1, Defines::SKILL_LEVEL_MAX));
 

@@ -4,6 +4,10 @@ use App\Defines\Defines;
 use Cake\Utility\Hash;
 
 $loginUserGroup = $this->getLoginUser('group_id');
+
+$this->Form->templates([
+    'dateWidget' => '{{year}} 年 {{month}} 月 {{day}} 日 ',
+]);
 ?>
 
 <?= $this->Form->create($user) ?>
@@ -37,7 +41,7 @@ $loginUserGroup = $this->getLoginUser('group_id');
                     <td>
                         <?php
                         if (in_array($loginUserGroup, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN])) {
-                            echo $this->Form->control('organizations._ids', ['options' => $organizations, 'empty' => false, 'label' => false, 'multiple' => true,]);
+                            echo $this->Form->control('organizations._ids', ['options' => $organizations, 'empty' => false, 'label' => false, 'multiple' => 'checkbox',]);
 
                             $org_set = Hash::extract($user, 'organizations.{n}.id');
                             $org_editable = array_keys($organizations->toArray());
@@ -57,6 +61,20 @@ $loginUserGroup = $this->getLoginUser('group_id');
                     <th>ユーザ紹介</th>
                     <td><?= $this->Form->control('note', ['label' => false, 'class' => 'w-100']) ?></td>
                 </tr>
+            </tbody>
+            <?php if ($user->group_id == Defines::GROUP_ENGINEER): ?>
+                <tbody>
+                    <tr>
+                        <th>性別</th>
+                        <td><?= $this->Form->select('engineer.sex', Defines::USERS_SEX, ['label' => false]) ?></td>
+                    </tr>
+                    <tr>
+                        <th>誕生日</th>
+                        <td><?= $this->Form->control('engineer.birthday', ['label' => false,'monthNames'=>false,'minYear'=>1950]) ?></td>
+                    </tr>
+                </tbody>
+            <?php endif; ?>
+            <tfoot>
                 <tr>
                     <td colspan="2">
                         <div  class="text-right" >
@@ -64,7 +82,7 @@ $loginUserGroup = $this->getLoginUser('group_id');
                         </div>
                     </td>
                 </tr>
-            </tbody>
+            </tfoot>
         </table>
     </div>
 </div>

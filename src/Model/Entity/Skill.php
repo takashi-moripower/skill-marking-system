@@ -43,8 +43,10 @@ class Skill extends Entity {
                 ->where(['Skills.id' => $this->id])
                 ->first();
 
-        $this->field_path = $skill->field_path;
-        return $skill->field_path;
+        $path = isset( $skill->field_path ) ? $skill->field_path : '';
+        
+        $this->field_path = $path;
+        return $path;
     }
 
     protected function _getlabel($value) {

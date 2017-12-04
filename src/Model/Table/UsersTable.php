@@ -50,6 +50,7 @@ class UsersTable extends Table {
         $this->hasMany('Comments', [
             'foreignKey' => 'user_id'
         ]);
+        $this->hasOne('Engineers');
 
         $this->belongsToMany('Organizations');
     }
@@ -149,12 +150,28 @@ class UsersTable extends Table {
         /** @var \Search\Manager $searchManager */
         $searchManager = $this->behaviors()->Search->searchManager();
         $searchManager
+                ->finder('sex')
+                ->finder('age')
                 ->finder('skill', ['finder' => 'Skills'])
                 ->finder('organization_id', ['finder' => 'RootOrganization'])
         ;
 
 
         return $searchManager;
+    }
+    
+    public function findAge($query , $options){
+        $age_max = Hash::get($options,$age_max);
+        $age_min = Hash::get($options,$age_min);
+    }
+
+    public function findSex($query, $options) {
+        if (empty($options['sex'])) {
+            return $query;
+        }
+        
+        $query->where(['Engineers.sex' => $options['sex']]);
+        return $query;
     }
 
     public function findSkills($query, $options) {
@@ -215,7 +232,6 @@ class UsersTable extends Table {
      * @param type $query
      * @param type $options
      */
-
     public function findEditable($query, $options) {
         $user_id = Hash::get($options, 'user_id');
 
@@ -235,10 +251,10 @@ class UsersTable extends Table {
     }
 
     public function beforeDelete($id) {
-        
-        
+
+
         /*
-        そのユーザーが採点したスキル情報を削除する処理　現在停止中
+          そのユーザーが採点したスキル情報を削除する処理　現在停止中
           $tableSW = TableRegistry::get('skills_works');
           $tableSW->query()
           ->delete()

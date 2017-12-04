@@ -3,7 +3,7 @@
         Skill <?= $i+1 ?>
     </div>
     <div class="col-6 p-0">
-        <?= $this->Form->select("skill[{$i}][id]", $skills, ['class' => 'form-control', 'value' => $this->request->getData("skill.{$i}.id")]) ?>
+        <?= $this->Form->select("skill[{$i}][id]", $skills, ['class' => 'form-control', 'value' => $this->request->getData("skill.{$i}.id"),'empty'=>true]) ?>
     </div>
     <div class="col-4 pt-0 pb-0 pl-3">
         <?php foreach ($levels as $level): ?>

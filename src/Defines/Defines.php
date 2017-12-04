@@ -4,6 +4,7 @@ namespace App\Defines;
 
 class Defines {
     const TITLE = "スキル認定システム";
+    const TITLE2 = "人材マッチングシステム";
     
     /*
      * 数値設定
@@ -29,6 +30,21 @@ class Defines {
         self::MARK_STATE_ALL => 'すべて',
         self::MARK_STATE_MARKED => '採点済',
         self::MARK_STATE_UNMARKED => '未採点'
+    ];
+    
+    const SEX_MALE = 1;
+    const SEX_FEMALE = 2;
+    const SEX_INDIFFARENCE = 0;
+    
+    const CONDITIONS_SEX = [
+        self::SEX_INDIFFARENCE => '性別不問',
+        self::SEX_MALE => '男性のみ',
+        self::SEX_FEMALE => '女性のみ'
+    ];
+    
+    const USERS_SEX = [
+        self::SEX_MALE =>'男性',
+        self::SEX_FEMALE =>'女性'
     ];
 
     /*
@@ -71,7 +87,7 @@ class Defines {
         self::NAV_ID_JUNLES => ['label' => 'ジャンル', 'url' => ['controller' => 'Junles', 'action' => 'index']],
         self::NAV_ID_WORKS => ['label' => '作品一覧', 'url' => ['controller' => 'Works', 'action' => 'index']],
         self::NAV_ID_PROFILE => ['label' => 'プロファイル', 'url' => ['controller' => 'Users', 'action' => 'editSelf']],
-        self::NAV_ID_ENGINEERS => ['label' => 'クリエイター', 'url' => ['controller' => 'Engineers', 'action' => 'index']],
+        self::NAV_ID_ENGINEERS => ['label' => '学生一覧', 'url' => ['controller' => 'Engineers', 'action' => 'index']],
         self::NAV_ID_ENG_WORKS => ['label' => '作品一覧', 'url' => ['controller' => 'Works', 'action' => 'index']],
         self::NAV_ID_ENG_NEW_WORK => ['label' => '新規投稿', 'url' => ['controller' => 'Works', 'action' => 'add']],
         self::NAV_ID_ENG_MARKS => ['label' => '評価', 'url' => ['controller' => 'home', 'action' => 'index']],
@@ -79,12 +95,12 @@ class Defines {
     ];
     const NAV_GROUP_TEMPLATES = [
         self::GROUP_ADMIN => [
-            self::NAV_ID_ENGINEERS,
-            self::NAV_ID_WORKS,
-            self::NAV_ID_FIELDS,
-            self::NAV_ID_SKILLS,
             self::NAV_ID_ORGANIZATIONS,
             self::NAV_ID_USERS,
+            self::NAV_ID_FIELDS,
+            self::NAV_ID_SKILLS,
+            self::NAV_ID_ENGINEERS,
+            self::NAV_ID_WORKS,
             self::NAV_ID_PROFILE,
             
             self::NAV_ID_GROUPS,
@@ -92,12 +108,12 @@ class Defines {
         ],
         self::GROUP_ORGANIZATION_ADMIN => [
 
-            self::NAV_ID_ENGINEERS,
-            self::NAV_ID_WORKS,
-            self::NAV_ID_FIELDS,
-            self::NAV_ID_SKILLS,
             self::NAV_ID_ORGANIZATIONS,
             self::NAV_ID_USERS,
+            self::NAV_ID_FIELDS,
+            self::NAV_ID_SKILLS,
+            self::NAV_ID_ENGINEERS,
+            self::NAV_ID_WORKS,
             self::NAV_ID_PROFILE,
         ],
         self::GROUP_MARKER => [

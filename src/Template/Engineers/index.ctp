@@ -14,7 +14,7 @@ $searchFormOpen = ( $this->request->getData('skill.1.id') != 0 || $this->request
         <div class="container-fluid px-0">
             <div class="form-group row mt-0 mb-1">
                 <div class="col-9">
-                    <?= $this->Form->select('organization_id', $organizations, ['class' => 'form-control']) ?>
+                    <?= $this->Form->select('organization_id', $organizations, ['class' => 'form-control', 'empty' => true]) ?>
                 </div>
                 <div class="col-3 text-right">
                     <button class="btn btn-primary mr-2" type="submit"><i class="fa fa-search"></i> 検索</button>
@@ -25,6 +25,17 @@ $searchFormOpen = ( $this->request->getData('skill.1.id') != 0 || $this->request
             <div id="searchExtends" class="collapse <?= $searchFormOpen ? 'show' : '' ?>" >
                 <div class="form-group row my-0">
                     <div class="col-9">
+                        <div class='row mb-1'>
+                            <div class="col-2">年齢</div>
+                            <div class="col-6 p-0">
+                                <?= $this->Form->text('age_max', ['class' => 'text-right d-inline', 'placeHolder' => '年齢:上限' ,'style'=>'width:6rem']) ?> ～
+                                <?= $this->Form->text('age_min', ['class' => 'text-right d-inline', 'placeHolder' => '年齢:下限' ,'style'=>'width:6rem']) ?>
+                            </div>
+                        </div>
+                        <div class='row mb-1'>
+                            <div class="col-2">性別</div>
+                            <div class="col-2 p-0"><?= $this->Form->select('sex', Defines::CONDITIONS_SEX) ?></div>
+                        </div>
                         <?= $this->Element('engineers/skillform', ['i' => 0]) ?>
                         <?= $this->Element('engineers/skillform', ['i' => 1]) ?>
                         <?= $this->Element('engineers/skillform', ['i' => 2]) ?>
@@ -64,7 +75,6 @@ $searchFormOpen = ( $this->request->getData('skill.1.id') != 0 || $this->request
                     <?php if (in_array($loginUser->group_id, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN])): ?>
                         <?= $this->Html->link('編集', ['controller' => 'engineers', 'action' => 'edit', $user->id], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>
                     <?php endif; ?>
-                    <?= $this->Html->link('評価', ['controller' => 'engineers', 'action' => 'view', $user->id], ['class' => 'btn btn-sm btn-secondary py-0 disabled']); ?>
                 </td>
             </tr>
         <?php endforeach; ?>

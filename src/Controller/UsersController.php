@@ -7,6 +7,7 @@ use App\Defines\Defines;
 use Cake\ORM\TableRegistry;
 use Cake\Event\Event;
 use \SplFileObject;
+use Cake\Utility\Hash;
 
 /**
  * Users Controller
@@ -109,21 +110,27 @@ class UsersController extends AppController {
     }
 
     public function edit($id) {
-        $user = $this->Users->get($id, ['contain' => ['Groups', 'Organizations']]);
+        $user = $this->Users->get($id, ['contain' => ['Groups', 'Organizations', 'Engineers']]);
         $this->UserEdit->edit($user);
 
         return;
     }
 
     public function add() {
+        $loginUserId = $this->Auth->user('id');
+        $organizations = $this->Users->Organizations->find('user', ['user_id' => $loginUserId, 'relation' => 'self'])
+                ->toArray();
+
         $user = $this->Users->newEntity();
+        $user->organizations = $organizations;
+
         $this->UserEdit->edit($user);
         return;
     }
 
     public function editSelf() {
         $loginUserId = $this->Auth->user('id');
-        $user = $this->Users->get($loginUserId, ['contain' => ['Groups', 'Organizations']]);
+        $user = $this->Users->get($loginUserId, ['contain' => ['Groups', 'Organizations', 'Engineers']]);
 
         $this->UserEdit->edit($user);
 

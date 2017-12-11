@@ -5,7 +5,7 @@ use Cake\Utility\Hash;
 
 $mode = $this->request->session()->read('App.Mode');
 $this->start('title');
-echo Hash::get(Defines::TITLES,$mode , NO_TITLE);
+echo Hash::get(Defines::TITLES,$mode , Defines::TITLES[Defines::MODE_MARKING]);
 $this->end();
 
 if ($mode == Defines::MODE_MATCHING) {

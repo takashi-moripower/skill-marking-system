@@ -1,10 +1,11 @@
 <?php
 
 use App\Defines\Defines;
+use Cake\Utility\Hash;
 
 $mode = $this->request->session()->read('App.Mode');
 $this->start('title');
-echo Defines::TITLES[$mode];
+echo Hash::get(Defines::TITLES,$mode , NO_TITLE);
 $this->end();
 
 if ($mode == Defines::MODE_MATCHING) {

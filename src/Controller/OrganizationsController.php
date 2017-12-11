@@ -22,7 +22,7 @@ class OrganizationsController extends AppController {
 
     public function initialize() {
         parent::initialize();
-        $this->viewBuilder()->layout('bootstrap');
+       
     }
 
     /**
@@ -61,7 +61,7 @@ class OrganizationsController extends AppController {
 
         $this->set(compact('organizations'));
         $this->set('_serialize', ['organizations']);
-        $this->viewBuilder()->layout('bootstrap');
+       
     }
 
     /**
@@ -111,7 +111,7 @@ class OrganizationsController extends AppController {
 
         $this->set(compact('organization', 'parentOrganizations'));
         $this->set('_serialize', ['organization']);
-        $this->viewBuilder()->layout('bootstrap');
+       
         $this->render('edit');
     }
 
@@ -159,7 +159,7 @@ class OrganizationsController extends AppController {
 
         $this->set(compact('organization', 'parentOrganizations', 'users'));
         $this->set('_serialize', ['organization']);
-        $this->viewBuilder()->layout('bootstrap');
+       
     }
 
     /**

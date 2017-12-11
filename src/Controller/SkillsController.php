@@ -85,7 +85,7 @@ class SkillsController extends AppController {
 
         $this->set(compact('skills', 'fields','organizations'));
         $this->set('_serialize', ['skills']);
-        $this->viewBuilder()->layout('bootstrap');
+       
     }
 
     /**
@@ -126,7 +126,7 @@ class SkillsController extends AppController {
 
         $this->set(compact('skill', 'fields'));
         $this->set('_serialize', ['skill']);
-        $this->viewBuilder()->layout('bootstrap');
+       
         $this->render('edit');
     }
 
@@ -155,7 +155,7 @@ class SkillsController extends AppController {
 
         $this->set(compact('skill', 'fields'));
         $this->set('_serialize', ['skill']);
-        $this->viewBuilder()->layout('bootstrap');
+       
     }
 
     protected function _getFieldsForEdit($user_id) {

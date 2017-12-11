@@ -27,7 +27,6 @@ class EngineersController extends AppController {
         
         $this->loadComponent('SearchSession', []);
         $this->loadComponent('UserEdit');
-        $this->viewBuilder()->layout('bootstrap');
     }
 
     public function beforeFilter(Event $event) {

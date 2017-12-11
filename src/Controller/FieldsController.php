@@ -43,7 +43,7 @@ class FieldsController extends AppController {
 
         $this->set(compact('fields'));
         $this->set('_serialize', ['fields']);
-        $this->viewBuilder()->layout('bootstrap');
+       
     }
 
     /**
@@ -129,7 +129,7 @@ class FieldsController extends AppController {
 
         $this->set(compact('field', 'organizations', 'parentFields'));
         $this->set('_serialize', ['field']);
-        $this->viewBuilder()->layout('bootstrap');
+       
         $this->render('edit');
     }
 

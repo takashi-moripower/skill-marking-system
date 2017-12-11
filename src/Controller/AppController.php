@@ -58,6 +58,8 @@ class AppController extends Controller {
                 ]
             ]
         ]);
+        
+        $this->viewBuilder()->setLayout('bootstrap');
     }
 
     /**

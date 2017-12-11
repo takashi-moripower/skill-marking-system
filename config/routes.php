@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Routes configuration
  *
@@ -17,7 +18,6 @@
  * @link          https://cakephp.org CakePHP(tm) Project
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-
 use Cake\Core\Plugin;
 use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
@@ -51,7 +51,7 @@ Router::scope('/', function (RouteBuilder $routes) {
      */
 //    $routes->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
     $routes->connect('/', ['controller' => 'Home', 'action' => 'index']);
-
+    $routes->connect('/matching/login', ['controller' => 'Users', 'action' => 'loginMatching']);
     /**
      * ...and connect the rest of 'Pages' controller's URLs.
      */

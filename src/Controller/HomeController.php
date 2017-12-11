@@ -20,7 +20,6 @@ class HomeController extends AppController {
     public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
         $this->Auth->allow(['login', 'add']);
-        $this->viewBuilder()->layout('bootstrap');
     }
 
     public function index() {

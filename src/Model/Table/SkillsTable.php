@@ -243,4 +243,18 @@ class SkillsTable extends Table {
         
         return $query->where([$this->aliasField('field_id').' IN' => $fields]);
     }
+    
+    
+    public static function toPathList( $skills ){
+        $skills->find('fieldPath')
+                ->contain(['Fields' => ['fields'=>[]]])
+                ->order('Fields.lft')
+                ->select(['id', 'name']);
+        
+        $list = [];
+        foreach( $skills as $skill ){
+            $list[$skill->id] = $skill->label;
+        }
+        return $list;
+    }
 }

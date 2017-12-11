@@ -73,7 +73,7 @@ class WorksController extends AppController {
                         ->toArray();
 
         $this->set(compact('works', 'organizations', 'junles'));
-        $this->viewBuilder()->layout('bootstrap');
+       
     }
 
     /**
@@ -95,7 +95,7 @@ class WorksController extends AppController {
 
         $this->set('work', $work);
         $this->set('_serialize', ['work']);
-        $this->viewBuilder()->layout('bootstrap');
+       
     }
 
     /**
@@ -159,22 +159,16 @@ class WorksController extends AppController {
 
         $skillsUsed = Hash::extract($work->getSkillsBy($loginUserId)->toArray(), '{n}.id');
 
-        $skillsUnUsed = $tableS->find('fieldPath')
-                ->contain(['Fields' => ['fields'=>[]]])
-                ->order('Fields.lft')
-                ->select(['id', 'name']);
+        $skillsUnUsed = $tableS->find('usable',['user_id'=>$loginUserId]);
+        
         if (!empty($skillsUsed)) {
             $skillsUnUsed
                     ->where([$tableS->aliasField('id') . ' not IN ' => $skillsUsed]);
         }
 
-        $skillsToSet = [];
-        foreach ($skillsUnUsed as $skill) {
-            $skillsToSet[$skill->id] = $skill->label;
-        }
-
+        $skillsToSet = \App\Model\Table\SkillsTable::toPathList($skillsUnUsed);
         $this->set(compact('work', 'skillsToSet'));
-        $this->viewBuilder()->layout('bootstrap');
+       
     }
 
     protected function _postMark($workId) {
@@ -238,7 +232,7 @@ class WorksController extends AppController {
         }
 
         $this->set(compact('work', 'junles'));
-        $this->viewBuilder()->layout('bootstrap');
+       
     }
 
     public function add() {
@@ -267,7 +261,7 @@ class WorksController extends AppController {
         }
 
         $this->set(compact('work', 'junles'));
-        $this->viewBuilder()->layout('bootstrap');
+       
         $this->render('edit');
     }
 

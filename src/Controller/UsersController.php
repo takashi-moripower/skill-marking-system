@@ -25,13 +25,11 @@ class UsersController extends AppController {
     public function initialize() {
         parent::initialize();
         $this->loadComponent('UserEdit');
-
-        $this->viewBuilder()->layout('bootstrap');
     }
 
     public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
-        $this->Auth->allow(['login', 'add']);
+        $this->Auth->allow(['login' , 'loginMatching']);
     }
 
     /**
@@ -80,10 +78,22 @@ class UsersController extends AppController {
         return $this->redirect(['action' => 'index']);
     }
 
-    public function login() {
-        $this->viewBuilder()->layout('bootstrap');
-
+    public function login(){
+        $this->_login( Defines::MODE_MARKING );
+    }
+    
+    public function loginMatching(){
+        $this->viewBuilder()->setTemplate('login');
+        $this->_login( Defines::MODE_MATCHING );
+    }
+    
+    public function _login($mode) {
         $this->Auth->logout();
+        
+        $session = $this->request->Session();
+        $session->clear();
+        $session->write('App.Mode',$mode);
+        
         if (!$this->request->is('post')) {
             return;
         }
@@ -98,8 +108,8 @@ class UsersController extends AppController {
         return $this->_setLoginUser($user['id']);
     }
 
-    protected function _setLoginUser($user_id) {
 
+    protected function _setLoginUser($user_id) {
         $user = $this->Users->getSessionData($user_id);
         $this->Auth->setUser($user);
         $this->redirect(['controller' => 'home', 'action' => 'index']);

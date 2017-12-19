@@ -1,13 +1,27 @@
 <?php
 
 use App\Defines\Defines;
+use App\Model\Table\SkillsTable;
 
-$this->Form->templates([
-    'checkboxWrapper' => '<div class="checkbox d-inline-block px-2">{{label}}</div>',
-]);
+$skillDefault = (object) [
+            'id' => 0,
+            'name' => '',
+            '_joinData' => (object) ['levels' => 0]
+];
+
+$this->Form->templates(Defines::FORM_TEMPLATE_INLINE_CHECKBOX);
+
+$option_types = [
+    'スキル',
+    '開催地',
+    '期間',
+];
+
+$location_valid = isset($condition->location);
+$date_valid = isset($condition->dateStart);
 ?>
 
-<?= $this->Form->create($condition) ?>
+<?= $this->Form->create($condition, ['name' => 'main']) ?>
 
 <div class="card">
     <div class="card-header">
@@ -24,51 +38,232 @@ $this->Form->templates([
                     <th>説明</th>
                     <td><?= $this->Form->control('note', ['label' => false, 'class' => 'w-100']); ?></td>
                 </tr>
+            </tbody>
+            <tbody class="option<?= $location_valid ? '' : ' d-none' ?>" role="location" option_type="1">
                 <tr>
-                    <th>スキル</th>
+                    <th>開催地</th>
                     <td>
-                        <?= $this->Form->select('skill_id', $skills, ['empty' => true]) ?><?= $this->Form->select('skill_levels', range(1, Defines::SKILL_LEVEL_MAX), ['multiple' => 'checkbox']) ?>
-                        <div class='float-right'>
-                            <button class='btn btn-sm btn-outline-primary' type='button' name='add_skill'>追加</buttoN>
+                        <div class="row">
+
+                            <div class="col-10">
+                                <?= $this->Form->input('location', ['type' => 'text', 'label' => false, 'class' => 'w-100']); ?>
+                            </div>
+                            <div class="col-2 text-right">
+                                <button type="button" name="remove_option" class="btn btn-sm btn-outline-danger">削除</button>
+                            </div>
                         </div>
                     </td>
                 </tr>
             </tbody>
-            <tbody name='skill_template'>
+            <tbody class="option<?= $date_valid ? '' : ' d-none' ?>" role="date" option_type="2">
                 <tr>
-                    <th>スキル</th>
-                    <td></td>
+                    <th>期間</th>
+                    <td>
+                        <div class="row">
+
+                            <div class="col-10">
+                                <?= $this->Form->input('date_start', ['type' => 'date', 'label' => false, 'monthNames' => false, 'templates' => Defines::FORM_TEMPLATE_DATE + Defines::FORM_TEMPLATE_INLINE_CONTAINER]); ?> ～ 
+                                <?= $this->Form->input('date_end', ['type' => 'date', 'label' => false, 'monthNames' => false, 'templates' => Defines::FORM_TEMPLATE_DATE + Defines::FORM_TEMPLATE_INLINE_CONTAINER]); ?>
+                            </div>
+                            <div class="col-2 text-right">
+                                <button type="button" name="remove_option" class="btn btn-sm btn-outline-danger">削除</button>
+                            </div>
+                        </div>
+
+                    </td>
                 </tr>
-                
+            </tbody>
+            <tbody class="skills">
+                <?php foreach ((array) $condition->skills as $skill): ?>
+                    <?= $this->Element('conditions/skill_row', ['skill' => $skill]); ?>
+                <?php endforeach ?>
+            </tbody>
+            <tbody class="new-skill">
+                <tr>
+                    <th>条件を追加</th>
+                    <td>
+                        <div class="text-right">
+                            <?= $this->Form->select('option_type', $option_types) ?>
+                            <button class='btn btn-sm btn-outline-primary' type='button' name='add_option'>条件を追加</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody  class="d-none skill_template">
+                <?= $this->Element('conditions/skill_row', ['skill' => $skillDefault]); ?>
             </tbody>
         </table>
     </div>
 </div>
 
 <div  class="text-right mt-2" >
-    <?= $this->Form->button('保存', ['class' => 'btn btn-primary ml-1']) ?>
+    <?= $this->Form->button('保存', ['class' => 'btn btn-primary ml-1', 'type' => 'button', 'name' => 'save']) ?>
     <?= $this->Html->link('一覧に戻る', ['controller' => 'conditions', 'action' => 'index'], ['class' => 'btn btn-secondary  ml-1']) ?>
 </div>
 <?= $this->Form->end ?>
 
+
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">条件を追加</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <?= $this->Form->select('skill_id', $skills, ['empty' => true, 'class' => 'w-100']) ?>
+                </div>
+                <div class="text-right mt-2">
+                    <?= $this->Form->select('skill_levels', SkillsTable::getSkillLevels(), ['multiple' => 'checkbox']) ?>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" name="add_skill">スキル追加</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+            </div>
+        </div>
+    </div>
+</div>
 <?php $this->append('script'); ?>
 <script>
-    
-    var SKILLS = JSON.parse('<?= json_encode( $skills ) ?>');
+
+    var SKILLS = JSON.parse('<?= json_encode($skills) ?>');
+
     $(function () {
 
-        $(document).on('change', 'select[name="skill_id"]', OnChangeSkill);
+        $(document).on('change', 'select[name="skill_id"]', onChangeSkill);
+        $(document).on('change', 'input[name="skill_levels[]"]', onChangeSkill);
+        $(document).on('click', 'button[name="add_skill"]', onAddSkill);
+        $(document).on('click', 'button[name="delete_skill"]', onDeleteSkill);
+        $(document).on('click', 'button[name="save"]', onSave);
+        $(document).on('click', 'button[name="add_option"]', onAddOption);
+        $(document).on('click', 'button[name="remove_option"]', onRemoveOption );
 
-        OnChangeSkill();
+        onChangeSkill();
+        updateSkillSelector();
+        updateConditionSelector();
         
-        function OnChangeSkill(event) {
-            
-            console.log( 'on change skill');
-            if ($('select[name="skill_id"]').val() == 0) {
-                $('button[name="add_skill"]').attr('disabled', 'disabled')
-            }else{
-                $('button[name="add_skill"]').removeAttr('disabled')
+        function onRemoveOption(event){
+            $(event.currentTarget).parents('tbody.option').addClass('d-none');
+        }
+
+        function onAddOption(event) {
+            var type = $('select[name="option_type"]').val();
+
+            if (type === '0') {
+                openDialog();
+                return;
             }
+
+            $('tbody[option_type="' + type + '"]').removeClass('d-none');
+            updateConditionSelector();
+        }
+
+        function updateConditionSelector() {
+            update(1);
+            update(2);
+            $('select[name="option_type"]').val(0);
+
+            function update(type) {
+                var tbody = $('tbody[option_type="' + type + '"]');
+                var option = $('select[name="option_type"] option[value="' + type + '"]');
+                if (tbody.hasClass('d-none')) {
+                    option.removeAttr('disabled');
+                } else {
+                    option.attr('disabled', 'disabled');
+                }
+            }
+        }
+
+        function onChangeSkill(event) {
+            updateAddButton();
+        }
+
+        function updateAddButton() {
+            if ($('select[name="skill_id"]').val() == 0 || $('input[name="skill_levels[]"]:checked').length == 0) {
+                $('button[name="add_skill"]').attr('disabled', 'disabled');
+            } else {
+                $('button[name="add_skill"]').removeAttr('disabled');
+            }
+        }
+
+        function onAddSkill(event) {
+            var id = $('select[name="skill_id"]').val();
+            var name = SKILLS[id];
+            var levels = $('input[name="skill_levels[]"]:checked').map(function () {
+                return $(this).val();
+            }).toArray();
+
+            var template = $('tbody.skill_template').html();
+            $('tbody.skills').append(template);
+
+            var new_skill = $('tbody.skills tr:last-child');
+
+            new_skill.find('.skill_name').text(name);
+            new_skill.find('input[name^=skill_and_levels]').each(function (i, input) {
+                var old_name = $(input).attr('name');
+                var new_name = old_name.replace('[0]', '[' + id + ']');
+                $(input).attr('name', new_name);
+
+                var old_id = $(input).attr('id');
+                if (old_id) {
+                    var new_id = old_id.replace('-0-', '-' + id + '-');
+                    $(input).attr('id', new_id);
+
+                    $('label[for="' + old_id + '"]').attr('for', new_id);
+                }
+
+                if ($.inArray($(input).attr('value'), levels) != -1) {
+                    $(input).prop('checked', true);
+                }
+            });
+
+
+            updateSkillSelector();
+            $('.modal').modal('hide');
+        }
+
+        function updateSkillSelector() {
+            skill_used = $('input[name^="skill_and_levels"').map(function () {
+                return $(this).attr('skill_id');
+            }).toArray();
+
+            $('select[name="skill_id"] option').each(function (i, op) {
+
+                var skill_id = String($(op).attr('value'));
+
+                if ($.inArray(skill_id, skill_used) === -1) {
+                    $(op).removeAttr('disabled');
+                } else {
+                    $(op).attr('disabled', 'disabled');
+                }
+            });
+
+            $('select[name="skill_id"]').val("");
+            $('input[name^="skill_levels"').prop('checked', false);
+            updateAddButton();
+        }
+
+        function onDeleteSkill(event) {
+            tr = $(event.currentTarget).parents('tr');
+            tr.remove();
+            updateSkillSelector();
+        }
+
+        function onSave(event) {
+            $('tbody.skill_template input').attr('disabled', 'disabled');
+            $('tbody.option.d-none').find('input,select').attr('disabled','disabled');
+            $('select[name="condition_type"]').attr('disabled', 'disabled');
+
+            console.log($('form[name="main"]'));
+            $('form[name="main"]').submit();
+        }
+
+        function openDialog(event) {
+            $('.modal').modal();
         }
     });
 

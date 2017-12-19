@@ -94,8 +94,8 @@ class SkillsTable extends Table {
         /** @var \Search\Manager $searchManager */
         $searchManager = $this->behaviors()->Search->searchManager();
         $searchManager
-                ->finder('organization_id',['finder'=> 'ByOrganization'])
-                ->finder('field_id',['finder'=> 'ByField'])
+                ->finder('organization_id', ['finder' => 'ByOrganization'])
+                ->finder('field_id', ['finder' => 'ByField'])
         ;
 
 
@@ -157,20 +157,21 @@ class SkillsTable extends Table {
             return $query;
         }
     }
+
     /**
      * あるユーザーが編集可能な
      * @param type $query
      * @param type $options
      */
-    public function findEditable($query,$options){
-        $user_id = Hash::get($options,'user_id');
+    public function findEditable($query, $options) {
+        $user_id = Hash::get($options, 'user_id');
         $fields = TableRegistry::get('Fields')
-                ->find('editable',['user_id'=>$user_id])
+                ->find('editable', ['user_id' => $user_id])
                 ->select('id');
-        
+
         $query->where(['field_id IN' => $fields]);
-        
-        
+
+
         return $query;
     }
 
@@ -218,43 +219,71 @@ class SkillsTable extends Table {
 
         return $query;
     }
-    
+
     //特定組織および子組織の管理下にあるスキルを取得
-    public function findByOrganization( $query , $options ){
-        $organization_id = Hash::get($options,'organization_id');
-        $orgs = TableRegistry::get('Organizations')->find('descendants',['id'=>$organization_id])
+    public function findByOrganization($query, $options) {
+        $organization_id = Hash::get($options, 'organization_id');
+        $orgs = TableRegistry::get('Organizations')->find('descendants', ['id' => $organization_id])
                 ->select('Organizations.id');
-        
+
         $fields = TableRegistry::get('Fields')
                 ->find()
-                ->where(['Fields.organization_id IN'=> $orgs])
+                ->where(['Fields.organization_id IN' => $orgs])
                 ->select('Fields.id');
-        
-        return $query->where([$this->aliasField('field_id').' IN' => $fields]);
+
+        return $query->where([$this->aliasField('field_id') . ' IN' => $fields]);
     }
 
     //特定フィールドおよびその子孫フィールドに含まれるスキルを取得
-    public function findByField( $query , $options ){
-        $field_id = Hash::get($options,'field_id');
-        
+    public function findByField($query, $options) {
+        $field_id = Hash::get($options, 'field_id');
+
         $fields = TableRegistry::get('Fields')
-                ->find('Descendants',['id'=>$field_id])
+                ->find('Descendants', ['id' => $field_id])
                 ->select('Fields.id');
-        
-        return $query->where([$this->aliasField('field_id').' IN' => $fields]);
+
+        return $query->where([$this->aliasField('field_id') . ' IN' => $fields]);
     }
-    
-    
-    public static function toPathList( $skills ){
+
+    public static function toPathList($skills) {
         $skills->find('fieldPath')
-                ->contain(['Fields' => ['fields'=>[]]])
+                ->contain(['Fields' => ['fields' => []]])
                 ->order('Fields.lft')
                 ->select(['id', 'name']);
-        
+
         $list = [];
-        foreach( $skills as $skill ){
+        foreach ($skills as $skill) {
             $list[$skill->id] = $skill->label;
         }
         return $list;
     }
+
+    static function getSkillLevels() {
+        return array_combine(range(1, Defines::SKILL_LEVEL_MAX), range(1, Defines::SKILL_LEVEL_MAX));
+    }
+
+    /*
+     * [3,4] を　12　に
+     */
+
+    static function array2flags($levelsArray) {
+        $result = 0;
+        foreach ($levelsArray as $l) {
+            $result += pow(2,$l-1);
+            
+        }
+        
+        return $result;
+    }
+
+    /*
+     * 12  を　[3,4]に
+     */
+
+    static function flags2Array($levelsFlags) {
+        return array_filter(self::getSkillLevels(), function($l) use($levelsFlags) {
+            return (1 << ($l - 1)) & $levelsFlags;
+        });
+    }
+
 }

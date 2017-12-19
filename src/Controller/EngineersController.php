@@ -128,7 +128,7 @@ class EngineersController extends AppController {
 
     public function edit($user_id) {
         $tableU = TableRegistry::get('Users');
-        $user = $tableU->get($user_id, ['contain' => 'organizations']);
+        $user = $tableU->get($user_id, ['contain' => ['Organizations','Engineers']]);
         return $this->UserEdit->edit($user);
     }
 

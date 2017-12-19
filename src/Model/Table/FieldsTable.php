@@ -183,7 +183,13 @@ class FieldsTable extends Table {
             case Defines::GROUP_ADMIN:
                 return $query;
 
-            default:
+                
+            case Defines::GROUP_MARKER:
+            case Defines::GROUP_ENGINEER:
+                return $query->where('FALSE');
+                
+                
+            case Defines::GROUP_ORGANIZATION_ADMIN:
                 $children = $this->Organizations->find('user', ['user_id' => $user_id, 'relation' => 'children'])
                         ->select($this->Organizations->aliasField('id'));
 

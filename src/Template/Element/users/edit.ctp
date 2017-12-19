@@ -66,11 +66,14 @@ $this->Form->templates([
                 <tbody>
                     <tr>
                         <th>性別</th>
-                        <td><?= $this->Form->select('engineer.sex', Defines::USERS_SEX, ['label' => false]) ?></td>
+                        <td>
+                            <?= $this->Form->hidden('engineer.user_id', ['value'=>$user->id]) ?>
+                            <?= $this->Form->select('engineer.sex', Defines::USERS_SEX, ['label' => false]) ?>
+                        </td>
                     </tr>
                     <tr>
                         <th>誕生日</th>
-                        <td><?= $this->Form->control('engineer.birthday', ['label' => false,'monthNames'=>false,'minYear'=>1950]) ?></td>
+                        <td><?= $this->Form->control('engineer.birthday', ['type' => 'date', 'label' => false, 'monthNames' => false, 'minYear' => 1950]) ?></td>
                     </tr>
                 </tbody>
             <?php endif; ?>

@@ -154,6 +154,7 @@ class UsersTable extends Table {
                 ->finder('age')
                 ->finder('skill', ['finder' => 'Skills'])
                 ->finder('organization_id', ['finder' => 'RootOrganization'])
+                ->finder('condition_id',['finder'=>'Condition'])
         ;
 
 
@@ -262,6 +263,16 @@ class UsersTable extends Table {
           ->execute();
          */
         return true;
+    }
+    
+    public function findCondition( $query , $options ){
+        $condition = TableRegistry::get('Conditions')->get($options['condition_id'],['contain'=>['Skills','ConditionOptions']]);
+              
+        foreach( $condition->skills as $skill ){
+            $query->find('skill',['skill'=>['id'=>$skill->id , 'level'=> SkillsTable::flags2Array( $skill->_joinData->levels )]]);
+        }
+        
+        return $query ;
     }
 
 }

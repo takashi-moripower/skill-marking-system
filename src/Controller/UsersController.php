@@ -128,7 +128,9 @@ class UsersController extends AppController {
 
     public function add() {
         $loginUserId = $this->Auth->user('id');
-        $organizations = $this->Users->Organizations->find('user', ['user_id' => $loginUserId, 'relation' => 'self'])
+        $organizations = $this->Users
+                ->Organizations
+                ->find('user', ['user_id' => $loginUserId, 'relation' => 'self'])
                 ->toArray();
 
         $user = $this->Users->newEntity();

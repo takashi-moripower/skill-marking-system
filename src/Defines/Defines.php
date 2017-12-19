@@ -16,9 +16,12 @@ class Defines {
      */
     const SKILL_LEVEL_MAX = 4;
 
+
+
     /*
      * グループID
      */
+
     const GROUP_ADMIN = 1;
     const GROUP_ORGANIZATION_ADMIN = 2;
     const GROUP_MARKER = 3;
@@ -74,7 +77,6 @@ class Defines {
     const NAV_ID_ENGINEERS = 8;
     const NAV_ID_PROFILE = 9;
     const NAV_ID_CONDITIONS = 10;
-
     const NAV_ID_ENG_WORKS = 101;
     const NAV_ID_ENG_NEW_WORK = 102;
     const NAV_ID_ENG_MARKS = 103;
@@ -121,27 +123,27 @@ class Defines {
             self::NAV_ID_ENGINEERS,
             self::NAV_ID_WORKS,
             self::NAV_ID_CONDITIONS,
+            self::NAV_ID_FIELDS,
+            self::NAV_ID_SKILLS,
         ],
         self::GROUP_ENGINEER => [
             self::NAV_ID_ENG_WORKS,
             self::NAV_ID_ENG_NEW_WORK,
             self::NAV_ID_CONDITIONS,
+            self::NAV_ID_FIELDS,
+            self::NAV_ID_SKILLS,
         ],
     ];
     const ENCODING = [
         'SJIS-win',
         'UTF-8',
     ];
-
-    
-    
     const CONDITION_OPTION_TYPE_MAX_AGE = 1;
     const CONDITION_OPTION_TYPE_MIN_AGE = 2;
     const CONDITION_OPTION_TYPE_SEX = 3;
     const CONDITION_OPTION_TYPE_DATE_START = 4;
     const CONDITION_OPTION_TYPE_DATE_END = 5;
     const CONDITION_OPTION_TYPE_LOCATION = 6;
-    
     const CONDITION_OPTIONS = [
         self::CONDITION_OPTION_TYPE_MAX_AGE => '年齢上限',
         self::CONDITION_OPTION_TYPE_MIN_AGE => '年齢下限',
@@ -150,4 +152,9 @@ class Defines {
         self::CONDITION_OPTION_TYPE_DATE_START => '期間(終了日）',
         self::CONDITION_OPTION_TYPE_LOCATION => '開催地'
     ];
+    
+    const FORM_TEMPLATE_INLINE_CHECKBOX = ['checkboxWrapper' => '<div class="checkbox d-inline-block px-2">{{label}}</div>'];
+    const FORM_TEMPLATE_DATE = ['dateWidget' => '{{year}} 年 {{month}} 月 {{day}} 日 '];
+    const FORM_TEMPLATE_INLINE_CONTAINER = ['inputContainer' => '<div class="input {{type}}{{required}} d-inline-block">{{content}}</div>'];
+
 }

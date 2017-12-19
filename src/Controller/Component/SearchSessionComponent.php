@@ -23,14 +23,13 @@ class SearchSessionComponent extends Component {
 
         if (Hash::get($this->request->data, 'clear') || Hash::get($this->request->query, 'clear')) {
             $this->_clearSession();
-//            return $this->_registry->getController()->redirect($this->_getClearUrl());
         }
         
         $session = $this->_readSession();
-
-//        $this->request->data += $this->_readSession();
         
         $this->request->data = $this->request->data + $this->request->query + $session;
+        
+        unset($this->request->data['clear']);
         
         $this->_writeSession( $this->request->data );
         
@@ -60,23 +59,6 @@ class SearchSessionComponent extends Component {
         return $key;
     }
 
-    /*
-      public function getSearchParam() {
-      $request = (array) $this->request->query;
-      $request += (array) $this->request->data;
-
-      if (Hash::get($request, 'clear', false)) {
-      $this->_clearSession();
-      return [];
-      }
-
-      $request = $request + $this->_readSession();
-
-      $this->_writeSession($request);
-
-      return $request;
-      }
-     */
 
     protected function _clearSession() {
         $this->request->session()->delete($this->_getSessionKey());

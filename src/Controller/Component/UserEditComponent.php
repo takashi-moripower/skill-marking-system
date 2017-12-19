@@ -20,7 +20,9 @@ class UserEditComponent extends Component {
 
         if ($this->request->is(['patch', 'post', 'put'])) {
 
-            $user = $this->Users->patchEntity($user, $this->request->getData());
+            $user = $this->Users->patchEntity($user, $this->request->getData() ,['associated' => ['Engineers','Organizations']]);
+            
+debug($user);
             if ($this->Users->save($user)) {
                 $controller->Flash->success(__('The user has been saved.'));
             } else {

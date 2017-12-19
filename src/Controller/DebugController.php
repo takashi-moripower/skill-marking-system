@@ -118,12 +118,67 @@ class DebugController extends AppController {
         $tableSW = TableRegistry::get('skills_works');
         $tableO = TableRegistry::get('Organizations');
         $tableF = TableRegistry::get('Fields');
+        $tableC = TableRegistry::get('Conditions');
+        $tableCS = TableRegistry::get('ConditionsSkills');
 
+        $user_id = 4;
+        /*
+        $skillsMatches = $tableCS->find()
+                ->select([
+                    'condition_id' => 'ConditionsSkills.condition_id',
+                    'count' => 'count(DISTINCT ConditionsSkills.id)'
+                ])
+                ->join([
+                    'SkillsWorks' => [
+                        'table' => 'skills_works',
+                        'type' => 'inner',
+                        'conditions' => [
+                            'SkillsWorks.skill_id =' . $tableCS->aliasField('skill_id'),
+                            '( POWER( 2 , SkillsWorks.level-1) & ConditionsSkills.levels ) <> 0'
+                        ]
+                    ],
+                    'Works' => [
+                        'table' => 'works',
+                        'type' => 'inner',
+                        'conditions' => [
+                            'SkillsWorks.work_id = Works.id',
+                            'Works.user_id' => $user_id,
+                            'Works.user_id <> SkillsWorks.user_id'
+                        ]
+                    ]
+                ])
+                ->group('ConditionsSkills.condition_id');
 
-        $query = $tableU->find()
-                ->contain(['Organizations'=>['finder'=>'pathName','fields'=>['OrganizationsUsers.user_id']]])
-                ->where([1]);
+        $skillsAll = $tableCS->find()
+                ->select([
+                    'condition_id' => 'ConditionsSkills.condition_id',
+                    'count' => 'count(DISTINCT ConditionsSkills.id)'
+                ])
+                ->group('ConditionsSkills.condition_id');
+
+        $query = $tableC->find()
+
+                ->join([
+            'skills_matches' => [
+                'table' => $skillsMatches,
+                'type' => 'inner',
+                'conditions' => [
+                    'skills_matches.condition_id = Conditions.id'
+                ]
+            ],
+            'skills_all' => [
+                'table' => $skillsAll,
+                'type' => 'inner',
+                'conditions' => [
+                    'skills_all.condition_id = Conditions.id'
+                ]
+            ]
+                ]
+        )
+                ->where(['skills_matches.count = skills_all.count']);
+*/
         
+        $query = $tableC->find('user',['user_id'=>4]);
 
         $data = $query->toArray();
 

@@ -21,7 +21,6 @@ class Defines {
     /*
      * グループID
      */
-
     const GROUP_ADMIN = 1;
     const GROUP_ORGANIZATION_ADMIN = 2;
     const GROUP_MARKER = 3;
@@ -108,7 +107,7 @@ class Defines {
             self::NAV_ID_WORKS,
             self::NAV_ID_GROUPS,
             self::NAV_ID_JUNLES,
-            self::NAV_ID_CONDITIONS,
+//            self::NAV_ID_CONDITIONS,
         ],
         self::GROUP_ORGANIZATION_ADMIN => [
             self::NAV_ID_ORGANIZATIONS,
@@ -117,19 +116,19 @@ class Defines {
             self::NAV_ID_SKILLS,
             self::NAV_ID_ENGINEERS,
             self::NAV_ID_WORKS,
-            self::NAV_ID_CONDITIONS,
+//            self::NAV_ID_CONDITIONS,
         ],
         self::GROUP_MARKER => [
             self::NAV_ID_ENGINEERS,
             self::NAV_ID_WORKS,
-            self::NAV_ID_CONDITIONS,
+//            self::NAV_ID_CONDITIONS,
             self::NAV_ID_FIELDS,
             self::NAV_ID_SKILLS,
         ],
         self::GROUP_ENGINEER => [
             self::NAV_ID_ENG_WORKS,
             self::NAV_ID_ENG_NEW_WORK,
-            self::NAV_ID_CONDITIONS,
+//            self::NAV_ID_CONDITIONS,
             self::NAV_ID_FIELDS,
             self::NAV_ID_SKILLS,
         ],
@@ -152,9 +151,17 @@ class Defines {
         self::CONDITION_OPTION_TYPE_DATE_START => '期間(終了日）',
         self::CONDITION_OPTION_TYPE_LOCATION => '開催地'
     ];
-    
+    const CONDITION_PUBLISHED_TRUE = 1;
+    const CONDITION_PUBLISHED_FALSE = 0;
+    const CONDITION_PUBLISHED_STATE = [
+        self::CONDITION_PUBLISHED_TRUE => '公開',
+        self::CONDITION_PUBLISHED_FALSE => '非公開',
+    ];
     const FORM_TEMPLATE_INLINE_CHECKBOX = ['checkboxWrapper' => '<div class="checkbox d-inline-block px-2">{{label}}</div>'];
     const FORM_TEMPLATE_DATE = ['dateWidget' => '{{year}} 年 {{month}} 月 {{day}} 日 '];
     const FORM_TEMPLATE_INLINE_CONTAINER = ['inputContainer' => '<div class="input {{type}}{{required}} d-inline-block">{{content}}</div>'];
+    const FORM_TEMPLATE_RADIO = ['nestingLabel' => '{{hidden}}{{input}}<label class="mr-4" {{attrs}}>{{text}}</label>',    ];
 
+    
+    const CONTACT_FLAG_FROM_ENGINEER = 1;
 }

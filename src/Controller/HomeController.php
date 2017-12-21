@@ -41,7 +41,7 @@ class HomeController extends AppController {
                 return $this->_org_admin();
 
             case Defines::GROUP_ENGINEER:
-                return $this->render('engineer');
+                return $this->_engineer();
         }
     }
 
@@ -110,6 +110,19 @@ class HomeController extends AppController {
         $this->set(compact('orgs', 'collections'));
 
         return $this->render('orgAdmin');
+    }
+
+    protected function _engineer() {
+        $loginUserId = $this->Auth->user('id');
+
+        $contacts = TableRegistry::get('Contacts')
+                ->find()
+                ->contain(['Users','Conditions'])
+                ->where(['Contacts.user_id' => $loginUserId]);
+
+        $this->set(compact('contacts'));
+        
+        $this->render('engineer');
     }
 
 }

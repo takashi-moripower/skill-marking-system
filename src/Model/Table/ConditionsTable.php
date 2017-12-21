@@ -55,6 +55,7 @@ class ConditionsTable extends Table {
         ]);
 
         $this->hasMany('ConditionsSkills');
+        $this->hasMany('Contacts');
     }
 
     /**

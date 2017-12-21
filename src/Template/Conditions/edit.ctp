@@ -9,7 +9,10 @@ $skillDefault = (object) [
             '_joinData' => (object) ['levels' => 0]
 ];
 
-$this->Form->templates(Defines::FORM_TEMPLATE_INLINE_CHECKBOX);
+$this->Form->templates(
+        Defines::FORM_TEMPLATE_INLINE_CHECKBOX
+        + Defines::FORM_TEMPLATE_RADIO
+);
 
 $option_types = [
     'スキル',
@@ -33,6 +36,10 @@ $date_valid = isset($condition->dateStart);
                 <tr>
                     <th class="w-20 border-top-0">名称</th>
                     <td class="w-80 border-top-0"><?= $this->Form->control('title', ['label' => false, 'class' => 'w-100']); ?></td>
+                </tr>
+                <tr>
+                    <th>公開</th>
+                    <td><?= $this->Form->radio('published', Defines::CONDITION_PUBLISHED_STATE); ?></td>
                 </tr>
                 <tr>
                     <th>説明</th>
@@ -140,13 +147,13 @@ $date_valid = isset($condition->dateStart);
         $(document).on('click', 'button[name="delete_skill"]', onDeleteSkill);
         $(document).on('click', 'button[name="save"]', onSave);
         $(document).on('click', 'button[name="add_option"]', onAddOption);
-        $(document).on('click', 'button[name="remove_option"]', onRemoveOption );
+        $(document).on('click', 'button[name="remove_option"]', onRemoveOption);
 
         onChangeSkill();
         updateSkillSelector();
         updateConditionSelector();
-        
-        function onRemoveOption(event){
+
+        function onRemoveOption(event) {
             $(event.currentTarget).parents('tbody.option').addClass('d-none');
         }
 
@@ -255,7 +262,7 @@ $date_valid = isset($condition->dateStart);
 
         function onSave(event) {
             $('tbody.skill_template input').attr('disabled', 'disabled');
-            $('tbody.option.d-none').find('input,select').attr('disabled','disabled');
+            $('tbody.option.d-none').find('input,select').attr('disabled', 'disabled');
             $('select[name="condition_type"]').attr('disabled', 'disabled');
 
             console.log($('form[name="main"]'));

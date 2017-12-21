@@ -46,3 +46,5 @@ $loginUserId = $this->getLoginUser('id');
         </ul>
     </div>
 </div>
+
+<?= $this->Element('home/contacts',['contacts'=>$contacts]) ?>

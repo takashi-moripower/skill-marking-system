@@ -22,17 +22,30 @@ class ConditionsController extends AppController {
     public function index() {
         $loginUserId = $this->Auth->user('id');
         $loginUserGroup = $this->Auth->user('group_id');
-        
+
         $query = $this->Conditions->find()
-                ->contain(['Skills' => ['sort' => 'Skills.id']]);
+                ->contain(['Skills' => ['sort' => 'Skills.id'], 'Users', 'Contacts']);
 
         if ($loginUserGroup == Defines::GROUP_ENGINEER) {
-            $query->find('user',['user_id'=>$loginUserId]);
+            $query->where(['Conditions.published <> 0'])
+                    ->find('user', ['user_id' => $loginUserId]);
         }
 
         $conditions = $this->paginate($query);
 
         $this->set(compact('conditions'));
+    }
+
+    public function view($id) {
+        $loginUserId = $this->Auth->user('id');
+        $condition = $this->Conditions->get($id, [
+            'contain' => [
+                'Skills' => ['sort' => 'skill_id'],
+                'ConditionOptions',
+                'Contacts' => ['conditions' => ['Contacts.user_id' => $loginUserId]]
+            ]
+        ]);
+        $this->set(compact('condition'));
     }
 
     public function add() {

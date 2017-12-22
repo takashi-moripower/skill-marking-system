@@ -19,6 +19,10 @@ class SkillsController extends AppController {
     public $helpers = [
         'Paginator' => ['templates' => 'paginator-templates']
     ];
+    public $paginate = [
+        'contain' => ['Fields' => ['Organizations']],
+        'sortWhitelist' => ['Fields.lft'],
+    ];
 
     public function initialize() {
         parent::initialize();
@@ -34,16 +38,11 @@ class SkillsController extends AppController {
         $loginUserId = $this->Auth->user('id');
         $loginUserGroup = $this->Auth->user('group_id');
 
-
-        $this->paginate = [
-            'contain' => ['Fields' => ['Organizations']]
-        ];
-
-
         $query = $this->Skills->find('fieldPath')
-                ->select(['Skills.id', 'Skills.name' , 'Skills.note' , 'Fields.organization_id'])
+                ->select(['Skills.id', 'Skills.name', 'Skills.note', 'Fields.organization_id'])
                 ->select(['org_name' => $this->Skills->Fields->Organizations->aliasField('name')])
-                ->find('search', ['search' => $this->request->data]);
+                ->find('search', ['search' => $this->request->data])
+                ->order(['Fields.lft' => 'ASC', 'Skills.id' => 'ASC']);
 
         if ($loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
             $query->find('usable', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup]);
@@ -71,21 +70,20 @@ class SkillsController extends AppController {
                 ->find('list', ['keyField' => 'id', 'valueField' => 'path'])
                 ->find('usable', ['user_id' => $loginUserId])
                 ->order('Fields.lft');
-        
+
         $organizations = $this->Skills->Fields->Organizations->find('pathName')
-                ->find('list',['keyField'=>'id','valueField'=>'path'])
+                ->find('list', ['keyField' => 'id', 'valueField' => 'path'])
                 ->select('Organizations.id')
                 ->order('Organizations.lft');
-        
+
         if ($loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
-            $organizations->find('user',['user_id'=>$loginUserId,'relation'=>'children']);
+            $organizations->find('user', ['user_id' => $loginUserId, 'relation' => 'children']);
         }
 
 
 
-        $this->set(compact('skills', 'fields','organizations'));
+        $this->set(compact('skills', 'fields', 'organizations'));
         $this->set('_serialize', ['skills']);
-       
     }
 
     /**
@@ -126,7 +124,7 @@ class SkillsController extends AppController {
 
         $this->set(compact('skill', 'fields'));
         $this->set('_serialize', ['skill']);
-       
+
         $this->render('edit');
     }
 
@@ -155,7 +153,6 @@ class SkillsController extends AppController {
 
         $this->set(compact('skill', 'fields'));
         $this->set('_serialize', ['skill']);
-       
     }
 
     protected function _getFieldsForEdit($user_id) {

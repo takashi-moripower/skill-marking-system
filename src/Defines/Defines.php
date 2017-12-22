@@ -16,8 +16,6 @@ class Defines {
      */
     const SKILL_LEVEL_MAX = 4;
 
-
-
     /*
      * グループID
      */

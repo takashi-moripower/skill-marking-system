@@ -183,12 +183,12 @@ class FieldsTable extends Table {
             case Defines::GROUP_ADMIN:
                 return $query;
 
-                
+
             case Defines::GROUP_MARKER:
             case Defines::GROUP_ENGINEER:
                 return $query->where('FALSE');
-                
-                
+
+
             case Defines::GROUP_ORGANIZATION_ADMIN:
                 $children = $this->Organizations->find('user', ['user_id' => $user_id, 'relation' => 'children'])
                         ->select($this->Organizations->aliasField('id'));
@@ -215,5 +215,22 @@ class FieldsTable extends Table {
         return $query;
     }
 
-    
+    public function findSetEditable($query, $options) {
+        $user_id = Hash::get($options, 'user_id');
+
+        $fieldsEditable = TableRegistry::get('FieldsEditable', ['table' => 'fields', 'className' => '\App\Model\Table\FieldsTable'])
+                ->find('editable', ['user_id' => $user_id])
+                ->select('id');
+
+        $query
+                ->select(['editable' => $query->newExpr()->addCase([
+                        $query->newExpr()->add([$this->aliasField('id') . ' IN' => $fieldsEditable]),
+                        1,
+                        'boolean'
+                    ])
+        ]);
+        
+        return $query;
+    }
+
 }

@@ -43,8 +43,8 @@ class Skill extends Entity {
                 ->where(['Skills.id' => $this->id])
                 ->first();
 
-        $path = isset( $skill->field_path ) ? $skill->field_path : '';
-        
+        $path = isset($skill->field_path) ? $skill->field_path : '';
+
         $this->field_path = $path;
         return $path;
     }
@@ -82,10 +82,35 @@ class Skill extends Entity {
     }
 
     static function getMarkerId($skill) {
-        if( !is_array( $skill )){
+        if (!is_array($skill)) {
             $skill = $skill->toArray();
         }
-        $marker_id = Hash::get($skill, 'marker_id',Hash::get($skill, '_joinData.user_id', Hash::get($skill, 'SkillsWorks.user_id')));
+        $marker_id = Hash::get($skill, 'marker_id', Hash::get($skill, '_joinData.user_id', Hash::get($skill, 'SkillsWorks.user_id')));
         return $marker_id;
     }
+
+    static function findByMarker($skills, $marker_id, $except = false) {
+        if (!is_array($marker_id)) {
+            $marker_id = [$marker_id];
+        }
+        $result = Hash::filter($skills, function($skill) use($marker_id, $except) {
+                    $mutch = in_array(self::getMarkerId($skill), $marker_id);
+                    return ( $except xor $mutch );
+                });
+
+        return $result;
+    }
+
+    static function findMaxLevel($skills) {
+        $maxLevels = [];
+
+        foreach ($skills as $skill) {
+            $maxLevels[$skill->id] = max(Hash::get($maxLevels, $skill->id, 0), $skill->level);
+        }
+
+        return array_filter($skills, function($skill) use($maxLevels) {
+            return ( $skill->level == $maxLevels[$skill->id] );
+        });
+    }
+
 }

@@ -35,10 +35,13 @@ use Cake\Utility\Hash;
                     </a>
                 </td>
                 <td>
+                    <?php if( $field->editable ): ?>
                     <?= $this->Html->link('編集', ['controller' => 'fields', 'action' => 'edit', $field->id], ['class' => 'btn btn-sm btn-outline-primary py-0']) ?>
                     <?= $this->Html->link('削除', ['controller' => 'fields', 'action' => 'delete', $field->id], ['class' => 'btn btn-sm btn-outline-danger py-0', 'role' => 'delete']) ?>
                     <?= $this->Form->create(null, ['method' => 'POST', 'url' => ['controller' => 'fields', 'action' => 'delete', $field->id], 'object_id' => $field->id, "role" => "delete"]) ?>
                     <?= $this->Form->end() ?>
+                    <?php else: ?>
+                    <?php endif; ?>
                 </td>
             </tr>
         <?php endforeach ?>

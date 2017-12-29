@@ -20,15 +20,15 @@ $this->Form->templates([
             <tbody>
                 <tr>
                     <th class="w-20 border-top-0">名称</th>
-                    <td class="border-top-0"><?= $this->Form->control('name', ['label' => false]); ?></td>
+                    <td class="border-top-0"><?= $this->Form->control('name', ['label' => false,'class'=>'w-100','default'=>'']); ?></td>
                 </tr>
                 <tr>
                     <th>email</th>
-                    <td><?= $this->Form->control('email', ['label' => false]); ?></td>
+                    <td><?= $this->Form->control('email', ['label' => false,'class'=>'w-100','default'=>'']); ?></td>
                 </tr>
                 <tr>
                     <th>password</th>
-                    <td><?= $this->Form->control('password', ['label' => false, 'value' => '']); ?></td>
+                    <td><?= $this->Form->control('password', ['label' => false, 'value' => '','class'=>'w-100']); ?></td>
                 </tr>
                 <?php if ($this->request->params['controller'] == 'Users'): ?>
                     <tr>

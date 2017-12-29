@@ -14,9 +14,7 @@ use Cake\Utility\Hash;
  * @method \App\Model\Entity\Field[] paginate($object = null, array $settings = [])
  */
 class FieldsController extends AppController {
-    public $helpers = [
-        'Paginator' => ['templates' => 'paginator-templates']
-    ];
+
 
     /**
      * Index method
@@ -32,18 +30,17 @@ class FieldsController extends AppController {
         ];
 
         $query = $this->Fields
-                ->find('editable', ['user_id' => $loginUser->id])
+                ->find('usable',['user_id'=>$loginUser['id']])
                 ->find('countSkills')
                 ->find('pathName')
                 ->select($this->Fields)
                 ->select($this->Fields->Organizations)
-        ;
+                ->find('setEditable');
 
         $fields = $this->paginate($query);
 
         $this->set(compact('fields'));
         $this->set('_serialize', ['fields']);
-       
     }
 
     /**
@@ -129,7 +126,7 @@ class FieldsController extends AppController {
 
         $this->set(compact('field', 'organizations', 'parentFields'));
         $this->set('_serialize', ['field']);
-       
+
         $this->render('edit');
     }
 

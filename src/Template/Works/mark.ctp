@@ -57,7 +57,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                     <th class="w-20 border-top-0">作者の採点</th>
                     <td class=" border-top-0">
                         <?php
-                        echo $this->Element('skills', ['skills' => $work->getSkillsBy($work->user_id) ,'user_id'=>$work->user_id]);
+                        echo $this->Element('skills/colored_skills', ['skills' => $work->getSkillsBy($work->user_id) ,'user_id'=>$work->user_id]);
                         ?>
                     </td>
                 </tr>
@@ -65,7 +65,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                     <th><?= h($this->getLoginUser('name')) ?> 以外の採点</th>
                     <td>
                         <?php
-                        echo $this->Element('skills', ['skills' => $work->getSkillsBy($loginUserId, 1)]);
+                        echo $this->Element('skills/colored_skills', ['skills' => $work->getSkillsBy($loginUserId, 1)]);
                         ?>
                     </td>
                 </tr>

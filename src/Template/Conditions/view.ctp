@@ -7,8 +7,11 @@ $location_valid = isset($condition->location);
 $date_valid = isset($condition->dateStart);
 
 $loginUserId = $this->getLoginUser('id');
+$loginUserGroup = $this->getLoginUser('group_id');
 
 $url = Router::url(null, true);
+
+$Contacts = \Cake\ORM\TableRegistry::get('Contacts');
 ?>
 <div class="card">
     <div class="card-header">
@@ -32,7 +35,7 @@ $url = Router::url(null, true);
                 <tr>
                     <th>開催地</th>
                     <td>
-<?= h($condition->location) ?>
+                        <?= h($condition->location) ?>
                     </td>
                 </tr>
             </tbody>
@@ -44,7 +47,7 @@ $url = Router::url(null, true);
                         $date_start = DateTime::createFromFormat('Y-m-d', $condition->date_start);
                         $date_end = DateTime::createFromFormat('Y-m-d', $condition->date_end);
                         ?>
-<?= $date_start->format('Y年m月d日') ?> - <?= $date_end->format('Y年m月d日') ?>
+                        <?= $date_start->format('Y年m月d日') ?> - <?= $date_end->format('Y年m月d日') ?>
                     </td>
                 </tr>
             </tbody>
@@ -63,17 +66,31 @@ $url = Router::url(null, true);
         </table>
     </div>
 </div>
-
-<div class="text-right mt-2">
-    <?php if ($condition->contacts): ?>
-        <button class="btn btn-sm btn-primary">コンタクト要求済</button>
+<div class="text-right my-2">
+    <?php if ($loginUserGroup == Defines::GROUP_ENGINEER): ?>
+        <?php if ($Contacts->isExists( $condition->id , $loginUserId )): ?>
+            <button class="btn btn-sm btn-outline-dark" disabled="disabled" type"button">登録済</button>
+        <?php else: ?>
+            <?= $this->Form->create(null, ['url' => ['controller' => 'contacts', 'action' => 'add']]) ?>
+            <?= $this->Form->hidden('user_id', ['value' => $loginUserId]) ?>
+            <?= $this->Form->hidden('condition_id', ['value' => $condition->id]) ?>
+            <?= $this->Form->hidden('callback_url', ['value' => $url]) ?>
+            <?= $this->Form->hidden('flags', ['value' => Defines::CONTACT_FLAG_FROM_ENGINEER]) ?>
+            <button class="btn btn-sm btn-outline-primary">コンタクト要求</button>
+            <?= $this->Form->end(); ?>
+        <?php endif; ?>
     <?php else: ?>
-        <?= $this->Form->create(null, ['url' => ['controller' => 'contacts', 'action' => 'add']]) ?>
-        <?= $this->Form->hidden('user_id', ['value' => $loginUserId]) ?>
-        <?= $this->Form->hidden('condition_id', ['value' => $condition->id]) ?>
-        <?= $this->Form->hidden('callback_url', ['value' => $url]) ?>
-        <?= $this->Form->hidden('flags', ['value' => Defines::CONTACT_FLAG_FROM_ENGINEER]) ?>
-        <button class="btn btn-sm btn-outline-primary">コンタクト要求</button>
-        <?= $this->Form->end(); ?>
-<?php endif; ?>
+        <?= $this->Html->link('該当ユーザーを検索', ['controller' => 'engineers', 'action' => 'index', 'condition_id' => $condition->id, 'clear' => 1], ['class' => 'btn btn-outline-primary']); ?>
+    <?php endif; ?>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="h4 m-0">
+            応募状況　
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <?= $this->Element('contacts/list') ?>        
+    </div>
 </div>

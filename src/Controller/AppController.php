@@ -30,6 +30,10 @@ use Acl\Controller\Component\AclComponent;
  */
 class AppController extends Controller {
 
+    public $helpers = [
+        'Paginator' => ['templates' => 'paginator-templates']
+    ];
+
     /**
      * Initialization hook method.
      *

@@ -15,10 +15,6 @@ use App\Model\Table\SkillsTable;
 
 class ConditionsController extends AppController {
 
-    public $helpers = [
-        'Paginator' => ['templates' => 'paginator-templates']
-    ];
-
     public function index() {
         $loginUserId = $this->Auth->user('id');
         $loginUserGroup = $this->Auth->user('group_id');
@@ -26,10 +22,17 @@ class ConditionsController extends AppController {
         $query = $this->Conditions->find()
                 ->contain(['Skills' => ['sort' => 'Skills.id'], 'Users', 'Contacts']);
 
-        if ($loginUserGroup == Defines::GROUP_ENGINEER) {
-            $query->where(['Conditions.published <> 0'])
-                    ->find('user', ['user_id' => $loginUserId]);
+        switch ($loginUserGroup) {
+            case Defines::GROUP_MARKER:
+                $query->where(['Conditions.user_id' => $loginUserId]);
+                break;
+
+            case Defines::GROUP_ENGINEER:
+                $query->where(['Conditions.published <> 0'])
+                        ->find('user', ['user_id' => $loginUserId]);
+                break;
         }
+
 
         $conditions = $this->paginate($query);
 
@@ -38,14 +41,20 @@ class ConditionsController extends AppController {
 
     public function view($id) {
         $loginUserId = $this->Auth->user('id');
+        $loginUserGroup = $this->Auth->user('group_id');
+
+        $contacts = $this->Conditions->Contacts->find('visible', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup])
+                ->where(['condition_id'=>$id])
+                ->contain('Users')
+                ->contain('Conditions');
+
         $condition = $this->Conditions->get($id, [
             'contain' => [
                 'Skills' => ['sort' => 'skill_id'],
                 'ConditionOptions',
-                'Contacts' => ['conditions' => ['Contacts.user_id' => $loginUserId]]
             ]
         ]);
-        $this->set(compact('condition'));
+        $this->set(compact('condition', 'contacts'));
     }
 
     public function add() {

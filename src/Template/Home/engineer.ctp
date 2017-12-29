@@ -35,7 +35,15 @@ $loginUserId = $this->getLoginUser('id');
                     <dt>解説</dt>
                     <dd>作品の説明、自己アピールなど自由に記載してください</dd>
                     <dt>添付ファイル</dt>
-                    <dd>作品をアップロードしてください、複数ファイルの場合は、フォルダにまとめてzip圧縮して送るようにしてください。</dd>
+                    <dd>
+                        作品をアップロードしてください、複数ファイルの場合は、フォルダにまとめてzip圧縮して送るようにしてください。（＊１）<br/>
+                        <p class="p-3 my-3 border border-info rounded">
+                            （＊１）アップロードは1回につき300MBまでです。全て合計した作品データ容量は、1人3GBまでになります。<br/>
+                            3GBを超える場合は、過去の作品の添付データを削除して下さい。添付データのみの削除であれば評価されたスキルはそのまま保持されます。作品自体を削除すると、その作品に対して評価したスキルも削除されますので注意して下さい。
+                        </p>
+                    </dd>
+
+
                 </dl>
             </div>
         </div>
@@ -47,4 +55,14 @@ $loginUserId = $this->getLoginUser('id');
     </div>
 </div>
 
-<?= $this->Element('home/contacts',['contacts'=>$contacts]) ?>
+
+<div class="card mt-3">
+    <div class="card-header">
+        <div class="h4 m-0">
+            応募状況　
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <?= $this->Element('contacts/list', ['contacts' => $contacts]) ?>
+    </div>
+</div>

@@ -74,6 +74,7 @@ class Defines {
     const NAV_ID_ENGINEERS = 8;
     const NAV_ID_PROFILE = 9;
     const NAV_ID_CONDITIONS = 10;
+    const NAV_ID_CONTACTS = 11;
     const NAV_ID_ENG_WORKS = 101;
     const NAV_ID_ENG_NEW_WORK = 102;
     const NAV_ID_ENG_MARKS = 103;
@@ -90,6 +91,7 @@ class Defines {
         self::NAV_ID_PROFILE => ['label' => 'プロファイル', 'url' => ['controller' => 'Users', 'action' => 'editSelf']],
         self::NAV_ID_CONDITIONS => ['label' => '人材募集条件', 'url' => ['controller' => 'Conditions', 'action' => 'index']],
         self::NAV_ID_ENGINEERS => ['label' => '学生一覧', 'url' => ['controller' => 'Engineers', 'action' => 'index']],
+        self::NAV_ID_CONTACTS => ['label' => 'コンタクト要求一覧', 'url' => ['controller' => 'Contacts', 'action' => 'index']],
         self::NAV_ID_ENG_WORKS => ['label' => '作品一覧', 'url' => ['controller' => 'Works', 'action' => 'index']],
         self::NAV_ID_ENG_NEW_WORK => ['label' => '新規投稿', 'url' => ['controller' => 'Works', 'action' => 'add']],
         self::NAV_ID_ENG_MARKS => ['label' => '評価', 'url' => ['controller' => 'home', 'action' => 'index']],
@@ -105,7 +107,8 @@ class Defines {
             self::NAV_ID_WORKS,
             self::NAV_ID_GROUPS,
             self::NAV_ID_JUNLES,
-//            self::NAV_ID_CONDITIONS,
+            self::NAV_ID_CONDITIONS,
+            self::NAV_ID_CONTACTS,
         ],
         self::GROUP_ORGANIZATION_ADMIN => [
             self::NAV_ID_ORGANIZATIONS,
@@ -114,21 +117,24 @@ class Defines {
             self::NAV_ID_SKILLS,
             self::NAV_ID_ENGINEERS,
             self::NAV_ID_WORKS,
-//            self::NAV_ID_CONDITIONS,
+            self::NAV_ID_CONDITIONS,
+            self::NAV_ID_CONTACTS,
         ],
         self::GROUP_MARKER => [
             self::NAV_ID_ENGINEERS,
             self::NAV_ID_WORKS,
-//            self::NAV_ID_CONDITIONS,
+            self::NAV_ID_CONDITIONS,
             self::NAV_ID_FIELDS,
             self::NAV_ID_SKILLS,
+            self::NAV_ID_CONTACTS,
         ],
         self::GROUP_ENGINEER => [
             self::NAV_ID_ENG_WORKS,
             self::NAV_ID_ENG_NEW_WORK,
-//            self::NAV_ID_CONDITIONS,
+            self::NAV_ID_CONDITIONS,
             self::NAV_ID_FIELDS,
             self::NAV_ID_SKILLS,
+            self::NAV_ID_CONTACTS,
         ],
     ];
     const ENCODING = [
@@ -162,4 +168,36 @@ class Defines {
 
     
     const CONTACT_FLAG_FROM_ENGINEER = 1;
+    const CONTACT_FLAG_FROM_COMPANY = 0x10;
+    const CONTACT_FLAG_FROM_TEACHER = 0x100;
+    
+    const CONTACT_FLAG_ALLOW_BY_ENGINEER = 0x2;
+    const CONTACT_FLAG_ALLOW_BY_COMPANY = 0x20;
+    const CONTACT_FLAG_ALLOW_BY_TEACHER = 0x200;
+    
+    const CONTACT_FLAG_DENIED_BY_ENGINEER = 0x4;
+    const CONTACT_FLAG_DENIED_BY_COMPANY = 0x40;
+    const CONTACT_FLAG_DENIED_BY_TEACHER = 0x400;
+    
+    const CONTACT_FLAG_FILTER_ENGINEER = 0xf;
+    const CONTACT_FLAG_FILTER_COMPANY = 0xf0;
+    const CONTACT_FLAG_FILTER_TEACHER = 0xf00;
+    
+    const CONTACT_STATE_UNDEFINED = 0;
+    const CONTACT_STATE_ALLOW = 1;
+    const CONTACT_STATE_DENY = 2;
+    
+    const CONTACT_STATES = [
+        self::CONTACT_STATE_UNDEFINED => '未設定',
+        self::CONTACT_STATE_ALLOW => '承認',
+        self::CONTACT_STATE_DENY => '否認',
+    ];
+    
+    
+    const SKILL_DISPLAY_FLAG_DETAILED_OTHERS = 1;
+    const SKILL_DISPLAY_FLAG_DETAILED_OWNER = 2;
+    const SKILL_DISPLAY_FLAG_DETAILED_VIEWER = 4;
+    
+    const SKILL_DISPLAY_FLAG_FOR_ENGINEERS = 0;
+    const SKILL_DISPLAY_FLAG_FOR_WORKS = self::SKILL_DISPLAY_FLAG_DETAILED_OWNER & self::SKILL_DISPLAY_FLAG_DETAILED_VIEWER;
 }

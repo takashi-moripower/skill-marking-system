@@ -171,7 +171,29 @@ class SkillsTable extends Table {
 
         $query->where(['field_id IN' => $fields]);
 
+        return $query;
+    }
 
+    /**
+     * editable というパラメータを各Entityにセット
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
+    public function findSetEditable($query, $options) {
+        $user_id = Hash::get($options, 'user_id');
+
+        $skillsEditable = TableRegistry::get('SkillsEditable', ['table' => 'skills', 'className' => '\App\Model\Table\SkillsTable'])
+                ->find('editable', ['user_id' => $user_id])
+                ->select('id');
+
+        $query
+                ->select(['editable' => $query->newExpr()->addCase([
+                        $query->newExpr()->add(['Skills.id IN' => $skillsEditable]),
+                        1,
+                        'boolean'
+                    ])
+        ]);
         return $query;
     }
 
@@ -269,10 +291,9 @@ class SkillsTable extends Table {
     static function array2flags($levelsArray) {
         $result = 0;
         foreach ($levelsArray as $l) {
-            $result += pow(2,$l-1);
-            
+            $result += pow(2, $l - 1);
         }
-        
+
         return $result;
     }
 

@@ -4,38 +4,88 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use App\Defines\Defines;
-use Cake\Event\Event;
-use Cake\ORM\TableRegistry;
-use Cake\Utility\Hash;
-use DateTime;
 
 class ContactsController extends AppController {
 
+    public function initialize() {
+        parent::initialize();
+
+        $loginUserGroup = $this->Auth->user('group_id');
+        switch ($loginUserGroup) {
+            case Defines::GROUP_ENGINEER:
+            default:
+                $this->loadComponent('Component', ['className' => 'ContactEngineer']);
+                break;
+
+            case Defines::GROUP_MARKER:
+                $this->loadComponent('Component', ['className' => 'ContactCompany']);
+                break;
+
+            case Defines::GROUP_ADMIN:
+            case Defines::GROUP_ORGANIZATION_ADMIN:
+                $this->loadComponent('Component', ['className' => 'ContactTeacher']);
+                break;
+        }
+    }
+
+    public function index() {
+        $loginUserId = $this->Auth->user('id');
+        $loginUserGroup = $this->Auth->user('group_id');
+
+        $query = $this->Contacts
+                ->find('visible', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup])
+                ->contain(['Users', 'Conditions']);
+
+        $contacts = $this->paginate($query);
+
+        $this->set('contacts', $contacts);
+    }
+
     public function add() {
-        $user_id = $this->request->data('user_id');
-        $condition_id = $this->request->data('condition_id');
         $callback_url = $this->request->data('callback_url');
 
-        $count = $this->Contacts->find()
-                ->where([
-                    'user_id' => $user_id,
-                    'condition_id' => $condition_id
-                ])
-                ->count();
+        if ($this->Contacts->isExists($this->request->data('condition_id'),$this->request->data('user_id'))) {
+            $this->Flash->error('すでに申請されています');
+            return $this->redirect($callback_url);
+        }
 
-        if ($count) {
-            $this->Flash->error('already exists');
+        $contact = $this->Component->onAdd();
+        if ($this->Contacts->save($contact)) {
+            $this->Flash->success('正常に処理されました');
             $this->redirect($callback_url);
         }
-        $contact = $this->Contacts->newEntity($this->request->data);
+    }
 
-        if ($contact->flags & Defines::CONTACT_FLAG_FROM_ENGINEER) {
-            $contact->engineer_date = new DateTime();
-        }
+    public function allow() {
+        $contact_id = $this->request->data('contact_id');
+        $callback_url = $this->request->data('callback_url');
 
+        $contact = $this->Contacts->get($contact_id);
+        $contact = $this->Component->allow($contact);
 
         $this->Contacts->save($contact);
+        $this->redirect($callback_url);
+    }
 
+    public function deny() {
+        $contact_id = $this->request->data('contact_id');
+        $callback_url = $this->request->data('callback_url');
+
+        $contact = $this->Contacts->get($contact_id);
+        $contact = $this->Component->deny($contact);
+
+        $this->Contacts->save($contact);
+        $this->redirect($callback_url);
+    }
+
+    public function cancel() {
+        $contact_id = $this->request->data('contact_id');
+        $callback_url = $this->request->data('callback_url');
+
+        $contact = $this->Contacts->get($contact_id);
+        $contact = $this->Component->cancel($contact);
+
+        $this->Contacts->save($contact);
         $this->redirect($callback_url);
     }
 

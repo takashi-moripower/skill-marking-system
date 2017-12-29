@@ -116,9 +116,8 @@ class HomeController extends AppController {
         $loginUserId = $this->Auth->user('id');
 
         $contacts = TableRegistry::get('Contacts')
-                ->find()
-                ->contain(['Users','Conditions'])
-                ->where(['Contacts.user_id' => $loginUserId]);
+                ->find('visible',['user_id'=>$loginUserId,'group_id'=>Defines::GROUP_ENGINEER])
+                ->contain(['Users','Conditions']);
 
         $this->set(compact('contacts'));
         

@@ -72,6 +72,11 @@ class UsersTable extends Table {
                 ->allowEmpty('name');
 
         $validator
+                ->email('email')
+                ->notEmpty('email')
+                ;
+
+        $validator
                 ->scalar('password')
                 ->allowEmpty('password');
 
@@ -99,6 +104,7 @@ class UsersTable extends Table {
      */
     public function buildRules(RulesChecker $rules) {
         $rules->add($rules->isUnique(['id']));
+        $rules->add($rules->isUnique(['email']));
         $rules->add($rules->existsIn(['group_id'], 'Groups'));
 
         return $rules;
@@ -119,6 +125,12 @@ class UsersTable extends Table {
         return $user;
     }
 
+    /**
+     * 該当組織のメンバーを取得
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
     public function findMembers($query, $options) {
         $tableOU = TableRegistry::get('organizations_users');
         $orgs = Hash::get($options, 'organization_id');
@@ -132,6 +144,11 @@ class UsersTable extends Table {
         return $query;
     }
 
+    /**
+     * 特定ユーザーの所属組織を取得
+     * @param type $user_id
+     * @return type
+     */
     public function getOrganizations($user_id) {
         $tableOU = TableRegistry::get('organizations_users');
 
@@ -185,7 +202,12 @@ class UsersTable extends Table {
 
         return $query;
     }
-
+    /**
+     * 特定スキルの所持者を取得
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
     public function findSkill($query, $options) {
 
         $skill_id = Hash::get($options, 'skill.id');
@@ -212,6 +234,12 @@ class UsersTable extends Table {
         return $query;
     }
 
+    /**
+     * 特定組織及びその下位組織に所属するユーザーを取得
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
     public function findRootOrganization($query, $options) {
         $root_id = Hash::get($options, 'organization_id');
 
@@ -249,6 +277,18 @@ class UsersTable extends Table {
 
         $query->where([$this->aliasField('id') . ' IN' => $members]);
         return $query;
+    }
+    
+    /**
+     * findEditableに丸投げ
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
+    public function findStudents($query,$options){
+        $user_id = Hash::get($options,'teacher_id' , Hash::get($options,'user_id'));
+        
+        return $query->find('Editable',compact('user_id'));
     }
 
     public function beforeDelete($id) {

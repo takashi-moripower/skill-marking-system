@@ -5799,3 +5799,7 @@ img.thumbnail {
 
 .bg-skill-loginuser {
   background-color: #AAD88E; }
+
+.skill-cell {
+  font-size: 0.8rem;
+  border-color: #ccc; }

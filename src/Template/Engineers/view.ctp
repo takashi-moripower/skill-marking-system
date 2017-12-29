@@ -36,7 +36,9 @@ $loginUserGroup = $this->getLoginUser('group');
                 <?php foreach ($user->works as $work): ?>
                     <tr>
                         <th><?= h($work->name) ?></th>
-                        <td><?= $this->Element('skills', ['skills' => $work->skills, 'user_id' => $user->id]); ?></td>
+                        <td>
+                            <?= $this->Element('skills/colored_skills', ['skills' => $work->skills, 'user_id' => $work->user_id, 'flags' => Defines::SKILL_DISPLAY_FLAG_FOR_ENGINEERS]); ?>
+                        </td>
                         <td>
                             <?= Hash::check($work->skills, "{n}._joinData[user_id={$loginUserId}]") ? '済' : '未'; ?>
                         </td>

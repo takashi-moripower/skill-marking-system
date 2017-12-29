@@ -17,10 +17,6 @@ use App\Model\Entity\User;
  */
 class EngineersController extends AppController {
 
-    public $helpers = [
-        'Paginator' => ['templates' => 'paginator-templates']
-    ];
-
     public function initialize() {
         parent::initialize();
         

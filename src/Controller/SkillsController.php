@@ -16,9 +16,6 @@ use Cake\ORM\TableRegistry;
  */
 class SkillsController extends AppController {
 
-    public $helpers = [
-        'Paginator' => ['templates' => 'paginator-templates']
-    ];
     public $paginate = [
         'contain' => ['Fields' => ['Organizations']],
         'sortWhitelist' => ['Fields.lft'],
@@ -44,21 +41,11 @@ class SkillsController extends AppController {
                 ->find('search', ['search' => $this->request->data])
                 ->order(['Fields.lft' => 'ASC', 'Skills.id' => 'ASC']);
 
-        if ($loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
+        if ($loginUserGroup != Defines::GROUP_ADMIN) {
             $query->find('usable', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup]);
         }
 
-        $skillsEditable = TableRegistry::get('SkillsEditable', ['table' => 'skills', 'className' => '\App\Model\Table\SkillsTable'])
-                ->find('editable', ['user_id' => $loginUserId])
-                ->select('id');
-
-        $query
-                ->select(['editable' => $query->newExpr()->addCase([
-                        $query->newExpr()->add(['Skills.id IN' => $skillsEditable]),
-                        1,
-                        'boolean'
-                    ])
-        ]);
+        $query->find('setEditable',['user_id'=>$loginUserId]);
 
 
         $skills = $this->paginate($query);

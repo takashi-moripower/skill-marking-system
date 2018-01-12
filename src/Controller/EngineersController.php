@@ -19,8 +19,8 @@ class EngineersController extends AppController {
 
     public function initialize() {
         parent::initialize();
-        
-        
+
+
         $this->loadComponent('SearchSession', []);
         $this->loadComponent('UserEdit');
     }
@@ -48,7 +48,7 @@ class EngineersController extends AppController {
 
         $query = $tableU
                 ->find()
-                ->contain(['Engineers','Organizations'])
+                ->contain(['Engineers', 'Organizations'])
                 ->where(['group_id' => Defines::GROUP_ENGINEER])
                 ->find('search', ['search' => $this->request->data]);
 
@@ -66,9 +66,9 @@ class EngineersController extends AppController {
                 ->select('Skills.name')
                 ->select('Skills.id')
                 ->toArray();
-        
-        foreach( $skillsQuery as $skill ){
-            $skills[ $skill->id ] = $skill->field_path . " > ". $skill->name;
+
+        foreach ($skillsQuery as $skill) {
+            $skills[$skill->id] = $skill->field_path . " > " . $skill->name;
         }
 
 
@@ -91,13 +91,19 @@ class EngineersController extends AppController {
     public function view($user_id) {
         return $this->_view($user_id);
     }
-    
-    public function viewSelf(){
+
+    public function viewSelf() {
         $loginUserId = $this->Auth->user('id');
-        return $this->_view($loginUserId);
+        $tableU = TableRegistry::get('Users');
+        $users = $tableU
+                ->find()
+                ->contain(['Engineers', 'Organizations'])
+                ->where(['Users.id' => $loginUserId]);
+
+        $this->set('users', $users);
     }
-    
-    protected function _view($id){
+
+    protected function _view($id) {
         $tableU = TableRegistry::get('users');
 
         $user = $tableU->find()
@@ -134,7 +140,7 @@ class EngineersController extends AppController {
 
     public function edit($user_id) {
         $tableU = TableRegistry::get('Users');
-        $user = $tableU->get($user_id, ['contain' => ['Organizations','Engineers']]);
+        $user = $tableU->get($user_id, ['contain' => ['Organizations', 'Engineers']]);
         return $this->UserEdit->edit($user);
     }
 

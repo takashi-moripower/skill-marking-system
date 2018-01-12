@@ -128,6 +128,7 @@ class WorksTable extends Table {
      */
     public function findOrganization($query, $options) {
         $org_ids = Hash::get($options, 'organization_ids', [Hash::get($options, 'organization_id')]);
+
         $users = TableRegistry::get('OrganizationsUsers')->find()
                 ->where(['organization_id IN' => $org_ids])
                 ->group('user_id')

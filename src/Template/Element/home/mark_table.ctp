@@ -3,22 +3,22 @@
 use App\Defines\Defines;
 ?>
 <h3 class="mt-4">所属している組織の状況</h3>
-<table class="table mt-4" style="width:auto">
+<table class="table table-bordered table-sm mt-4 ">
     <thead>
         <tr class="bg-light">
             <th>
                 組織
             </th>
-            <th>
+            <th class="w-10">
                 人数
             </th>
-            <th>
+            <th class="w-10">
                 作品数
             </th>
-            <th>
+            <th class="w-10">
                 採点済み
             </th>
-            <th>
+            <th class="w-10">
                 未採点
             </th>
         </tr>

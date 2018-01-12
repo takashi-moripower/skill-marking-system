@@ -46,81 +46,36 @@ class HomeController extends AppController {
     }
 
     protected function _marker() {
-        $user = $this->Auth->user();
-
+        $loginUserId = $this->Auth->user('id');
         $tableOrgs = TableRegistry::get('Organizations');
-        $tableWorks = TableRegistry::get('works');
-        $tableOU = TableRegistry::get('organizations_users');
 
-        $orgs = $tableOrgs
-                ->find('user', ['user_id' => $user->id, 'relation' => 'children'])
-        ;
-
-
-        $collections = [];
-        foreach ($orgs as $org) {
-            $collections[$org->id] = [
-                'all' => $tableWorks
-                        ->find('Organization', ['organization_id' => $org->id])
-                        ->count(),
-                'marked' => $tableWorks
-                        ->find('Organization', ['organization_id' => $org->id])
-                        ->find('MarkState', ['mark-state' => Defines::MARK_STATE_MARKED])
-                        ->count(),
-                'unmarked' => $tableWorks
-                        ->find('Organization', ['organization_id' => $org->id])
-                        ->find('MarkState', ['mark-state' => Defines::MARK_STATE_UNMARKED])
-                        ->count(),
-            ];
-        }
-
-
-        $this->set(compact('orgs', 'collections'));
-
+        $organizations = $tableOrgs
+                ->find('home',['user_id' => $loginUserId]);
+        
+        $this->set(compact('organizations'));
         return $this->render('marker');
     }
 
     protected function _org_admin() {
-        $user = $this->Auth->user();
+        $loginUserId = $this->Auth->user('id');
+        $tableOrgs = TableRegistry::get('Organizations');
 
-        $tableOrgs = TableRegistry::get('organizations');
-        $tableWorks = TableRegistry::get('works');
-
-        $orgs = $tableOrgs->find('user', ['user_id' => $user->id, 'relation' => 'children']);
-
-
-        $collections = [];
-        foreach ($orgs as $org) {
-            $collections[$org->id] = [
-                'all' => $tableWorks
-                        ->find('Organization', ['organization_id' => $org->id])
-                        ->count(),
-                'marked' => $tableWorks
-                        ->find('Organization', ['organization_id' => $org->id])
-                        ->find('Mark', ['mark-state' => Defines::MARK_STATE_MARKED])
-                        ->count(),
-                'unmarked' => $tableWorks
-                        ->find('Organization', ['organization_id' => $org->id])
-                        ->find('Mark', ['mark-state' => Defines::MARK_STATE_UNMARKED])
-                        ->count(),
-            ];
-        }
-
-
-        $this->set(compact('orgs', 'collections'));
-
-        return $this->render('orgAdmin');
+        $organizations = $tableOrgs
+                ->find('home',['user_id' => $loginUserId]);
+        
+        $this->set(compact('organizations'));
+        return $this->render('marker');
     }
 
     protected function _engineer() {
         $loginUserId = $this->Auth->user('id');
 
         $contacts = TableRegistry::get('Contacts')
-                ->find('visible',['user_id'=>$loginUserId,'group_id'=>Defines::GROUP_ENGINEER])
-                ->contain(['Users','Conditions']);
+                ->find('visible', ['user_id' => $loginUserId, 'group_id' => Defines::GROUP_ENGINEER])
+                ->contain(['Users', 'Conditions']);
 
         $this->set(compact('contacts'));
-        
+
         $this->render('engineer');
     }
 

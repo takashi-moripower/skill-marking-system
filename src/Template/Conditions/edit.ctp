@@ -10,8 +10,7 @@ $skillDefault = (object) [
 ];
 
 $this->Form->templates(
-        Defines::FORM_TEMPLATE_INLINE_CHECKBOX
-        + Defines::FORM_TEMPLATE_RADIO
+        Defines::FORM_TEMPLATE_INLINE_CHECKBOX + Defines::FORM_TEMPLATE_RADIO
 );
 
 $option_types = [
@@ -38,12 +37,17 @@ $date_valid = isset($condition->dateStart);
                     <td class="w-80 border-top-0"><?= $this->Form->control('title', ['label' => false, 'class' => 'w-100']); ?></td>
                 </tr>
                 <tr>
-                    <th>公開</th>
+                    <th>
+                        公開
+                        <button type="button" class="btn btn-outline-info btn-sm ml-3" data-toggle="tooltip" data-placement="top" title="非公開にすると、学生からは人材募集一覧に表示されません">
+                            <i class="fa fa-question"></i>
+                        </button>
+                    </th>
                     <td><?= $this->Form->radio('published', Defines::CONDITION_PUBLISHED_STATE); ?></td>
                 </tr>
                 <tr>
                     <th>説明</th>
-                    <td><?= $this->Form->control('note', ['label' => false, 'class' => 'w-100']); ?></td>
+                    <td><?= $this->Form->control('note', ['label' => false, 'class' => 'w-100' , 'id'=>'editor']); ?></td>
                 </tr>
             </tbody>
             <tbody class="option<?= $location_valid ? '' : ' d-none' ?>" role="location" option_type="1">
@@ -134,12 +138,27 @@ $date_valid = isset($condition->dateStart);
         </div>
     </div>
 </div>
+<script>
+    // エディタへの設定を適用する
+    CKEDITOR.replace('editor', {
+        uiColor: '#EEEEEE',
+        height: 200
+    });
+</script>
+
+<?php $this->append('script') ?>
+<script src="https://cdn.ckeditor.com/4.5.6/standard/ckeditor.js"></script>
+<?php $this->end() ?>
+
 <?php $this->append('script'); ?>
 <script>
 
     var SKILLS = JSON.parse('<?= json_encode($skills) ?>');
 
     $(function () {
+
+        $('[data-toggle="tooltip"]').tooltip();
+
 
         $(document).on('change', 'select[name="skill_id"]', onChangeSkill);
         $(document).on('change', 'input[name="skill_levels[]"]', onChangeSkill);

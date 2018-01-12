@@ -25,7 +25,7 @@ class UsersController extends AppController {
 
     public function beforeFilter(Event $event) {
         parent::beforeFilter($event);
-        $this->Auth->allow(['login' , 'loginMatching']);
+        $this->Auth->allow(['login', 'loginMatching']);
     }
 
     /**
@@ -35,13 +35,15 @@ class UsersController extends AppController {
      */
     public function index() {
         $this->paginate = [
+            'order' => ['id' => 'ASC'],
             'contain' => ['Groups', 'Organizations']
         ];
 
         $loginUserId = $this->Auth->user('id');
         $loginUserGroup = $this->Auth->user('group_id');
 
-        $users = $this->Users->find();
+        $users = $this->Users
+                ->find('search', ['search' => $this->request->data]);
 
         if ($loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
             $users->find('editable', ['user_id' => $loginUserId]);
@@ -49,8 +51,18 @@ class UsersController extends AppController {
 
         $users = $this->paginate($users);
 
+        //検索フォーム用
+        $groups = $this->Users->Groups->find('list');
+        $organizations = $this->Users->Organizations
+                ->find('pathName')
+                ->select($this->Users->Organizations->aliasField('id'))
+                ->find('list', ['keyField' => 'id', 'valueField' => 'path']);
 
-        $this->set(compact('users', 'organizations'));
+        if ($loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
+            $organizations->find('user', ['user_id' => $loginUserId, 'relation' => 'children']);
+        }
+
+        $this->set(compact('users', 'organizations', 'groups'));
         $this->set('_serialize', ['users']);
     }
 
@@ -74,22 +86,24 @@ class UsersController extends AppController {
         return $this->redirect(['action' => 'index']);
     }
 
-    public function login(){
-        $this->_login( Defines::MODE_MARKING );
+    public function login() {
+        $this->_setCurrentMode(Defines::MODE_MARKING);
+        $this->_login(Defines::MODE_MARKING);
     }
-    
-    public function loginMatching(){
+
+    public function loginMatching() {
+        $this->_setCurrentMode(Defines::MODE_MATCHING);
         $this->viewBuilder()->setTemplate('login');
-        $this->_login( Defines::MODE_MATCHING );
+        $this->_login(Defines::MODE_MATCHING);
     }
-    
+
     public function _login($mode) {
         $this->Auth->logout();
-        
+
         $session = $this->request->Session();
         $session->clear();
-        $session->write('App.Mode',$mode);
-        
+        $session->write('App.Mode', $mode);
+
         if (!$this->request->is('post')) {
             return;
         }
@@ -101,11 +115,10 @@ class UsersController extends AppController {
             return;
         }
 
-        return $this->_setLoginUser($user['id']);
+        return $this->_setLoginUser($user['id'], $mode);
     }
 
-
-    protected function _setLoginUser($user_id) {
+    protected function _setLoginUser($user_id, $mode) {
         $user = $this->Users->getSessionData($user_id);
         $this->Auth->setUser($user);
         $this->redirect(['controller' => 'home', 'action' => 'index']);
@@ -200,6 +213,20 @@ class UsersController extends AppController {
 
             $this->set('results', $results);
         }
+    }
+
+    public function setMode($newMode) {
+        $this->_setCurrentMode($newMode);
+        return $this->redirect(['controller' => 'home', 'action' => 'index']);
+    }
+
+    public function view($user_id) {
+        $user = $this->Users->find()
+                ->where(['Users.id' => $user_id])
+                ->contain(['Organizations','Groups'])
+                ->first();
+
+        $this->set(compact('user'));
     }
 
 }

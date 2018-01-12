@@ -1,6 +1,7 @@
 <?php
 
 use App\Defines\Defines;
+use App\Utility\MyUtil;
 
 $loginUserId = $this->getLoginUser('id');
 $loginUserGroup = $this->getLoginUser('group_id');
@@ -35,7 +36,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                 </tr>
                 <tr>
                     <th>解説</th>
-                    <td><?= nl2br(h($work->note)) ?></td>
+                    <td><?= MyUtil::strip_tags($work->note) ?></td>
                 </tr>
                 <tr>
                     <th>添付ファイル</th>
@@ -57,7 +58,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                     <th class="w-20 border-top-0">作者の採点</th>
                     <td class=" border-top-0">
                         <?php
-                        echo $this->Element('skills/colored_skills', ['skills' => $work->getSkillsBy($work->user_id) ,'user_id'=>$work->user_id]);
+                        echo $this->Element('skills/colored_skills', ['skills' => $work->getSkillsBy($work->user_id), 'user_id' => $work->user_id]);
                         ?>
                     </td>
                 </tr>
@@ -98,9 +99,9 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                                 <?= $this->Form->hidden('user_id', ['value' => $loginUserId]); ?>
                                 <?= $this->Form->hidden('work_id', ['value' => $work->id]); ?>
 
-                                <?= $this->Form->select('skill_id', $skillsToSet, ['value' => 0,'empty'=>true]) ?>
+                                <?= $this->Form->select('skill_id', $skillsToSet, ['value' => 0, 'empty' => true]) ?>
                                 - 
-                                <?= $this->Form->select('level', $LEVELS, ['value' => 1, 'class' => 'align-middle' ]) ?>
+                                <?= $this->Form->select('level', $LEVELS, ['value' => 1, 'class' => 'align-middle']) ?>
                                 <?= $this->Form->button('追加', ['class' => 'btn btn-outline-dark disabled btn-sm ml-auto bg-weak-white', 'disabled' => 'disabled', 'type' => 'submit', 'name' => 'action', 'value' => 'set']) ?>
                                 <?= $this->Form->end() ?>
                             </div>
@@ -112,8 +113,8 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
     </div>
 </div>
 <div class="card mt-1">
-    
-<div class="card-boty p-0">
+
+    <div class="card-boty p-0">
         <table class="table mb-0">
             <tbody role="comments">
                 <?php foreach ($work->comments as $comment): ?>
@@ -141,7 +142,7 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
     </div>
 </div>
 
-                        <?= $this->Form->end() ?>
+<?= $this->Form->end() ?>
 
 
 <div class="text-right">
@@ -191,11 +192,11 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
             }
         }
     });
-    $(function(){
-        $('tbody[role="comments"]').on('click','button[value="delete"]',function(event){
+    $(function () {
+        $('tbody[role="comments"]').on('click', 'button[value="delete"]', function (event) {
             return confirm('realy delete?');
         });
-        
+
     });
 </script>
 <?php $this->end(); ?>

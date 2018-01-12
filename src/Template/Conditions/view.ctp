@@ -1,6 +1,7 @@
 <?php
 
 use App\Defines\Defines;
+use App\Utility\MyUtil;
 use Cake\Routing\Router;
 
 $location_valid = isset($condition->location);
@@ -16,7 +17,7 @@ $Contacts = \Cake\ORM\TableRegistry::get('Contacts');
 <div class="card">
     <div class="card-header">
         <div class="h4 m-0">
-            人材募集条件　
+            人材募集詳細　
         </div>
     </div>
     <div class="card-body p-0">
@@ -27,11 +28,16 @@ $Contacts = \Cake\ORM\TableRegistry::get('Contacts');
                     <td class="w-80 border-top-0"><?= h($condition->title) ?></td>
                 </tr>
                 <tr>
+                    <th>登録者</th>
+                    <td><?= h($condition->user->name) ?></td>
+                </tr>
+                <tr>
                     <th>説明</th>
-                    <td><?= h($condition->note) ?></td>
+                    <td><?= MyUtil::strip_tags($condition->note) ?></td>
                 </tr>
             </tbody>
-            <tbody class="option<?= $location_valid ? '' : ' d-none' ?>" role="location" option_type="1">
+            <?php if ($location_valid): ?>
+            <tbody class="option" role="location" option_type="1">
                 <tr>
                     <th>開催地</th>
                     <td>
@@ -39,27 +45,22 @@ $Contacts = \Cake\ORM\TableRegistry::get('Contacts');
                     </td>
                 </tr>
             </tbody>
-            <tbody class="option<?= $date_valid ? '' : ' d-none' ?>" role="date" option_type="2">
-                <tr>
-                    <th>期間</th>
-                    <td>
-                        <?php
-                        $date_start = DateTime::createFromFormat('Y-m-d', $condition->date_start);
-                        $date_end = DateTime::createFromFormat('Y-m-d', $condition->date_end);
-                        ?>
-                        <?= $date_start->format('Y年m月d日') ?> - <?= $date_end->format('Y年m月d日') ?>
-                    </td>
-                </tr>
-            </tbody>
+            <?php endif; ?>
+            <?php if ($date_valid): ?>
+                <tbody class="option" role="date" option_type="2">
+                    <tr>
+                        <th>期間</th>
+                        <td>
+                            <?= MyUtil::dateFormat($condition->date_start) ?> - <?= MyUtil::dateFormat($condition->date_end) ?>
+                        </td>
+                    </tr>
+                </tbody>
+            <?php endif; ?>
             <tbody class="skills">
                 <tr>
                     <th>スキル条件</th>
                     <td>
-                        <?php
-                        foreach ((array) $condition->skills as $skill):
-                            echo $this->Element('conditions/index_skill', compact('skill'));
-                        endforeach
-                        ?>
+                        <?= $this->Element('skills/skills',['skills'=>$condition->skills]);?>
                     </td>
                 </tr>
             </tbody>
@@ -68,7 +69,7 @@ $Contacts = \Cake\ORM\TableRegistry::get('Contacts');
 </div>
 <div class="text-right my-2">
     <?php if ($loginUserGroup == Defines::GROUP_ENGINEER): ?>
-        <?php if ($Contacts->isExists( $condition->id , $loginUserId )): ?>
+        <?php if ($Contacts->isExists($condition->id, $loginUserId)): ?>
             <button class="btn btn-sm btn-outline-dark" disabled="disabled" type"button">登録済</button>
         <?php else: ?>
             <?= $this->Form->create(null, ['url' => ['controller' => 'contacts', 'action' => 'add']]) ?>

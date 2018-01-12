@@ -48,7 +48,7 @@ class EngineersController extends AppController {
 
         $query = $tableU
                 ->find()
-                ->contain(['Engineers'])
+                ->contain(['Engineers','Organizations'])
                 ->where(['group_id' => Defines::GROUP_ENGINEER])
                 ->find('search', ['search' => $this->request->data]);
 
@@ -89,14 +89,24 @@ class EngineersController extends AppController {
     }
 
     public function view($user_id) {
+        return $this->_view($user_id);
+    }
+    
+    public function viewSelf(){
+        $loginUserId = $this->Auth->user('id');
+        return $this->_view($loginUserId);
+    }
+    
+    protected function _view($id){
         $tableU = TableRegistry::get('users');
 
         $user = $tableU->find()
-                ->where(['id' => $user_id])
+                ->where(['id' => $id])
                 ->contain(['Organizations', 'Works' => ['Skills']])
                 ->first();
 
         $this->set(compact('user'));
+        $this->render('view');
     }
 
     public function add() {

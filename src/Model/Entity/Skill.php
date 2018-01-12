@@ -65,9 +65,23 @@ class Skill extends Entity {
         }
 
         $level = Hash::get($this, '_joinData.level', Hash::get($this, 'SkillsWorks.level'));
+        if($level == null){
+            $level = implode(',',$this->levels);
+        }
 
         $this->level = $level;
         return $level;
+    }
+    
+    protected function _getLevels( $value ){
+        if (isset($value)) {
+            return $value;
+        }
+
+        $levelsFlags = Hash::get($this, '_joinData.levels',0);
+        $levels = \App\Model\Table\SkillsTable::flags2Array($levelsFlags);
+
+        return $levels;
     }
 
     protected function _getMarkerId($value) {

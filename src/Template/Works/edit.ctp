@@ -26,7 +26,7 @@ if ($this->request->action == 'add') {
                 </tr>
                 <tr>
                     <th>解説</th>
-                    <td><?= $this->Form->input('note', ['class' => 'form-control', 'label' => false, 'type' => 'textArea']) ?></td>
+                    <td><?= $this->Form->input('note', ['class' => 'form-control', 'label' => false, 'type' => 'textArea' , 'id'=>'editor']) ?></td>
                 </tr>
                 <tr>
                     <th>添付ファイル</th>
@@ -83,7 +83,18 @@ if ($this->request->action == 'add') {
         ?>
     </div>
 <?php endif; ?>
+
+<?= $this->Form->end ?>
+<script>
+    // エディタへの設定を適用する
+    CKEDITOR.replace('editor', {
+        uiColor: '#EEEEEE',
+        height: 400,
+    });
+</script>
+
 <?php $this->append('script'); ?>
+<script src="https://cdn.ckeditor.com/4.5.6/standard/ckeditor.js"></script>
 <script>
     $(function () {
         $('button.add-file').on('click', function () {

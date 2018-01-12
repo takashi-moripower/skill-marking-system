@@ -1,5 +1,5 @@
 <div class="row justify-content-center mt-3">
-    <div class="col-6">
+    <div class="col-12 col-sm-10 col-md-6">
         <div class="card">
             <div class="card-header bg-primary text-white">
                 <h2 class="card-title">login</h2>

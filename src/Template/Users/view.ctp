@@ -1,6 +1,7 @@
 <?php
 
 use App\Defines\Defines;
+use App\Utility\MyUtil;
 use Cake\Utility\Hash;
 ?>
 <table class="table">
@@ -30,5 +31,11 @@ use Cake\Utility\Hash;
                 </td>
             </tr>
         <?php endif; ?>
+        <tr>
+            <th>ユーザ紹介</th>
+            <td>
+                <?= MyUtil::strip_tags($user->note) ?>
+            </td>
+        </tr>
     </tbody>
 </table>

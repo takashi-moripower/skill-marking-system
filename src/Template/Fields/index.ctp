@@ -15,7 +15,7 @@ use Cake\Utility\Hash;
             <th>名称</th>
             <th>説明</th>
             <th>スキル</th>
-            <th>action</th>
+            <th>操作</th>
         </tr>
     </thead>
     <tbody>

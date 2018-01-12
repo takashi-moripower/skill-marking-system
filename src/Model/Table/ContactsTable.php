@@ -93,6 +93,12 @@ class ContactsTable extends Table {
         return $rules;
     }
 
+    /**
+     * 該当コンタクトが存在するかどうか
+     * @param type $condition_id
+     * @param type $user_id
+     * @return type
+     */
     public function isExists($condition_id, $user_id) {
         $count = $this->find()
                 ->where([
@@ -102,6 +108,19 @@ class ContactsTable extends Table {
                 ->count();
 
         return ( $count != 0 );
+    }
+    
+    /**
+     * 該当コンタクトに許可を与えているかどうか
+     */
+    public function isAllowed( $condition_id , $user_id , $login_user_group){
+        $contact = $this->find()
+                ->where(['condition_id'=>$condition_id,'user_id'=>$user_id])
+                ->first();
+        
+        $state = $contact->getState( $login_user_group );
+        
+        return ( $state == Defines::CONTACT_STATE_ALLOW );
     }
 
     /**
@@ -128,36 +147,15 @@ class ContactsTable extends Table {
 
             case Defines::GROUP_MARKER:
                 $conditions = $this->Conditions->find()
-                        ->where([$this->aliasField('user_id') => $user_id])
-                        ->where(['or' => [
-                        'Contacts.flags & ' . Defines::CONTACT_FLAG_FROM_COMPANY,
-                        'And' => [
-                            'Contacts.flags &' . Defines::CONTACT_FLAG_FROM_TEACHER,
-                            'Contacts.flags &' . Defines::CONTACT_FLAG_ALLOW_BY_TEACHER,
-                            'Contacts.flags &' . Defines::CONTACT_FLAG_ALLOW_BY_ENGINEER,
-                        ],
-                        'and' => [
-                            'Contacts.flags &' . Defines::CONTACT_FLAG_FROM_ENGINEER,
-                            'Contacts.flags &' . Defines::CONTACT_FLAG_ALLOW_BY_TEACHER,
-                            'Contacts.flags &' . Defines::CONTACT_FLAG_ALLOW_BY_ENGINEER,
-                ]]]);
+                        ->select('id')
+                        ->where([$this->Conditions->aliasField('user_id') => $user_id])
+                ;
                 $query->where([$this->aliasField('condition_id') . ' IN' => $conditions]);
                 return $query;
 
             case Defines::GROUP_ENGINEER:
                 $query
-                        ->where([$this->aliasField('user_id') => $user_id])
-/*                        ->where(['or' => [
-                                'Contacts.flags & ' . Defines::CONTACT_FLAG_FROM_ENGINEER,
-                                'And' => [
-                                    'Contacts.flags &' . Defines::CONTACT_FLAG_FROM_TEACHER,
-                                    'Contacts.flags &' . Defines::CONTACT_FLAG_ALLOW_BY_TEACHER,
-                                ],
-                                'and' => [
-                                    'Contacts.flags &' . Defines::CONTACT_FLAG_FROM_COMPANY,
-                                    'Contacts.flags &' . Defines::CONTACT_FLAG_ALLOW_BY_TEACHER,
-                                    'Contacts.flags &' . Defines::CONTACT_FLAG_ALLOW_BY_COMPANY,
-                ]]])*/;
+                        ->where([$this->aliasField('user_id') => $user_id]);
         }
 
         return $query;

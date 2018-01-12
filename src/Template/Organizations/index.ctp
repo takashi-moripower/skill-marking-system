@@ -39,7 +39,7 @@ use App\Defines\Defines;
                     <?= $this->Html->link('編集', ['controller' => 'organizations', 'action' => 'edit', $org->id], ['class' => 'btn btn-sm btn-outline-primary py-0']) ?>
                     <?= $this->Html->link('登録', ['controller' => 'organizations', 'action' => 'setMembers', $org->id], ['class' => 'btn btn-sm btn-outline-primary py-0']) ?>
                     <?php if( !$org->deletable ):?>
-                        <button class="btn btn-sm btn-outline-danger py-0" disabled='disabled' >削除</button>
+                        <button class="btn btn-sm btn-outline-dark py-0" disabled='disabled' >削除</button>
                     <?php else: ?>
                         <?= $this->Html->link('削除', '', ['class' => 'btn btn-sm btn-outline-danger py-0', 'role' => 'delete']) ?>
                         <?= $this->Form->create(null, ['method' => 'POST', 'url' => ['controller' => 'organizations', 'action' => 'delete', $org->id], 'object_id' => $org->id, "role" => "delete"]) ?>

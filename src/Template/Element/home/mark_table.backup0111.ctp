@@ -24,22 +24,22 @@ use App\Defines\Defines;
         </tr>
     </thead>
     <tbody>
-        <?php foreach ($organizations as $organization): ?>
+        <?php foreach ($orgs as $org): ?>
             <tr>
                 <th>
-                    <?= h($organization->path) ?>
+                    <?= $org->path_name ?>
                 </th>
                 <td class="text-right">
-                    <?= $this->Html->link( $organization->count_engineers , ['controller' => 'engineers', 'action' => 'index', 'organization_id' => $organization->id, 'clear' => 1]) ?>
+                    <?= $this->Html->link($org->count_engineers, ['controller' => 'engineers', 'action' => 'index', 'organization_id' => $org->id]) ?>
                 </td>
                 <td class="text-right">
-                    <?= $this->Html->link( $organization->count_works , ['controller'=>'works','action'=>'index','organization_id'=>$organization->id,'clear'=>1] ) ?>
+                    <?= $this->Html->link($collections[$org->id]['all'], ['controller' => 'works', 'action' => 'index', 'organization_id' => $org->id, 'mark-state' => Defines::MARK_STATE_ALL , 'clear'=>1]) ?>
                 </td>
                 <td class="text-right">
-                    <?= $this->Html->link( $organization->count_works_marked , ['controller'=>'works','action'=>'index','organization_id'=>$organization->id,'mark-state'=>Defines::MARK_STATE_MARKED,'clear'=>1] ) ?>
+                    <?= $this->Html->link($collections[$org->id]['marked'], ['controller' => 'works', 'action' => 'index', 'organization_id' => $org->id, 'mark-state' => Defines::MARK_STATE_MARKED, 'clear'=>1]) ?>
                 </td>
                 <td class="text-right">
-                    <?= $this->Html->link( $organization->count_works_unmarked , ['controller'=>'works','action'=>'index','organization_id'=>$organization->id,'mark-state'=>Defines::MARK_STATE_UNMARKED,'clear'=>1] ) ?>
+                    <?= $this->Html->link($collections[$org->id]['unmarked'], ['controller' => 'works', 'action' => 'index', 'organization_id' => $org->id, 'mark-state' => Defines::MARK_STATE_UNMARKED, 'clear'=>1]) ?>
                 </td>
             </tr>
         <?php endforeach; ?>

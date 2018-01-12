@@ -2,6 +2,7 @@
 
 use App\Defines\Defines;
 use Cake\Utility\Hash;
+use App\Utility\MyUtil;
 
 $loginUserId = $this->getLoginUser('id');
 $loginUserGroup = $this->getLoginUser('group');
@@ -27,7 +28,7 @@ $loginUserGroup = $this->getLoginUser('group');
                 <tr>
                     <th>ユーザ紹介</th>
                     <td colspan="3">
-                        <?= $user->note ?>
+                        <?= MyUtil::strip_tags($user->note) ?>
                     </td>
                 </tr>
                 <tr>

@@ -8,6 +8,7 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\Utility\Hash;
 use Cake\ORM\TableRegistry;
+use Cake\Network\Session;
 
 /**
  * Conditions Model
@@ -35,6 +36,7 @@ class ConditionsTable extends Table {
      */
     public function initialize(array $config) {
         parent::initialize($config);
+        $this->addBehavior('Search.Search');
 
         $this->setTable('conditions');
         $this->setDisplayField('title');
@@ -149,46 +151,12 @@ class ConditionsTable extends Table {
                 ->execute();
     }
 
-    public function findUser0($query, $options) {
-        $user_id = Hash::get($options, 'user_id');
-
-        $skills = TableRegistry::get('SkillsWorks')->find()
-                ->select('skill_id')
-                ->join(['Works' => ['table' => 'works', 'type' => 'inner', 'conditions' => 'SkillsWorks.work_id = Works.id']])
-                ->where(['Works.user_id' => $user_id]);
-
-
-        $count = TableRegistry::get('conditions_skills')->find()
-                ->select(['count' => 'count(DISTINCT id)'])
-                ->where(['conditions_skills.condition_id = Conditions.id']);
-
-        $tableCS = TableRegistry::get('conditions_skills');
-
-        $count_matches = $tableCS->find()
-                ->select(['count' => 'count(DISTINCT conditions_skills.id)'])
-                ->join([
-                    'skills_works' => [
-                        'table' => 'skills_works',
-                        'type' => 'inner',
-                        'conditions' => [
-                            'skills_works.skill_id = ' . $tableCS->aliasField('skill_id'),
-                            '(POWER(2, skills_works.level-1) & ' . $tableCS->aliasField('levels') . ') <> 0',
-                        ]
-                    ]
-                ])
-                ->join(['works' => ['table' => 'works', 'type' => 'inner', 'conditions' => ['works.id = skills_works.work_id', 'works.user_id <> skills_works.user_id ']]])
-                ->where([
-            'conditions_skills.condition_id = Conditions.id',
-            'works.user_id' => $user_id,
-        ]);
-
-
-        $query
-                ->select(compact('count', 'count_matches'));
-
-        return $query;
-    }
-
+    /**
+     * 募集条件にマッチするユーザーを取得
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
     public function findUser($query, $options) {
         $query->find('UserSkill', $options);
         return $query;
@@ -252,6 +220,61 @@ class ConditionsTable extends Table {
                 )
                 ->where(['skills_matches.count = skills_all.count']);
 
+        return $query;
+    }
+
+    /**
+     * match というパラメータを各Entityにセット
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
+    public function findSetMatch($query, $options) {
+        $user_id = Hash::get($options, 'user_id');
+
+        $matchingConditions = $this->find('user', ['user_id' => $user_id])
+                ->select('id');
+
+        $query
+                ->select(['match' => $query->newExpr()->addCase([
+                        $query->newExpr()->add([$this->aliasField('id') . ' IN' => $matchingConditions]),
+                        1,
+                        'boolean'
+                    ])
+        ]);
+        return $query;
+    }
+
+    /**
+     * @return \Search\Manager
+     */
+    public function searchManager() {
+
+        /** @var \Search\Manager $searchManager */
+        $searchManager = $this->behaviors()->Search->searchManager();
+        $searchManager
+                ->value('user_id')
+                ->like('title', ['field' => 'title', 'before' => true, 'after' => true])
+                ->finder('match')
+        ;
+
+
+        return $searchManager;
+    }
+
+    
+    /**
+     * 検索時、ログインユーザーに条件適合するもののみ表示
+     * 実装はfindUserに丸投げ
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
+    public function findMatch($query, $options) {
+        $session = new Session();
+        $loginUserId = $session->read('Auth.User.id');
+        $userId = Hash::get($options, 'user_id', $loginUserId);
+        $query->find('user',['user_id'=>$userId]);
         return $query;
     }
 

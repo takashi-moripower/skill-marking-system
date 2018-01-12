@@ -13,7 +13,7 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
 ?>
 <div class="card mt-2 border-primary">
     <div class="card-body py-2">
-        <?= $this->Form->create(null, ['valueSources' => 'data']); ?>
+        <?= $this->Form->create(null, ['valueSources' => 'data','url'=>['controller'=>'works','action'=>'index']]); ?>
         <div class="form-group row mb-0">
             <label class="col-2 col-form-label">キーワード</label>
             <div class="col-4">
@@ -38,7 +38,7 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
                 <?php if ($loginUserGroup != Defines::GROUP_ENGINEER): ?>
                     <label class="col-2 col-form-label mt-1">所属組織</label>
                     <div class="col-4 mt-1">
-                        <?= $this->Form->select('organization_id', $organizations, ['class' => 'form-control']) ?>
+                        <?= $this->Form->select('organization_id', $organizations, ['class' => 'form-control','empty'=>'すべて']) ?>
                     </div>
                 <?php endif; ?>
             </div>

@@ -165,13 +165,13 @@ class OrganizationsTable extends Table {
         $tableOU = TableRegistry::get('organizations_users');
 
         $fromMembers = $tableOU
-                ->find('list',['valueField'=>'user_id'])
+                ->find('list', ['valueField' => 'user_id'])
                 ->where(['organization_id' => $from])
                 ->select('user_id')
                 ->toArray();
 
         $toMembers = $tableOU
-                ->find('list',['valueField'=>'user_id'])
+                ->find('list', ['valueField' => 'user_id'])
                 ->where(['organization_id' => $to])
                 ->select('user_id')
                 ->toArray();
@@ -192,4 +192,18 @@ class OrganizationsTable extends Table {
         }
     }
 
+    /**
+     * Home画面統計表示用
+     * @param type $query
+     * @param type $options
+     */
+    public function findHome($query, $options) {
+        $user_id = Hash::get($options, 'user_id');
+
+        $query->find('pathName')
+                ->select($this)
+                ->find('user', ['user_id' => $user_id,'relation'=>'children']);
+
+        return $query;
+    }
 }

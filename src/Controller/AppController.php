@@ -20,6 +20,7 @@ use Cake\Controller\Controller;
 use Cake\Event\Event;
 use Cake\Controller\ComponentRegistry;
 use Acl\Controller\Component\AclComponent;
+
 /**
  * Application Controller
  *
@@ -62,7 +63,7 @@ class AppController extends Controller {
                 ]
             ]
         ]);
-        
+
         $this->viewBuilder()->setLayout('bootstrap');
     }
 
@@ -86,18 +87,27 @@ class AppController extends Controller {
     public function beforeFilter(Event $event) {
 
         //デバッグ時はすべてのアクションにアクセス可能にする
-        if (\Cake\Core\Configure::read('debug') ) {
+        if (\Cake\Core\Configure::read('debug')) {
             $this->Auth->allow();
         }
     }
-    
-    public function isAuthorized($user)
-    {
+
+    public function isAuthorized($user) {
         $Collection = new ComponentRegistry();
         $acl = new AclComponent($Collection);
         $controller = $this->request->controller;
-        $action     = $this->request->action;
+        $action = $this->request->action;
         return $acl->check(['Users' => ['id' => $user['id']]], "$controller/$action");
-    }    
+    }
+
+    protected function _getCurrentMode() {
+        $session = $this->request->Session();
+        return $session->read('App.Mode');
+    }
+
+    protected function _setCurrentMode($mode) {
+        $session = $this->request->Session();
+        $session->write('App.Mode', $mode);
+    }
 
 }

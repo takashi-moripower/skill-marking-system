@@ -63,15 +63,8 @@ class DummyDataComponent extends Component {
         ]);
 
         $r = $tableU->save($admin);
-        /*
-          echo "<pre>";
-          print_r($admin);
-          echo "</pre>";
-          exit();
 
-
-          exit();
-         */
+        
         $organizations = $tableO->find()
                 ->where(['parent_id is' => null]);
         foreach ($organizations as $org) {

@@ -172,6 +172,8 @@ class UsersTable extends Table {
                 ->finder('skill', ['finder' => 'Skills'])
                 ->finder('organization_id', ['finder' => 'RootOrganization'])
                 ->finder('condition_id',['finder'=>'Condition'])
+                ->value('group_id')
+                ->like('name',['field'=>'name','before'=>true,'after'=>true])
         ;
 
 

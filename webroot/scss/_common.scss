@@ -20,3 +20,23 @@ $color-skill-loginuser:#AAD88E;
     font-size:0.8rem;
     border-color:#ccc;
 }
+
+
+.btn{
+    
+    @mixin btn-mode($color){
+        border-color:$color;
+        color:$color;
+        &:hover{
+            color:white;
+            background-color:$color;
+        }
+    }
+    
+    &.btn-mode-1{
+        @include btn-mode( $color-mode-matching );
+    }
+    &.btn-mode-2{
+        @include btn-mode( $color-mode-marking );
+    }
+}

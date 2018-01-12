@@ -18,9 +18,18 @@ class ConditionsController extends AppController {
     public function index() {
         $loginUserId = $this->Auth->user('id');
         $loginUserGroup = $this->Auth->user('group_id');
+        
+        $this->paginate = [
+            'order'=>['title' => 'ASC']
+        ];
 
         $query = $this->Conditions->find()
-                ->contain(['Skills' => ['sort' => 'Skills.id'], 'Users', 'Contacts']);
+                ->find('search', ['search' => $this->request->data])
+                ->find('setMatch',['user_id'=>$loginUserId])
+                ->contain(['Skills' => ['sort' => 'Skills.id'], 'Users', 'Contacts'])
+                ->select( $this->Conditions )
+                ->select( $this->Conditions->Users )
+                ;
 
         switch ($loginUserGroup) {
             case Defines::GROUP_MARKER:
@@ -28,15 +37,35 @@ class ConditionsController extends AppController {
                 break;
 
             case Defines::GROUP_ENGINEER:
+                $orgs1 = TableRegistry::get('Organizations')->find('user',['user_id'=>$loginUserId,'relation'=>'parents'])
+                    ->select('Organizations.id');
+                $orgs2 = TableRegistry::get('Organizations')->find('user',['user_id'=>$loginUserId,'relation'=>'children'])
+                    ->select('Organizations.id');
+                
+                $companies = TableRegistry::get('OrganizationsUsers')->find()
+                        ->select('user_id')
+                        ->where(['or'=>[
+                            'organization_id in' => $orgs1,
+                            'organization_id IN' => $orgs2,
+                        ]]);
+                
                 $query->where(['Conditions.published <> 0'])
-                        ->find('user', ['user_id' => $loginUserId]);
+                        ->where(['Conditions.user_id IN' => $companies ]);
                 break;
         }
-
-
+        
         $conditions = $this->paginate($query);
+        
+        //検索用
+        $condition_owner =  $this->Conditions->find()
+                ->where(['published' => 1])
+                ->select('user_id');
 
-        $this->set(compact('conditions'));
+        $companies = $this->Conditions->Users->find('list',['keyField'=>'id','valueField'=>'name'])
+                ->where(['id IN' => $condition_owner]);
+        
+
+        $this->set(compact('conditions','companies'));
     }
 
     public function view($id) {
@@ -52,6 +81,7 @@ class ConditionsController extends AppController {
             'contain' => [
                 'Skills' => ['sort' => 'skill_id'],
                 'ConditionOptions',
+                'Users'
             ]
         ]);
         $this->set(compact('condition', 'contacts'));

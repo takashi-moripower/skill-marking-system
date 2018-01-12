@@ -44,8 +44,8 @@ class WorksController extends AppController {
         ];
 
         $query = $this->Works
-                ->find('mark')
-                ->find('user', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup])
+//                ->find('mark')
+//                ->find('user', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup])
                 ->find('search', ['search' => $this->request->data])
                 ->group($this->Works->aliasField('id'))
                 ->select($this->Works);

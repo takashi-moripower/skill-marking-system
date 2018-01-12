@@ -96,8 +96,11 @@ class DebugController extends AppController {
 
     public function loginAs($user_id = null) {
         $tableU = TableRegistry::get('Users');
+        $mode = $this->_getCurrentMode();
+        
         if (isset($user_id)) {
             $user = $tableU->getSessionData($user_id);
+            $user->mode = $mode;
             $this->Auth->setUser($user);
             $this->redirect(['controller' => 'home', 'action' => 'index']);
         }

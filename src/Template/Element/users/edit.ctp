@@ -20,15 +20,15 @@ $this->Form->templates([
             <tbody>
                 <tr>
                     <th class="w-20 border-top-0">名称</th>
-                    <td class="border-top-0"><?= $this->Form->control('name', ['label' => false,'class'=>'w-100','default'=>'']); ?></td>
+                    <td class="border-top-0"><?= $this->Form->control('name', ['label' => false, 'class' => 'w-100', 'default' => '']); ?></td>
                 </tr>
                 <tr>
                     <th>email</th>
-                    <td><?= $this->Form->control('email', ['label' => false,'class'=>'w-100','default'=>'']); ?></td>
+                    <td><?= $this->Form->control('email', ['label' => false, 'class' => 'w-100', 'default' => '']); ?></td>
                 </tr>
                 <tr>
                     <th>password</th>
-                    <td><?= $this->Form->control('password', ['label' => false, 'value' => '','class'=>'w-100']); ?></td>
+                    <td><?= $this->Form->control('password', ['label' => false, 'value' => '', 'class' => 'w-100']); ?></td>
                 </tr>
                 <?php if ($this->request->params['controller'] == 'Users'): ?>
                     <tr>
@@ -59,7 +59,7 @@ $this->Form->templates([
                 </tr>
                 <tr>
                     <th>ユーザ紹介</th>
-                    <td><?= $this->Form->control('note', ['label' => false, 'class' => 'w-100']) ?></td>
+                    <td><?= $this->Form->control('note', ['label' => false, 'class' => 'w-100' ,'id'=>'editor']) ?></td>
                 </tr>
             </tbody>
             <?php if ($user->group_id == Defines::GROUP_ENGINEER): ?>
@@ -67,7 +67,7 @@ $this->Form->templates([
                     <tr>
                         <th>性別</th>
                         <td>
-                            <?= $this->Form->hidden('engineer.user_id', ['value'=>$user->id]) ?>
+                            <?= $this->Form->hidden('engineer.user_id', ['value' => $user->id]) ?>
                             <?= $this->Form->select('engineer.sex', Defines::USERS_SEX, ['label' => false]) ?>
                         </td>
                     </tr>
@@ -90,3 +90,14 @@ $this->Form->templates([
     </div>
 </div>
 <?= $this->Form->end ?>
+<script>
+    // エディタへの設定を適用する
+    CKEDITOR.replace('editor', {
+        uiColor: '#EEEEEE',
+        height: 400,
+    });
+</script>
+
+<?php $this->append('script') ?>
+<script src="https://cdn.ckeditor.com/4.5.6/standard/ckeditor.js"></script>
+<?php $this->end() ?>

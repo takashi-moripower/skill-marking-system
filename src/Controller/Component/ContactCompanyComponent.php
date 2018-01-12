@@ -18,19 +18,21 @@ class ContactCompanyComponent extends Component {
     }
 
     public function allow($contact) {
-        $contact->flags |= Defines::CONTACT_FLAG_ALLOW_BY_TEACHER;
+        $contact->clearFlag(Defines::CONTACT_FLAG_DENIED_BY_COMPANY);
+        $contact->flags |= Defines::CONTACT_FLAG_ALLOW_BY_COMPANY;
         $contact->teacher_date = new \DateTime;
         return $contact;
     }
 
     public function deny($contact) {
-        $contact->flags |= Defines::CONTACT_FLAG_DENIED_BY_TEACHER;
+        $contact->clearFlag(Defines::CONTACT_FLAG_ALLOW_BY_COMPANY);
+        $contact->flags |= Defines::CONTACT_FLAG_DENIED_BY_COMPANY;
         $contact->teacher_date = null;
         return $contact;
     }
 
     public function cancel($contact) {
-        $contact->clearFlag(Defines::CONTACT_FLAG_ALLOW_BY_TEACHER | Defines::CONTACT_FLAG_DENIED_BY_TEACHER);
+        $contact->clearFlag(Defines::CONTACT_FLAG_ALLOW_BY_COMPANY | Defines::CONTACT_FLAG_DENIED_BY_COMPANY);
         $contact->teacher_date = null;
         return $contact;
     }

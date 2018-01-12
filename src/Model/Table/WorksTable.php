@@ -127,34 +127,18 @@ class WorksTable extends Table {
      * @return type
      */
     public function findOrganization($query, $options) {
-        if (isset($options['organization_id'])) {
-            $org_id = $options['organization_id'];
-
-            $query->join([
-                'OU' => [
-                    'table' => 'organizations_users',
-                    'type' => 'left',
-                    'conditions' => ['OU.user_id =' . $this->aliasField('user_id')]
-                ]
-            ]);
-            $query->where(['OU.organization_id' => $org_id]);
-        }
-
-
-        if (isset($options['organization_ids'])) {
-            $org_ids = $options['organization_ids'];
-
-            $query->join([
-                'OU' => [
-                    'table' => 'organizations_users',
-                    'type' => 'left',
-                    'conditions' => ['OU.user_id =' . $this->aliasField('user_id')]
-                ]
-            ]);
-            $query->where(['OU.organization_id IN' => $org_ids]);
-        }
+        $org_ids = Hash::get($options, 'organization_ids', [Hash::get($options, 'organization_id')]);
+        $users = TableRegistry::get('OrganizationsUsers')->find()
+                ->where(['organization_id IN' => $org_ids])
+                ->group('user_id')
+                ->select('user_id');
+        
+        $query->where([ $this->aliasField('user_id').' IN'=>$users ]);
+        
         return $query;
     }
+
+    
 
     /**
      * 絞り込み検索用　所属ジャンル

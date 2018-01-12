@@ -35,7 +35,6 @@ class ContactsController extends AppController {
         $query = $this->Contacts
                 ->find('visible', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup])
                 ->contain(['Users', 'Conditions']);
-
         $contacts = $this->paginate($query);
 
         $this->set('contacts', $contacts);
@@ -81,7 +80,7 @@ class ContactsController extends AppController {
     public function cancel() {
         $contact_id = $this->request->data('contact_id');
         $callback_url = $this->request->data('callback_url');
-
+        
         $contact = $this->Contacts->get($contact_id);
         $contact = $this->Component->cancel($contact);
 

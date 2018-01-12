@@ -5803,3 +5803,17 @@ img.thumbnail {
 .skill-cell {
   font-size: 0.8rem;
   border-color: #ccc; }
+
+.btn.btn-mode-1 {
+  border-color: #007bff;
+  color: #007bff; }
+  .btn.btn-mode-1:hover {
+    color: white;
+    background-color: #007bff; }
+
+.btn.btn-mode-2 {
+  border-color: #28a745;
+  color: #28a745; }
+  .btn.btn-mode-2:hover {
+    color: white;
+    background-color: #28a745; }

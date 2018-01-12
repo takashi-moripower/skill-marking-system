@@ -1,7 +1,6 @@
 <?php
-
 echo $this->Element('contacts/list');
 ?>
-
-<?= $this->Element('paginator'); ?>
-
+<div class="my-2">
+    <?= $this->Element('paginator'); ?>
+</div>

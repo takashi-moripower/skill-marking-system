@@ -1,6 +1,7 @@
 <?php
 
 use App\Defines\Defines;
+use App\Utility\MyUtil;
 
 $loginUserGroup = $this->getLoginUser('group_id');
 ?>
@@ -30,7 +31,7 @@ $loginUserGroup = $this->getLoginUser('group_id');
                 </tr>
                 <tr>
                     <th>解説</th>
-                    <td><?= nl2br(h($work->note)) ?></td>
+                    <td><?= MyUtil::strip_tags($work->note) ?></td>
                 </tr>
                 <tr>
                     <th>添付ファイル</th>

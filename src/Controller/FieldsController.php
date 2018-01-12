@@ -32,6 +32,7 @@ class FieldsController extends AppController {
         $query = $this->Fields
                 ->find('usable',['user_id'=>$loginUser['id']])
                 ->find('countSkills')
+                ->find('countSkillsChildren')
                 ->find('pathName')
                 ->select($this->Fields)
                 ->select($this->Fields->Organizations)

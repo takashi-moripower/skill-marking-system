@@ -12,7 +12,7 @@ use Cake\Utility\Hash;
     <tbody>
         <?php foreach ($users as $user): ?>
             <tr>
-                <td>
+                <td class="text-nowrap">
                     <?= $this->Html->link(h($user->name), ['controller' => 'debug', 'action' => 'loginAs', $user->id]) ?>
                 </td>
                 <td>

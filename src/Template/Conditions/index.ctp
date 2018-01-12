@@ -19,9 +19,8 @@ $loginUserGroup = $this->getLoginUser('group_id');
             <th><?= $this->Paginator->sort('user_id', '主催'); ?></th>
             <th class="text-nowrap">
                 適合
-                <button type="button" class="btn btn-outline-info btn-sm py-0 px-1" data-toggle="tooltip" data-placement="top" title="あなたのスキルが募集条件に適合しているかどうかを表示します">
-                    ?
-                </button>            </th>
+                <?= $this->Element('popup_hint',['message'=>'あなたのスキルが募集条件に適合している場合　マークが表示されます'])?>
+            </th>
             <th class="w-40">スキル</th>
             <?php if ($loginUserGroup != Defines::GROUP_ENGINEER): ?>
                 <th>操作</th>
@@ -35,7 +34,7 @@ $loginUserGroup = $this->getLoginUser('group_id');
                     <?= $condition->published ? '<i class="fa fa-globe"></i>' : '' ?>
                 </td>
                 <th><?= $this->Html->link(h($condition->title), ['controller' => 'conditions', 'action' => 'view', $condition->id]) ?></th>
-                <th><?= $this->Html->link(h($condition->user->name), ['controller' => 'users', 'action' => 'view', $condition->user_id]) ?></th>
+                <th class="text-nowrap"><?= $this->Html->link(h($condition->user->name), ['controller' => 'users', 'action' => 'view', $condition->user_id]) ?></th>
                 <td class="text-center w-5">
                     <?= $condition->match ? '<i class="fa fa-hand-peace-o"></i>' : '' ?>
                 </td>
@@ -64,8 +63,6 @@ $loginUserGroup = $this->getLoginUser('group_id');
 <?php $this->append('script'); ?>
 <script>
     $(function () {
-        $('[data-toggle="tooltip"]').tooltip();
-
         $(document).on('click', 'a.btn[role="delete"]', function (event) {
             if (confirm('realy delete?')) {
                 form = $(event.target).siblings('form');

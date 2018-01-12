@@ -14,7 +14,10 @@ use Cake\Utility\Hash;
             <th>管轄組織</th>
             <th>名称</th>
             <th>説明</th>
-            <th>スキル</th>
+            <th>
+                スキル数
+                <?= $this->Element('popup_hint',['message'=>'下位分野を含む(含まない)']) ?>
+            </th>
             <th>操作</th>
         </tr>
     </thead>
@@ -30,16 +33,16 @@ use Cake\Utility\Hash;
                     <?= h($field->note) ?>
                 </td>
                 <td class="text-right">
-                    <a href="<?= $this->Url->build(['controller' => 'skills', 'action' => 'index', 'organization_id' => $field->organization_id, 'field_id' => $field->id]) ?>">
-                        <?= h($field->skill_count) ?>
+                    <a href="<?= $this->Url->build(['controller' => 'skills', 'action' => 'index', 'organization_id' => $field->organization_id, 'field_id' => $field->id, 'clear' => 1]) ?>">
+                        <?= sprintf( '%2d ( %2d )' , $field->skill_count_children , $field->skill_count) ?>
                     </a>
                 </td>
                 <td>
-                    <?php if( $field->editable ): ?>
-                    <?= $this->Html->link('編集', ['controller' => 'fields', 'action' => 'edit', $field->id], ['class' => 'btn btn-sm btn-outline-primary py-0']) ?>
-                    <?= $this->Html->link('削除', ['controller' => 'fields', 'action' => 'delete', $field->id], ['class' => 'btn btn-sm btn-outline-danger py-0', 'role' => 'delete']) ?>
-                    <?= $this->Form->create(null, ['method' => 'POST', 'url' => ['controller' => 'fields', 'action' => 'delete', $field->id], 'object_id' => $field->id, "role" => "delete"]) ?>
-                    <?= $this->Form->end() ?>
+                    <?php if ($field->editable): ?>
+                        <?= $this->Html->link('編集', ['controller' => 'fields', 'action' => 'edit', $field->id], ['class' => 'btn btn-sm btn-outline-primary py-0']) ?>
+                        <?= $this->Html->link('削除', ['controller' => 'fields', 'action' => 'delete', $field->id], ['class' => 'btn btn-sm btn-outline-danger py-0', 'role' => 'delete']) ?>
+                        <?= $this->Form->create(null, ['method' => 'POST', 'url' => ['controller' => 'fields', 'action' => 'delete', $field->id], 'object_id' => $field->id, "role" => "delete"]) ?>
+                        <?= $this->Form->end() ?>
                     <?php else: ?>
                     <?php endif; ?>
                 </td>

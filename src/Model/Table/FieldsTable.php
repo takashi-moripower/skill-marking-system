@@ -215,6 +215,23 @@ class FieldsTable extends Table {
         return $query;
     }
 
+    public function findCountSkillsChildren($query, $options) {
+        $children = TableRegistry::get('Descendants', ['table' => 'fields'])
+                ->find()
+                ->where(['Descendants.lft >=' . $this->aliasField('lft'), 'Descendants.rght <=' . $this->aliasField('rght')])
+                ->select('Descendants.id');
+
+
+
+        $skills = TableRegistry::get('Skills')->find()
+                ->where(['Skills.field_id IN' => $children])
+                ->select(['count' => 'count(Skills.id)']);
+
+        $query->select(['skill_count_children' => $skills]);
+
+        return $query;
+    }
+
     public function findSetEditable($query, $options) {
         $user_id = Hash::get($options, 'user_id');
 
@@ -229,7 +246,7 @@ class FieldsTable extends Table {
                         'boolean'
                     ])
         ]);
-        
+
         return $query;
     }
 

@@ -19,14 +19,14 @@ switch( $loginUser->group_id ){
         $contact_states = Defines::CONTACT_STATES_ENGINEER;
         break;
 }
-
-
 ?>
 
 <table class="table table-bordered table-sm m-0">
     <thead>
         <tr class="">
-            <th class="w-15" >技術者名</th>
+            <th class="w-15">
+                技術者名
+            </th>
             <th class="">
                 人材募集
             </th>

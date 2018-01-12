@@ -14,10 +14,7 @@ $isConditionSearch = !empty($this->request->getData('condition_id'));
             <th class="" >所属</th>
             <th class="">
                 スキル評価
-                <button type="button" class="btn btn-outline-primary hint btn-sm py-0" data-toggle="tooltip" data-html="true" title="<div class='text-left'>各スキルで最大レベルのみ表示</div>">
-                    <i class="fa fa-question"></i>
-                </button>
-
+                <?= $this->Element('popup_hint',['message'=>'各スキルで最大レベルのみ表示'])?>
             </th>
             <th class="">操作</th>
         </tr>

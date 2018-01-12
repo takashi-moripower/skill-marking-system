@@ -16,11 +16,3 @@ if ($isConditionSearch) {
 <?= $this->Element('engineers/index') ?>
 
 <?= $this->Element('paginator'); ?>
-
-<?php $this->append('script') ?>
-<script>
-    $(function () {
-        $('.hint').tooltip();
-    });
-</script>
-<?php $this->end() ?>

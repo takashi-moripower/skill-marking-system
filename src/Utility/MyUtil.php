@@ -28,8 +28,12 @@ class MyUtil {
         }
     }
 
-    public static function getAges() {
-        $result = ['' => '制限なし'];
+    public static function getAges($empty = '制限なし') {
+        if (isset($empty)) {
+            $result = ['' => $empty];
+        } else {
+            $result = [];
+        }
         foreach (range(Defines::CONDITION_AGE_RANGE_MIN, Defines::CONDITION_AGE_RANGE_MAX) as $age) {
             $result[$age] = $age . '歳';
         }

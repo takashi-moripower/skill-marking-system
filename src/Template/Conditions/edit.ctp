@@ -12,7 +12,6 @@ $skillDefault = (object) [
 $this->Form->templates(
         Defines::FORM_TEMPLATE_INLINE_CHECKBOX + Defines::FORM_TEMPLATE_RADIO
 );
-
 ?>
 
 <?= $this->Form->create($condition, ['name' => 'main']) ?>
@@ -31,7 +30,7 @@ $this->Form->templates(
                 <tr>
                     <th>
                         公開
-                        <?= $this->Element('popup_hint',['message'=>'非公開にすると、学生視点の人材募集条件一覧には表示されず、学生からは応募できなくなります。主催者側から勧誘することは可能です'])?>
+                        <?= $this->Element('popup_hint', ['message' => '非公開にすると、学生視点の人材募集条件一覧には表示されず、学生からは応募できなくなります。主催者側から勧誘することは可能です']) ?>
                     </th>
                     <td><?= $this->Form->radio('published', Defines::CONDITION_PUBLISHED_STATE); ?></td>
                 </tr>
@@ -49,16 +48,16 @@ $this->Form->templates(
                 <tr>
                     <th>
                         年齢
-                        <?= $this->Element('popup_hint',['message'=>'開催日とは関係なく、<br/>検索実行時の年齢で絞り込みます'])?>
+                        <?= $this->Element('popup_hint', ['message' => '開催日とは関係なく、<br/>検索実行時の年齢で絞り込みます']) ?>
                     </th>
                     <td>
                         <div class="row">
                             <div class="col-10">
                                 最低:
-                                <?= $this->Form->select('min_age', $ages, ['empty' => '制限なし']); ?>
+                                <?= $this->Form->select('min_age', MyUtil::getAges()); ?>
                                 ～
                                 最高:
-                                <?= $this->Form->select('max_age', $ages, ['empty' => '制限なし']); ?>
+                                <?= $this->Form->select('max_age', MyUtil::getAges()); ?>
                             </div>
                             <div class="col-2 text-right">
                                 <button type="button" name="remove_option" class="btn btn-sm btn-outline-danger">削除</button>

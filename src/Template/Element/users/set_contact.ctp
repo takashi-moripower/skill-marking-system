@@ -6,6 +6,7 @@ use Cake\Routing\Router;
 $Contacts = \Cake\ORM\TableRegistry::get('Contacts');
 $loginUserGroup = $this->getLoginUser('group_id');
 $url = Router::url(null, true);
+$condition_id = $this->request->getData('condition_id');
 
 switch ($loginUserGroup) {
     case Defines::GROUP_ADMIN:

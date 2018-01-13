@@ -262,7 +262,6 @@ class ConditionsTable extends Table {
         return $searchManager;
     }
 
-    
     /**
      * 検索時、ログインユーザーに条件適合するもののみ表示
      * 実装はfindUserに丸投げ
@@ -274,8 +273,25 @@ class ConditionsTable extends Table {
         $session = new Session();
         $loginUserId = $session->read('Auth.User.id');
         $userId = Hash::get($options, 'user_id', $loginUserId);
-        $query->find('user',['user_id'=>$userId]);
+        $query->find('user', ['user_id' => $userId]);
         return $query;
+    }
+
+    public function beforeSave($event, $entity, $options) {
+        $ContitionOptions = TableRegistry::get('ConditionOptions');
+
+        foreach ($entity->condition_options as $option_id => $option) {
+            if( $option->value == null || $option->value == '' ){
+                $ContitionOptions->query()
+                        ->delete()
+                        ->where(['condition_id'=>$entity->id,'type'=>$option->type])
+                        ->execute();
+                
+                unset( $entity->condition_options[$option_id] );
+            }
+        }
+        
+        return true;
     }
 
 }

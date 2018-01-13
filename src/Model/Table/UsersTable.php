@@ -8,6 +8,9 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use Cake\Utility\Hash;
+use DateTime;
+use App\Defines\Defines;
+use App\Utility\MyUtil;
 
 /**
  * Users Model
@@ -74,7 +77,7 @@ class UsersTable extends Table {
         $validator
                 ->email('email')
                 ->notEmpty('email')
-                ;
+        ;
 
         $validator
                 ->scalar('password')
@@ -168,28 +171,40 @@ class UsersTable extends Table {
         $searchManager = $this->behaviors()->Search->searchManager();
         $searchManager
                 ->finder('sex')
-                ->finder('age')
+                ->finder('max_age',['finder'=>'maxAge'])
+                ->finder('min_age',['finder'=>'minAge'])
                 ->finder('skill', ['finder' => 'Skills'])
                 ->finder('organization_id', ['finder' => 'RootOrganization'])
-                ->finder('condition_id',['finder'=>'Condition'])
+                ->finder('condition_id', ['finder' => 'Condition'])
                 ->value('group_id')
-                ->like('name',['field'=>'name','before'=>true,'after'=>true])
+                ->like('name', ['field' => 'name', 'before' => true, 'after' => true])
         ;
 
 
         return $searchManager;
     }
+
+    public function findMaxAge($query, $options) {
+        $max_age = Hash::get($options, 'max_age');
+        $min_birthday = new DateTime();
+        $min_birthday->modify("-{$max_age} years");
+        $query->where(['Engineers.birthday >=' => $min_birthday]);
+        return $query;
+    }
     
-    public function findAge($query , $options){
-        $age_max = Hash::get($options,$age_max);
-        $age_min = Hash::get($options,$age_min);
+    public function findMinAge( $query , $options ){
+        $min_age = Hash::get($options, 'min_age');
+        $max_birthday = new DateTime();
+        $max_birthday->modify("-{$min_age} years");
+        $query->where(['Engineers.birthday <=' => $max_birthday]);
+        return $query;
     }
 
     public function findSex($query, $options) {
         if (empty($options['sex'])) {
             return $query;
         }
-        
+
         $query->where(['Engineers.sex' => $options['sex']]);
         return $query;
     }
@@ -204,6 +219,7 @@ class UsersTable extends Table {
 
         return $query;
     }
+
     /**
      * 特定スキルの所持者を取得
      * @param type $query
@@ -280,17 +296,17 @@ class UsersTable extends Table {
         $query->where([$this->aliasField('id') . ' IN' => $members]);
         return $query;
     }
-    
+
     /**
      * findEditableに丸投げ
      * @param type $query
      * @param type $options
      * @return type
      */
-    public function findStudents($query,$options){
-        $user_id = Hash::get($options,'teacher_id' , Hash::get($options,'user_id'));
-        
-        return $query->find('Editable',compact('user_id'));
+    public function findStudents($query, $options) {
+        $user_id = Hash::get($options, 'teacher_id', Hash::get($options, 'user_id'));
+
+        return $query->find('Editable', compact('user_id'));
     }
 
     public function beforeDelete($id) {
@@ -306,15 +322,27 @@ class UsersTable extends Table {
          */
         return true;
     }
-    
-    public function findCondition( $query , $options ){
-        $condition = TableRegistry::get('Conditions')->get($options['condition_id'],['contain'=>['Skills','ConditionOptions']]);
-              
-        foreach( $condition->skills as $skill ){
-            $query->find('skill',['skill'=>['id'=>$skill->id , 'level'=> SkillsTable::flags2Array( $skill->_joinData->levels )]]);
+
+    public function findCondition($query, $options) {
+        $condition = TableRegistry::get('Conditions')->get($options['condition_id'], ['contain' => ['Skills', 'ConditionOptions']]);
+
+        foreach ($condition->skills as $skill) {
+            $query->find('skill', ['skill' => ['id' => $skill->id, 'level' => MyUtil::flags2Array($skill->_joinData->levels)]]);
         }
+
+        if (isset($condition->sex) && $condition->sex != Defines::SEX_INDIFFARENCE) {
+            $query->find('sex', ['sex' => $condition->sex]);
+        }
+
+        if (isset($condition->max_age)) {
+            $query->find('maxAge',['max_age'=>$condition->max_age]);
+        }
+        if (isset($condition->min_age)) {
+            $query->find('minAge',['min_age'=>$condition->min_age]);
+        }
+
         
-        return $query ;
+        return $query;
     }
 
 }

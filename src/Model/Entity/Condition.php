@@ -66,6 +66,27 @@ class Condition extends Entity {
         }
         return $this->setOpValue(Defines::CONDITION_OPTION_TYPE_DATE_END, $value);
     }
+    
+    protected function _getSex( $value ){
+        return $this->getOpValue(Defines::CONDITION_OPTION_TYPE_SEX, $value);
+    }
+    
+    protected function _setSex( $value ){
+        return $this->setOpValue(Defines::CONDITION_OPTION_TYPE_SEX, $value);
+    }
+    
+    protected function _getMaxAge( $value ){
+        return $this->getOpValue( Defines::CONDITION_OPTION_TYPE_MAX_AGE , $value);
+    }
+    protected function _setMaxAge( $value ){
+        return $this->setOpValue( Defines::CONDITION_OPTION_TYPE_MAX_AGE , $value);
+    }
+    protected function _getMinAge( $value ){
+        return $this->getOpValue( Defines::CONDITION_OPTION_TYPE_MIN_AGE , $value);
+    }
+    protected function _setMinAge( $value ){
+        return $this->setOpValue( Defines::CONDITION_OPTION_TYPE_MIN_AGE , $value);
+    }
 
     public function getOp($type) {
         foreach ((array) $this->condition_options as $op) {

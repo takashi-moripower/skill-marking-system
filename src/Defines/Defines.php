@@ -18,7 +18,6 @@ class Defines {
     /*
      * 数値設定
      */
-
     const SKILL_LEVEL_MAX = 4;
 
     /*
@@ -43,7 +42,7 @@ class Defines {
     const SEX_MALE = 1;
     const SEX_FEMALE = 2;
     const SEX_INDIFFARENCE = 0;
-    const CONDITIONS_SEX = [
+    const CONDITION_SEX_OPTIONS = [
         self::SEX_INDIFFARENCE => '性別不問',
         self::SEX_MALE => '男性のみ',
         self::SEX_FEMALE => '女性のみ'
@@ -185,12 +184,12 @@ class Defines {
     const CONDITION_OPTION_TYPE_DATE_START = 4;
     const CONDITION_OPTION_TYPE_DATE_END = 5;
     const CONDITION_OPTION_TYPE_LOCATION = 6;
+    const CONDITION_OPTION_TYPE_SKILL = 255;
     const CONDITION_OPTIONS = [
-        self::CONDITION_OPTION_TYPE_MAX_AGE => '年齢上限',
-        self::CONDITION_OPTION_TYPE_MIN_AGE => '年齢下限',
+        self::CONDITION_OPTION_TYPE_SKILL => 'スキル',
         self::CONDITION_OPTION_TYPE_SEX => '性別',
-        self::CONDITION_OPTION_TYPE_DATE_START => '期間(開始日）',
-        self::CONDITION_OPTION_TYPE_DATE_START => '期間(終了日）',
+        self::CONDITION_OPTION_TYPE_MAX_AGE => '年齢',
+        self::CONDITION_OPTION_TYPE_DATE_START => '期間',
         self::CONDITION_OPTION_TYPE_LOCATION => '開催地'
     ];
     const CONDITION_PUBLISHED_TRUE = 1;
@@ -199,6 +198,10 @@ class Defines {
         self::CONDITION_PUBLISHED_TRUE => '公開',
         self::CONDITION_PUBLISHED_FALSE => '非公開',
     ];
+    
+    const CONDITION_AGE_RANGE_MAX = 99;
+    const CONDITION_AGE_RANGE_MIN = 1;
+    const CONDITION_AGE_INDIFFARENCE = null;
     
     const FORM_TEMPLATE_INLINE_CHECKBOX = ['checkboxWrapper' => '<div class="checkbox d-inline-block px-2">{{label}}</div>'];
     const FORM_TEMPLATE_DATE = ['dateWidget' => '{{year}} 年 {{month}} 月 {{day}} 日 '];
@@ -219,8 +222,6 @@ class Defines {
     const CONTACT_STATE_UNDEFINED = 0;
     const CONTACT_STATE_ALLOW = 1;
     const CONTACT_STATE_DENY = 2;
-
-
     const CONTACT_STATES_ENGINEER = [
         self::CONTACT_STATE_UNDEFINED => '未定',
         self::CONTACT_STATE_ALLOW => '応募',
@@ -236,13 +237,10 @@ class Defines {
         self::CONTACT_STATE_ALLOW => '勧誘',
         self::CONTACT_STATE_DENY => '見送',
     ];
-    
     const SKILL_DISPLAY_FLAG_DETAILED_OTHERS = 1;
     const SKILL_DISPLAY_FLAG_DETAILED_OWNER = 2;
     const SKILL_DISPLAY_FLAG_DETAILED_VIEWER = 4;
     const SKILL_DISPLAY_FLAG_FOR_ENGINEERS = 0;
     const SKILL_DISPLAY_FLAG_FOR_WORKS = self::SKILL_DISPLAY_FLAG_DETAILED_OWNER & self::SKILL_DISPLAY_FLAG_DETAILED_VIEWER;
-    
-    
 
 }

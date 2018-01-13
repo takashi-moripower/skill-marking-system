@@ -9,6 +9,7 @@ use Cake\Validation\Validator;
 use Cake\Utility\Hash;
 use Cake\ORM\TableRegistry;
 use Cake\Network\Session;
+use App\Utility\MyUtil;
 
 /**
  * Conditions Model
@@ -124,7 +125,7 @@ class ConditionsTable extends Table {
         }
 
         if (is_array($levels)) {
-            $levels = SkillsTable::array2flags($levels);
+            $levels = MyUtil::array2flags($levels);
         }
 
         $CS = $this->ConditionsSkills->find()

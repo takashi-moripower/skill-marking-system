@@ -1,6 +1,12 @@
 <?php
+
 use App\Defines\Defines;
+use App\Utility\MyUtil;
+
 $searchFormOpen = ( $this->request->getData('skill.1.id') != 0 || $this->request->getData('skill.2.id') != 0);
+$searchFormOpen |= !empty($this->request->getData('max_age'));
+$searchFormOpen |= !empty($this->request->getData('min_age'));
+$searchFormOpen |= !empty($this->request->getData('sex'));
 ?>
 <div class="card mt-2 border-primary">
     <div class="card-body py-2 px-3">
@@ -22,13 +28,13 @@ $searchFormOpen = ( $this->request->getData('skill.1.id') != 0 || $this->request
                         <div class='row mb-1'>
                             <div class="col-2">年齢</div>
                             <div class="col-6 p-0">
-                                <?= $this->Form->text('age_max', ['class' => 'text-right d-inline', 'placeHolder' => '年齢:上限' ,'style'=>'width:6rem']) ?> ～
-                                <?= $this->Form->text('age_min', ['class' => 'text-right d-inline', 'placeHolder' => '年齢:下限' ,'style'=>'width:6rem']) ?>
+                                最低：<?= $this->Form->select('min_age', MyUtil::getAges()); ?>　～
+                                最高：<?= $this->Form->select('max_age', MyUtil::getAges()); ?>
                             </div>
                         </div>
                         <div class='row mb-1'>
                             <div class="col-2">性別</div>
-                            <div class="col-2 p-0"><?= $this->Form->select('sex', Defines::CONDITIONS_SEX) ?></div>
+                            <div class="col-2 p-0"><?= $this->Form->select('sex', Defines::CONDITION_SEX_OPTIONS) ?></div>
                         </div>
                         <?= $this->Element('engineers/skillform', ['i' => 0]) ?>
                         <?= $this->Element('engineers/skillform', ['i' => 1]) ?>

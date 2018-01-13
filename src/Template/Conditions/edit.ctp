@@ -1,7 +1,7 @@
 <?php
 
 use App\Defines\Defines;
-use App\Model\Table\SkillsTable;
+use App\Utility\MyUtil;
 
 $skillDefault = (object) [
             'id' => 0,
@@ -13,14 +13,6 @@ $this->Form->templates(
         Defines::FORM_TEMPLATE_INLINE_CHECKBOX + Defines::FORM_TEMPLATE_RADIO
 );
 
-$option_types = [
-    'スキル',
-    '開催地',
-    '期間',
-];
-
-$location_valid = isset($condition->location);
-$date_valid = isset($condition->dateStart);
 ?>
 
 <?= $this->Form->create($condition, ['name' => 'main']) ?>
@@ -39,18 +31,77 @@ $date_valid = isset($condition->dateStart);
                 <tr>
                     <th>
                         公開
-                        <button type="button" class="btn btn-outline-info btn-sm ml-3" data-toggle="tooltip" data-placement="top" title="非公開にすると、学生からは人材募集一覧に表示されません">
-                            <i class="fa fa-question"></i>
-                        </button>
+                        <?= $this->Element('popup_hint',['message'=>'非公開にすると、学生視点の人材募集条件一覧には表示されず、学生からは応募できなくなります。主催者側から勧誘することは可能です'])?>
                     </th>
                     <td><?= $this->Form->radio('published', Defines::CONDITION_PUBLISHED_STATE); ?></td>
                 </tr>
                 <tr>
                     <th>説明</th>
-                    <td><?= $this->Form->control('note', ['label' => false, 'class' => 'w-100' , 'id'=>'editor']); ?></td>
+                    <td><?= $this->Form->control('note', ['label' => false, 'class' => 'w-100', 'id' => 'editor']); ?></td>
                 </tr>
             </tbody>
-            <tbody class="option<?= $location_valid ? '' : ' d-none' ?>" role="location" option_type="1">
+            <tbody class="skills">
+                <?php foreach ((array) $condition->skills as $skill): ?>
+                    <?= $this->Element('conditions/skill_row', ['skill' => $skill]); ?>
+                <?php endforeach ?>
+            </tbody>
+            <tbody class="option<?= (isset($condition->max_age) || isset($condition->min_age)) ? '' : ' d-none' ?>" role="date" option_type="<?= Defines::CONDITION_OPTION_TYPE_MAX_AGE ?>">
+                <tr>
+                    <th>
+                        年齢
+                        <?= $this->Element('popup_hint',['message'=>'開催日とは関係なく、<br/>検索実行時の年齢で絞り込みます'])?>
+                    </th>
+                    <td>
+                        <div class="row">
+                            <div class="col-10">
+                                最低:
+                                <?= $this->Form->select('min_age', $ages, ['empty' => '制限なし']); ?>
+                                ～
+                                最高:
+                                <?= $this->Form->select('max_age', $ages, ['empty' => '制限なし']); ?>
+                            </div>
+                            <div class="col-2 text-right">
+                                <button type="button" name="remove_option" class="btn btn-sm btn-outline-danger">削除</button>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+            </tbody>
+            <tbody class="option<?= isset($condition->sex) ? '' : ' d-none' ?>" role="date" option_type="<?= Defines::CONDITION_OPTION_TYPE_SEX ?>">
+                <tr>
+                    <th>性別</th>
+                    <td>
+                        <div class="row">
+                            <div class="col-10">
+                                <?= $this->Form->radio('sex', Defines::CONDITION_SEX_OPTIONS, ['default' => Defines::SEX_INDIFFARENCE]); ?>
+                            </div>
+                            <div class="col-2 text-right">
+                                <button type="button" name="remove_option" class="btn btn-sm btn-outline-danger">削除</button>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+            </tbody>
+            <tbody class="option<?= isset($condition->date_start) ? '' : ' d-none' ?>" role="date" option_type="<?= Defines::CONDITION_OPTION_TYPE_DATE_START ?>">
+                <tr>
+                    <th>期間</th>
+                    <td>
+                        <div class="row">
+                            <div class="col-10">
+                                <?= $this->Form->input('date_start', ['type' => 'date', 'label' => false, 'monthNames' => false, 'templates' => Defines::FORM_TEMPLATE_DATE + Defines::FORM_TEMPLATE_INLINE_CONTAINER]); ?> ～ 
+                                <?= $this->Form->input('date_end', ['type' => 'date', 'label' => false, 'monthNames' => false, 'templates' => Defines::FORM_TEMPLATE_DATE + Defines::FORM_TEMPLATE_INLINE_CONTAINER]); ?>
+                            </div>
+                            <div class="col-2 text-right">
+                                <button type="button" name="remove_option" class="btn btn-sm btn-outline-danger">削除</button>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+            </tbody>           
+            <tbody class="option<?= isset($conditon->location) ? '' : ' d-none' ?>" role="location" option_type="<?= Defines::CONDITION_OPTION_TYPE_LOCATION ?>">
                 <tr>
                     <th>開催地</th>
                     <td>
@@ -66,35 +117,12 @@ $date_valid = isset($condition->dateStart);
                     </td>
                 </tr>
             </tbody>
-            <tbody class="option<?= $date_valid ? '' : ' d-none' ?>" role="date" option_type="2">
-                <tr>
-                    <th>期間</th>
-                    <td>
-                        <div class="row">
-
-                            <div class="col-10">
-                                <?= $this->Form->input('date_start', ['type' => 'date', 'label' => false, 'monthNames' => false, 'templates' => Defines::FORM_TEMPLATE_DATE + Defines::FORM_TEMPLATE_INLINE_CONTAINER]); ?> ～ 
-                                <?= $this->Form->input('date_end', ['type' => 'date', 'label' => false, 'monthNames' => false, 'templates' => Defines::FORM_TEMPLATE_DATE + Defines::FORM_TEMPLATE_INLINE_CONTAINER]); ?>
-                            </div>
-                            <div class="col-2 text-right">
-                                <button type="button" name="remove_option" class="btn btn-sm btn-outline-danger">削除</button>
-                            </div>
-                        </div>
-
-                    </td>
-                </tr>
-            </tbody>
-            <tbody class="skills">
-                <?php foreach ((array) $condition->skills as $skill): ?>
-                    <?= $this->Element('conditions/skill_row', ['skill' => $skill]); ?>
-                <?php endforeach ?>
-            </tbody>
             <tbody class="new-skill">
                 <tr>
                     <th>条件を追加</th>
                     <td>
                         <div class="text-right">
-                            <?= $this->Form->select('option_type', $option_types) ?>
+                            <?= $this->Form->select('option_type', Defines::CONDITION_OPTIONS, ['empty' => false, 'default' => Defines::CONDITION_OPTION_TYPE_SKILL]) ?>
                             <button class='btn btn-sm btn-outline-primary' type='button' name='add_option'>条件を追加</button>
                         </div>
                     </td>
@@ -128,7 +156,7 @@ $date_valid = isset($condition->dateStart);
                     <?= $this->Form->select('skill_id', $skills, ['empty' => true, 'class' => 'w-100']) ?>
                 </div>
                 <div class="text-right mt-2">
-                    <?= $this->Form->select('skill_levels', SkillsTable::getSkillLevels(), ['multiple' => 'checkbox']) ?>
+                    <?= $this->Form->select('skill_levels', MyUtil::getSkillLevels(), ['multiple' => 'checkbox']) ?>
                 </div>
             </div>
             <div class="modal-footer">
@@ -154,6 +182,11 @@ $date_valid = isset($condition->dateStart);
 <script>
 
     var SKILLS = JSON.parse('<?= json_encode($skills) ?>');
+    var CONDITION_OPTION_TYPE_DATE_START = <?= Defines::CONDITION_OPTION_TYPE_DATE_START ?>;
+    var CONDITION_OPTION_TYPE_LOCATION = <?= Defines::CONDITION_OPTION_TYPE_LOCATION ?>;
+    var CONDITION_OPTION_TYPE_SEX = <?= Defines::CONDITION_OPTION_TYPE_SEX ?>;
+    var CONDITION_OPTION_TYPE_MAX_AGE = <?= Defines::CONDITION_OPTION_TYPE_MAX_AGE ?>;
+    var CONDITION_OPTION_TYPE_SKILL = <?= Defines::CONDITION_OPTION_TYPE_SKILL ?>;
 
     $(function () {
 
@@ -189,9 +222,12 @@ $date_valid = isset($condition->dateStart);
         }
 
         function updateConditionSelector() {
-            update(1);
-            update(2);
-            $('select[name="option_type"]').val(0);
+            update(CONDITION_OPTION_TYPE_DATE_START);
+            update(CONDITION_OPTION_TYPE_LOCATION);
+            update(CONDITION_OPTION_TYPE_SEX);
+            update(CONDITION_OPTION_TYPE_MAX_AGE);
+
+            $('select[name="option_type"]').val(CONDITION_OPTION_TYPE_SKILL);
 
             function update(type) {
                 var tbody = $('tbody[option_type="' + type + '"]');

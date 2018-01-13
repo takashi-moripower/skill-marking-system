@@ -4,9 +4,9 @@ namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
-use App\Defines\Defines;
 use Cake\Utility\Hash;
-
+use App\Defines\Defines;
+use App\Utility\MyUtil;
 /**
  * Skill Entity
  *
@@ -79,7 +79,7 @@ class Skill extends Entity {
         }
 
         $levelsFlags = Hash::get($this, '_joinData.levels',0);
-        $levels = \App\Model\Table\SkillsTable::flags2Array($levelsFlags);
+        $levels = MyUtil::flags2Array($levelsFlags);
 
         return $levels;
     }

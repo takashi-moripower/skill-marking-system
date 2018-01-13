@@ -4,9 +4,6 @@ use App\Defines\Defines;
 use App\Utility\MyUtil;
 use Cake\Routing\Router;
 
-$location_valid = isset($condition->location);
-$date_valid = isset($condition->dateStart);
-
 $loginUserId = $this->getLoginUser('id');
 $loginUserGroup = $this->getLoginUser('group_id');
 
@@ -36,18 +33,38 @@ $Contacts = \Cake\ORM\TableRegistry::get('Contacts');
                     <td><?= MyUtil::strip_tags($condition->note) ?></td>
                 </tr>
             </tbody>
-            <?php if ($location_valid): ?>
-            <tbody class="option" role="location" option_type="1">
+            <tbody class="skills">
                 <tr>
-                    <th>開催地</th>
+                    <th>スキル条件</th>
                     <td>
-                        <?= h($condition->location) ?>
+                        <?= $this->Element('skills/skills', ['skills' => $condition->skills]); ?>
                     </td>
                 </tr>
             </tbody>
+            <?php if (isset($condition->max_age) || isset($condition->min_age)): ?>
+                <tbody class="option" role="max_age" option_type="<?= Defines::CONDITION_OPTION_TYPE_MAX_AGE ?>">
+                    <tr>
+                        <th>年齢</th>
+                        <td>
+                            最低:<?= MyUtil::ageFormat($condition->min_age) ?>
+                            ～
+                            最高:<?= MyUtil::ageFormat($condition->max_age) ?>
+                        </td>
+                    </tr>
+                </tbody>
             <?php endif; ?>
-            <?php if ($date_valid): ?>
-                <tbody class="option" role="date" option_type="2">
+            <?php if (isset($condition->sex)): ?>
+                <tbody class="option" role="sex" option_type="<?= Defines::CONDITION_OPTION_TYPE_SEX ?>">
+                    <tr>
+                        <th>性別</th>
+                        <td>
+                            <?= Defines::CONDITION_SEX_OPTIONS[$condition->sex] ?>
+                        </td>
+                    </tr>
+                </tbody>
+            <?php endif; ?>
+            <?php if (isset($condition->date_start)): ?>
+                <tbody class="option" role="date" option_type="<?= Defines::CONDITION_OPTION_TYPE_DATE_START ?>">
                     <tr>
                         <th>期間</th>
                         <td>
@@ -56,14 +73,16 @@ $Contacts = \Cake\ORM\TableRegistry::get('Contacts');
                     </tr>
                 </tbody>
             <?php endif; ?>
-            <tbody class="skills">
-                <tr>
-                    <th>スキル条件</th>
-                    <td>
-                        <?= $this->Element('skills/skills',['skills'=>$condition->skills]);?>
-                    </td>
-                </tr>
-            </tbody>
+            <?php if (isset($condition->location)): ?>
+                <tbody class="option" role="location" option_type="<?= Defines::CONDITION_OPTION_TYPE_LOCATION ?>">
+                    <tr>
+                        <th>開催地</th>
+                        <td>
+                            <?= h($condition->location) ?>
+                        </td>
+                    </tr>
+                </tbody>
+            <?php endif; ?>
         </table>
     </div>
 </div>

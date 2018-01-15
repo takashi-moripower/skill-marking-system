@@ -94,10 +94,8 @@ $this->Form->templates([
     // エディタへの設定を適用する
     CKEDITOR.replace('editor', {
         uiColor: '#EEEEEE',
-        height: 400,
+        height: 400
     });
 </script>
 
-<?php $this->append('script') ?>
-<script src="https://cdn.ckeditor.com/4.5.6/standard/ckeditor.js"></script>
-<?php $this->end() ?>
+<?php $this->append('script' , $this->Html->script('/js/ckeditor/ckeditor.js')) ?>

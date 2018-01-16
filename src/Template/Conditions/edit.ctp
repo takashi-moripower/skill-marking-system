@@ -173,9 +173,7 @@ $this->Form->templates(
     });
 </script>
 
-<?php $this->append('script') ?>
-<script src="https://cdn.ckeditor.com/4.5.6/standard/ckeditor.js"></script>
-<?php $this->end() ?>
+<?php $this->append('script' , $this->Html->script('/js/ckeditor/ckeditor.js')) ?>
 
 <?php $this->append('script'); ?>
 <script>

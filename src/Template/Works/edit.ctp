@@ -93,8 +93,8 @@ if ($this->request->action == 'add') {
     });
 </script>
 
+<?php $this->append('script' , $this->Html->script('/js/ckeditor/ckeditor.js')) ?>
 <?php $this->append('script'); ?>
-<script src="https://cdn.ckeditor.com/4.5.6/standard/ckeditor.js"></script>
 <script>
     $(function () {
         $('button.add-file').on('click', function () {

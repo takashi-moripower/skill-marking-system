@@ -208,8 +208,10 @@ $this->Form->templates(
 
         function onAddOption(event) {
             var type = $('select[name="option_type"]').val();
+            console.log( 'add Option');
+            console.log(type);
 
-            if (type === '0') {
+            if (type == CONDITION_OPTION_TYPE_SKILL) {
                 openDialog();
                 return;
             }
@@ -275,7 +277,7 @@ $this->Form->templates(
                     $('label[for="' + old_id + '"]').attr('for', new_id);
                 }
 
-                if ($.inArray($(input).attr('value'), levels) != -1) {
+                if ($.inArray($(input).attr('value'), levels) !== -1) {
                     $(input).prop('checked', true);
                 }
             });

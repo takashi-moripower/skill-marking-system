@@ -281,17 +281,32 @@ class ConditionsTable extends Table {
     public function beforeSave($event, $entity, $options) {
         $ContitionOptions = TableRegistry::get('ConditionOptions');
 
+        $validTypes = [];
         foreach ($entity->condition_options as $option_id => $option) {
-            if( $option->value == null || $option->value == '' ){
-                $ContitionOptions->query()
-                        ->delete()
-                        ->where(['condition_id'=>$entity->id,'type'=>$option->type])
-                        ->execute();
-                
-                unset( $entity->condition_options[$option_id] );
+            if ($option->value != null && $option->value != '') {
+                $validTypes[] = $option->type;
+            } else {
+                unset($entity->condition_options[$option_id]);
             }
         }
-        
+
+        $ContitionOptions->query()
+                ->delete()
+                ->where(['condition_id' => $entity->id, 'type NOT IN' => $validTypes])
+                ->execute();
+        /*
+
+          foreach ($entity->condition_options as $option_id => $option) {
+          if( $option->value == null || $option->value == '' ){
+          $ContitionOptions->query()
+          ->delete()
+          ->where(['condition_id'=>$entity->id,'type'=>$option->type])
+          ->execute();
+
+          unset( $entity->condition_options[$option_id] );
+          }
+          }
+         */
         return true;
     }
 

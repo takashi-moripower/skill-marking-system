@@ -44,7 +44,7 @@ $this->Form->templates(
                     <?= $this->Element('conditions/skill_row', ['skill' => $skill]); ?>
                 <?php endforeach ?>
             </tbody>
-            <tbody class="option<?= (isset($condition->max_age) || isset($condition->min_age)) ? '' : ' d-none' ?>" role="date" option_type="<?= Defines::CONDITION_OPTION_TYPE_MAX_AGE ?>">
+            <tbody class="option<?= (isset($condition->max_age) || isset($condition->min_age)) ? '' : ' d-none' ?>" role="age" option_type="<?= Defines::CONDITION_OPTION_TYPE_MAX_AGE ?>">
                 <tr>
                     <th>
                         年齢
@@ -67,7 +67,7 @@ $this->Form->templates(
                     </td>
                 </tr>
             </tbody>
-            <tbody class="option<?= isset($condition->sex) ? '' : ' d-none' ?>" role="date" option_type="<?= Defines::CONDITION_OPTION_TYPE_SEX ?>">
+            <tbody class="option<?= isset($condition->sex) ? '' : ' d-none' ?>" role="sex" option_type="<?= Defines::CONDITION_OPTION_TYPE_SEX ?>">
                 <tr>
                     <th>性別</th>
                     <td>
@@ -99,13 +99,12 @@ $this->Form->templates(
 
                     </td>
                 </tr>
-            </tbody>           
-            <tbody class="option<?= isset($conditon->location) ? '' : ' d-none' ?>" role="location" option_type="<?= Defines::CONDITION_OPTION_TYPE_LOCATION ?>">
+            </tbody> 
+            <tbody class="option<?= isset($condition->location) ? '' : ' d-none' ?>" role="location" option_type="<?= Defines::CONDITION_OPTION_TYPE_LOCATION ?>">
                 <tr>
                     <th>開催地</th>
                     <td>
                         <div class="row">
-
                             <div class="col-10">
                                 <?= $this->Form->input('location', ['type' => 'text', 'label' => false, 'class' => 'w-100']); ?>
                             </div>
@@ -231,6 +230,7 @@ $this->Form->templates(
             function update(type) {
                 var tbody = $('tbody[option_type="' + type + '"]');
                 var option = $('select[name="option_type"] option[value="' + type + '"]');
+                
                 if (tbody.hasClass('d-none')) {
                     option.removeAttr('disabled');
                 } else {

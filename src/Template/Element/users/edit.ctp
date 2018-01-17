@@ -37,7 +37,10 @@ $this->Form->templates([
                     </tr>
                 <?php endif ?>
                 <tr>
-                    <th>組織</th>
+                    <th>
+                        組織
+                        <?= $this->Element('popup_hint',['message'=>'一つもチェックを入れなかった場合　そのユーザーは管轄外となります<br/>管轄外のユーザーはユーザー一覧に表示されず　編集操作もできません'])?>
+                    </th>
                     <td>
                         <?php
                         if (in_array($loginUserGroup, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN])) {

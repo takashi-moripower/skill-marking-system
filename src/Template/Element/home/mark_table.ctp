@@ -10,7 +10,7 @@ use App\Defines\Defines;
                 組織
             </th>
             <th class="w-10">
-                人数
+                学生数
             </th>
             <th class="w-10">
                 作品数

@@ -188,7 +188,7 @@ class UsersTable extends Table {
 
     public function findMaxAge($query, $options) {
         $max_age = Hash::get($options, 'max_age');
-        $min_birthday = new DateTime();
+        $min_birthday = new DateTime;
         $min_birthday->modify("-{$max_age} years");
         $query->where(['Engineers.birthday >=' => $min_birthday]);
         return $query;
@@ -196,8 +196,13 @@ class UsersTable extends Table {
 
     public function findMinAge($query, $options) {
         $min_age = Hash::get($options, 'min_age');
-        $max_birthday = new DateTime();
+        $max_birthday = new DateTime;
         $max_birthday->modify("-{$min_age} years");
+/*        
+        $max_birthday = $max_birthday->format('Y-m-d');
+debug( $max_birthday );
+ * 
+ */
         $query->where(['Engineers.birthday <=' => $max_birthday]);
         return $query;
     }
@@ -372,10 +377,11 @@ class UsersTable extends Table {
      * @return type
      */
     public function findCondition($query, $options) {
-        $condition = TableRegistry::get('Conditions')->get($options['condition_id'], ['contain' => ['Skills', 'ConditionOptions']]);
+        $condition_id = Hash::get($options,'condition_id');
+        $condition = TableRegistry::get('Conditions')->get($condition_id, ['contain' => ['Skills', 'ConditionOptions']]);
 
         $organizations = TableRegistry::get('ConditionsOrganizations')->find()
-                ->where(['condition_id' => $condition->id])
+                ->where(['condition_id' => $condition_id])
                 ->select('organization_id');
 
         $query->find('members', ['organization_id' => $organizations]);
@@ -394,7 +400,8 @@ class UsersTable extends Table {
         if (isset($condition->min_age)) {
             $query->find('minAge', ['min_age' => $condition->min_age]);
         }
-
+        /*
+         */
 
         return $query;
     }

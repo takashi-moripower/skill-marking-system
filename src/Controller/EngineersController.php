@@ -44,11 +44,11 @@ class EngineersController extends AppController {
 
         $this->paginate = [
             'order' => ['id' => 'ASC'],
-            'contain' => ['Engineers', 'Organizations']
         ];
 
         $query = $tableU
                 ->find()
+                ->contain(['Engineers','Organizations'])
                 ->where(['group_id' => Defines::GROUP_ENGINEER])
                 ->find('search', ['search' => $this->request->data]);
 

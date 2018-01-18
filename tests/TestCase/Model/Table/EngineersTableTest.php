@@ -26,11 +26,20 @@ class EngineersTableTest extends TestCase
     public $fixtures = [
         'app.engineers',
         'app.users',
+        'app.aros',
+        'app.acos',
+        'app.permissions',
         'app.groups',
-        'app.markers',
+        'app.works',
+        'app.files',
+        'app.comments',
+        'app.junles',
+        'app.junles_works',
+        'app.skills',
+        'app.fields',
         'app.organizations',
-        'app.markers_organizations',
-        'app.works'
+        'app.organizations_users',
+        'app.skills_works'
     ];
 
     /**

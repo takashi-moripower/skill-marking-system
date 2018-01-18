@@ -126,21 +126,21 @@ class DebugController extends AppController {
         $tableCO = TableRegistry::get('ConditionOptions');
         $user_id = 4;
 
-        $engineer = TableRegistry::get('Engineers')->find()
-                ->where(['user_id' => $user_id])
-                ->first();
+        
 
-        if ($engineer) {
-            $now = new \DateTime;
+        $min_age = 10;
+        $max_birthday = new \DateTime;
+        $max_birthday->modify("-{$min_age} years");
+        
+        $query = $tableU->find()
+                ->contain('Engineers')
+                ->where(['group_id'=>Defines::GROUP_ENGINEER]);
+//        $query->find('minAge',['min_age'=>'39']);
+        $query->find('condition',['condition_id'=>14]);
+          
+        $data = $query->toArray();
 
-//            $age = $engineer->birthday->diff($now);
-            $age = $now->diff( $engineer->birthday )->y;
-            $data = $age;
-        } else {
-            $data = ( $engineer === null ) ? 'NULL' : 'FILL';
-        }
-
-
+        
 
 
 

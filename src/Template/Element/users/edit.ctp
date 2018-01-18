@@ -39,7 +39,7 @@ $this->Form->templates([
                 <tr>
                     <th>
                         組織
-                        <?= $this->Element('popup_hint',['message'=>'一つもチェックを入れなかった場合　そのユーザーは管轄外となります<br/>管轄外のユーザーはユーザー一覧に表示されず　編集操作もできません'])?>
+                        <?= $this->Element('popup_hint', ['message' => '一つもチェックを入れなかった場合　そのユーザーは管轄外となります<br/>管轄外のユーザーはユーザー一覧に表示されず　編集操作もできません']) ?>
                     </th>
                     <td>
                         <?php
@@ -62,24 +62,22 @@ $this->Form->templates([
                 </tr>
                 <tr>
                     <th>ユーザ紹介</th>
-                    <td><?= $this->Form->control('note', ['label' => false, 'class' => 'w-100' ,'id'=>'editor']) ?></td>
+                    <td><?= $this->Form->control('note', ['label' => false, 'class' => 'w-100', 'id' => 'editor']) ?></td>
                 </tr>
             </tbody>
-            <?php if ($user->group_id == Defines::GROUP_ENGINEER): ?>
-                <tbody>
-                    <tr>
-                        <th>性別</th>
-                        <td>
-                            <?= $this->Form->hidden('engineer.user_id', ['value' => $user->id]) ?>
-                            <?= $this->Form->select('engineer.sex', Defines::USERS_SEX, ['label' => false]) ?>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>誕生日</th>
-                        <td><?= $this->Form->control('engineer.birthday', ['type' => 'date', 'label' => false, 'monthNames' => false, 'minYear' => 1950]) ?></td>
-                    </tr>
-                </tbody>
-            <?php endif; ?>
+            <tbody group="engineer" class="<?= ($user->group_id == Defines::GROUP_ENGINEER ? '' : 'd-none')?>">
+                <tr>
+                    <th>性別</th>
+                    <td>
+                        <?= $this->Form->hidden('engineer.user_id', ['value' => $user->id]) ?>
+                        <?= $this->Form->select('engineer.sex', Defines::USERS_SEX, ['label' => false]) ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th>誕生日</th>
+                    <td><?= $this->Form->control('engineer.birthday', ['type' => 'date', 'label' => false, 'monthNames' => false, 'minYear' => 1950]) ?></td>
+                </tr>
+            </tbody>
             <tfoot>
                 <tr>
                     <td colspan="2">
@@ -101,4 +99,4 @@ $this->Form->templates([
     });
 </script>
 
-<?php $this->append('script' , $this->Html->script('/js/ckeditor/ckeditor.js')) ?>
+<?php $this->append('script', $this->Html->script('/js/ckeditor/ckeditor.js')) ?>

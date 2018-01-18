@@ -50,7 +50,8 @@ class HomeController extends AppController {
         $tableOrgs = TableRegistry::get('Organizations');
 
         $organizations = $tableOrgs
-                ->find('home',['user_id' => $loginUserId]);
+                ->find('home',['user_id' => $loginUserId])
+                ->order('Organizations.lft');
         
         $this->set(compact('organizations'));
         return $this->render('marker');
@@ -61,7 +62,8 @@ class HomeController extends AppController {
         $tableOrgs = TableRegistry::get('Organizations');
 
         $organizations = $tableOrgs
-                ->find('home',['user_id' => $loginUserId]);
+                ->find('home',['user_id' => $loginUserId])
+                ->order('Organizations.lft');
         
         $this->set(compact('organizations'));
         return $this->render('marker');

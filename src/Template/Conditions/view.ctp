@@ -32,6 +32,18 @@ $Contacts = \Cake\ORM\TableRegistry::get('Contacts');
                     <th>説明</th>
                     <td><?= MyUtil::strip_tags($condition->note) ?></td>
                 </tr>
+                <tr>
+                    <th>対象組織</th>
+                    <td>
+                        <div class="row">
+                            <?php
+                            foreach ($condition->organizations as $org) {
+                                echo "<div class='col-6'>・{$org->path_name}</div>";
+                            }
+                            ?>
+                        </div>
+                    </td>
+                </tr>
             </tbody>
             <tbody class="skills">
                 <tr>

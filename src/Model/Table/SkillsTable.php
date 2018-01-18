@@ -267,44 +267,4 @@ class SkillsTable extends Table {
         return $query->where([$this->aliasField('field_id') . ' IN' => $fields]);
     }
 
-    public static function toPathList($skills) {
-        $skills->find('fieldPath')
-                ->contain(['Fields' => ['fields' => []]])
-                ->order('Fields.lft')
-                ->select(['id', 'name']);
-
-        $list = [];
-        foreach ($skills as $skill) {
-            $list[$skill->id] = $skill->label;
-        }
-        return $list;
-    }
-
-    static function getSkillLevels() {
-        return array_combine(range(1, Defines::SKILL_LEVEL_MAX), range(1, Defines::SKILL_LEVEL_MAX));
-    }
-
-    /*
-     * [3,4] を　12　に
-     */
-
-    static function array2flags($levelsArray) {
-        $result = 0;
-        foreach ($levelsArray as $l) {
-            $result += pow(2, $l - 1);
-        }
-
-        return $result;
-    }
-
-    /*
-     * 12  を　[3,4]に
-     */
-
-    static function flags2Array($levelsFlags) {
-        return array_filter(self::getSkillLevels(), function($l) use($levelsFlags) {
-            return (1 << ($l - 1)) & $levelsFlags;
-        });
-    }
-
 }

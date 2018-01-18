@@ -171,8 +171,8 @@ class UsersTable extends Table {
         $searchManager = $this->behaviors()->Search->searchManager();
         $searchManager
                 ->finder('sex')
-                ->finder('max_age',['finder'=>'maxAge'])
-                ->finder('min_age',['finder'=>'minAge'])
+                ->finder('max_age', ['finder' => 'maxAge'])
+                ->finder('min_age', ['finder' => 'minAge'])
                 ->finder('skill', ['finder' => 'Skills'])
                 ->finder('organization_id', ['finder' => 'RootOrganization'])
                 ->finder('condition_id', ['finder' => 'Condition'])
@@ -191,8 +191,8 @@ class UsersTable extends Table {
         $query->where(['Engineers.birthday >=' => $min_birthday]);
         return $query;
     }
-    
-    public function findMinAge( $query , $options ){
+
+    public function findMinAge($query, $options) {
         $min_age = Hash::get($options, 'min_age');
         $max_birthday = new DateTime();
         $max_birthday->modify("-{$min_age} years");
@@ -298,6 +298,46 @@ class UsersTable extends Table {
     }
 
     /**
+     * （組織管理者が）削除可能なユーザーを取得
+     *  自分の管轄組織以外に所属していると不可
+     * @param type $query
+     * @param type $options
+     */
+    public function findDeletable($query, $options) {
+        $user_id = Hash::get($options, 'user_id');
+
+        $orgs = TableRegistry::get('Organizations')
+                ->find('user', ['user_id' => $user_id, 'relation' => 'children'])
+                ->select('id');
+
+        $users_undeletable = TableRegistry::get('OrganizationsUsers')->find()
+                ->where(['OrganizationsUsers.organization_id NOT IN' => $orgs])
+                ->select('OrganizationsUsers.user_id');
+
+        $query->where([$this->aliasField('id') . ' NOT IN' => $users_undeletable])
+                ->where([$this->aliasField('id') . ' <>' => $user_id]);
+        return $query;
+    }
+
+    /**
+     * deletableパラメータをセット
+     * @param type $query
+     * @param type $options
+     */
+    public function findSetDeletable($query, $options) {
+        $user_id = Hash::get($options, 'user_id');
+        $usersDeletable = $this->find('deletable', ['user_id' => $user_id])
+                ->select($this->aliasField('id'));
+
+        $query->select(['deletable' => $query->newExpr()->addCase(
+                    [$query->newExpr()->add([$this->aliasField('id') . ' IN' => $usersDeletable])], [1, 0], ['integer', 'integer']
+            )
+        ]);
+
+        return $query;
+    }
+
+    /**
      * findEditableに丸投げ
      * @param type $query
      * @param type $options
@@ -323,8 +363,20 @@ class UsersTable extends Table {
         return true;
     }
 
+    /**
+     * 該当コンディションにマッチするユーザーを返す
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
     public function findCondition($query, $options) {
         $condition = TableRegistry::get('Conditions')->get($options['condition_id'], ['contain' => ['Skills', 'ConditionOptions']]);
+        
+        $organizations = TableRegistry::get('ConditionsOrganizations')->find()
+                ->where(['condition_id'=>$condition->id])
+                ->select('organization_id');
+        
+        $query->find('members',['organization_id'=>$organizations]);
 
         foreach ($condition->skills as $skill) {
             $query->find('skill', ['skill' => ['id' => $skill->id, 'level' => MyUtil::flags2Array($skill->_joinData->levels)]]);
@@ -335,13 +387,13 @@ class UsersTable extends Table {
         }
 
         if (isset($condition->max_age)) {
-            $query->find('maxAge',['max_age'=>$condition->max_age]);
+            $query->find('maxAge', ['max_age' => $condition->max_age]);
         }
         if (isset($condition->min_age)) {
-            $query->find('minAge',['min_age'=>$condition->min_age]);
+            $query->find('minAge', ['min_age' => $condition->min_age]);
         }
 
-        
+
         return $query;
     }
 

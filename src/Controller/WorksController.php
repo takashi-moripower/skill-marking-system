@@ -5,9 +5,10 @@ namespace App\Controller;
 use App\Controller\AppController;
 use App\Model\Entity\SkillsWork;
 use Cake\ORM\TableRegistry;
-use Cake\Collection\Collection;
+
 use Cake\Utility\Hash;
 use App\Defines\Defines;
+use App\Utility\MyUtil;
 
 /**
  * Works Controller
@@ -162,7 +163,7 @@ class WorksController extends AppController {
                     ->where([$tableS->aliasField('id') . ' not IN ' => $skillsUsed]);
         }
 
-        $skillsToSet = \App\Model\Table\SkillsTable::toPathList($skillsUnUsed);
+        $skillsToSet = MyUtil::toPathList($skillsUnUsed);
         $this->set(compact('work', 'skillsToSet'));
        
     }

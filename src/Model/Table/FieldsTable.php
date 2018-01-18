@@ -232,6 +232,12 @@ class FieldsTable extends Table {
         return $query;
     }
 
+    /**
+     * editable パラメータをセット
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
     public function findSetEditable($query, $options) {
         $user_id = Hash::get($options, 'user_id');
 
@@ -239,12 +245,9 @@ class FieldsTable extends Table {
                 ->find('editable', ['user_id' => $user_id])
                 ->select('id');
 
-        $query
-                ->select(['editable' => $query->newExpr()->addCase([
-                        $query->newExpr()->add([$this->aliasField('id') . ' IN' => $fieldsEditable]),
-                        1,
-                        'boolean'
-                    ])
+        $query->select(['editable' => $query->newExpr()->addCase(
+                    [$query->newExpr()->add([$this->aliasField('id') . ' IN' => $fieldsEditable])], [1, 0], ['integer', 'integer']
+            )
         ]);
 
         return $query;

@@ -202,8 +202,31 @@ class OrganizationsTable extends Table {
 
         $query->find('pathName')
                 ->select($this)
-                ->find('user', ['user_id' => $user_id,'relation'=>'children']);
+                ->find('user', ['user_id' => $user_id, 'relation' => 'children']);
 
         return $query;
     }
+
+    public function getListByUser($user_id, $group_id = null) {
+
+        if ($group_id == null) {
+            $user = TableRegistry::get('Users')->get($user_id);
+            $group_id = $user->group_id;
+        }
+
+
+        $organizations = TableRegistry::get('Organizations')
+                ->find('pathName')
+                ->select('id')
+                ->order('Organizations.lft')
+                ->find('list', ['keyField' => 'id', 'valueField' => 'path']);
+
+        if ($group_id != Defines::GROUP_ADMIN) {
+            $organizations
+                    ->find('user', ['user_id' => $user_id, 'relation' => 'children']);
+        }
+
+        return $organizations;
+    }
+
 }

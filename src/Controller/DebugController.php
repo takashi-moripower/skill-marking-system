@@ -97,7 +97,7 @@ class DebugController extends AppController {
     public function loginAs($user_id = null) {
         $tableU = TableRegistry::get('Users');
         $mode = $this->_getCurrentMode();
-        
+
         if (isset($user_id)) {
             $user = $tableU->getSessionData($user_id);
             $user->mode = $mode;
@@ -123,67 +123,27 @@ class DebugController extends AppController {
         $tableF = TableRegistry::get('Fields');
         $tableC = TableRegistry::get('Conditions');
         $tableCS = TableRegistry::get('ConditionsSkills');
-
+        $tableCO = TableRegistry::get('ConditionOptions');
         $user_id = 4;
-        /*
-        $skillsMatches = $tableCS->find()
-                ->select([
-                    'condition_id' => 'ConditionsSkills.condition_id',
-                    'count' => 'count(DISTINCT ConditionsSkills.id)'
-                ])
-                ->join([
-                    'SkillsWorks' => [
-                        'table' => 'skills_works',
-                        'type' => 'inner',
-                        'conditions' => [
-                            'SkillsWorks.skill_id =' . $tableCS->aliasField('skill_id'),
-                            '( POWER( 2 , SkillsWorks.level-1) & ConditionsSkills.levels ) <> 0'
-                        ]
-                    ],
-                    'Works' => [
-                        'table' => 'works',
-                        'type' => 'inner',
-                        'conditions' => [
-                            'SkillsWorks.work_id = Works.id',
-                            'Works.user_id' => $user_id,
-                            'Works.user_id <> SkillsWorks.user_id'
-                        ]
-                    ]
-                ])
-                ->group('ConditionsSkills.condition_id');
 
-        $skillsAll = $tableCS->find()
-                ->select([
-                    'condition_id' => 'ConditionsSkills.condition_id',
-                    'count' => 'count(DISTINCT ConditionsSkills.id)'
-                ])
-                ->group('ConditionsSkills.condition_id');
+        $engineer = TableRegistry::get('Engineers')->find()
+                ->where(['user_id' => $user_id])
+                ->first();
 
-        $query = $tableC->find()
+        if ($engineer) {
+            $now = new \DateTime;
 
-                ->join([
-            'skills_matches' => [
-                'table' => $skillsMatches,
-                'type' => 'inner',
-                'conditions' => [
-                    'skills_matches.condition_id = Conditions.id'
-                ]
-            ],
-            'skills_all' => [
-                'table' => $skillsAll,
-                'type' => 'inner',
-                'conditions' => [
-                    'skills_all.condition_id = Conditions.id'
-                ]
-            ]
-                ]
-        )
-                ->where(['skills_matches.count = skills_all.count']);
-*/
-        
-        $query = $tableC->find('user',['user_id'=>4]);
+//            $age = $engineer->birthday->diff($now);
+            $age = $now->diff( $engineer->birthday )->y;
+            $data = $age;
+        } else {
+            $data = ( $engineer === null ) ? 'NULL' : 'FILL';
+        }
 
-        $data = $query->toArray();
+
+
+
+
 
         $this->set('data', $data);
         $this->render('/Common/debug');

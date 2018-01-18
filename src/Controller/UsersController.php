@@ -43,10 +43,13 @@ class UsersController extends AppController {
         $loginUserGroup = $this->Auth->user('group_id');
 
         $users = $this->Users
-                ->find('search', ['search' => $this->request->data]);
-
+                ->find('search', ['search' => $this->request->data])
+                ->select($this->Users)
+                ->select($this->Users->Groups)
+;
         if ($loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
             $users->find('editable', ['user_id' => $loginUserId]);
+            $users->find('setDeletable', ['user_id' => $loginUserId]);
         }
 
         $users = $this->paginate($users);
@@ -223,7 +226,7 @@ class UsersController extends AppController {
     public function view($user_id) {
         $user = $this->Users->find()
                 ->where(['Users.id' => $user_id])
-                ->contain(['Organizations','Groups'])
+                ->contain(['Organizations', 'Groups'])
                 ->first();
 
         $this->set(compact('user'));

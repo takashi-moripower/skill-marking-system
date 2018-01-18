@@ -10,7 +10,7 @@ class Defines {
         self::MODE_MARKING => "スキル認定システム",
         self::MODE_MATCHING => "人材マッチングシステム"
     ];
-    const ALLOW_TAGS = '<br><p><img><a><div><strong><em><ul><ol><li>';
+    const ALLOW_TAGS = '<br><p><img><a><div><strong><em><ul><ol><li><iframe>';
     const DATE_FRMAT = 'Y年m月d日';
     const DATE_UNDEFINED = '未定';
 

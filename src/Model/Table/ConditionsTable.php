@@ -10,6 +10,7 @@ use Cake\Utility\Hash;
 use Cake\ORM\TableRegistry;
 use Cake\Network\Session;
 use App\Utility\MyUtil;
+use App\Defines\Defines;
 
 /**
  * Conditions Model
@@ -55,6 +56,12 @@ class ConditionsTable extends Table {
             'foreignKey' => 'condition_id',
             'targetForeignKey' => 'skill_id',
             'joinTable' => 'conditions_skills'
+        ]);
+
+        $this->belongsToMany('Organizations', [
+            'foreignKey' => 'condition_id',
+            'targetForeignKey' => 'organization_id',
+            'joinTable' => 'conditions_organizations'
         ]);
 
         $this->hasMany('ConditionsSkills');
@@ -153,18 +160,143 @@ class ConditionsTable extends Table {
     }
 
     /**
-     * 募集条件にマッチするユーザーを取得
+     * 対象ユーザーにマッチする条件を取得
      * @param type $query
      * @param type $options
      * @return type
      */
     public function findUser($query, $options) {
-        $query->find('UserSkill', $options);
+        $user_id = Hash::get($options, 'user_id');
+        $query->find('UserSkill', compact('user_id'));
+        $query->find('UserMinAge', compact('user_id'));
+        $query->find('UserMaxAge', compact('user_id'));
+        $query->find('UserSex', compact('user_id'));
+        $query->find('UserOrganization',compact('user_id'));
+        return $query;
+    }
+    
+    public function findUserOrganization( $query , $options ){
+        $user_id = Hash::get($options, 'user_id');
+        $organizations = TableRegistry::get('OrganizationsUsers')
+                ->find()
+                ->where(['user_id'=>$user_id])
+                ->select('organization_id');
+        
+        $conditions = TableRegistry::get('ConditionsOrganizations')
+                ->find()
+                ->where(['organization_id IN'=>$organizations])
+                ->group('condition_id')
+                ->select('condition_id');
+        $query->where([$this->aliasField('id').' IN'=>$conditions]);
         return $query;
     }
 
-    public function findUserSkill($query, $options) {
+    public function findUserSex($query, $options) {
+        $user_id = Hash::get($options, 'user_id');
+        $tableCO = TableRegistry::get('ConditionOptions');
+        $engineer = TableRegistry::get('Engineers')
+                ->find()
+                ->where(['user_id' => $user_id])
+                ->first();
 
+        if ($engineer == null || $engineer->sex == null) {
+            //性別指定のある募集はすべて除外
+            $conditions_not_match = $tableCO
+                    ->find()
+                    ->where(['type' => Defines::CONDITION_OPTION_TYPE_SEX,'value <>'=>Defines::SEX_INDIFFARENCE])
+                    ->select('condition_id');            
+        }else{
+            //性別指定が存在し　ユーザーの性別と異なる場合は除外
+            $sex = $engineer->sex;
+            $conditions_not_match = $tableCO
+                    ->find()
+                    ->where(['type' => Defines::CONDITION_OPTION_TYPE_SEX,'value <>'=>Defines::SEX_INDIFFARENCE])
+                    ->where(['value <>' => $sex])
+                    ->select('condition_id');            
+        }
+
+        $query->where([$this->aliasField('id') . ' NOT IN' => $conditions_not_match]);
+
+        return $query;
+    }
+
+    /**
+     * 該当ユーザーの年齢が最大年齢制限にマッチする募集を返す
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
+    public function findUserMaxAge($query, $options) {
+        $user_id = Hash::get($options, 'user_id');
+        $tableCO = TableRegistry::get('ConditionOptions');
+        $engineer = TableRegistry::get('Engineers')
+                ->find()
+                ->where(['user_id' => $user_id])
+                ->first();
+
+        if ($engineer == null || $engineer->birthday == null) {
+            //最大年齢指定のあるものはすべて除外
+            $conditions_not_match = $tableCO
+                    ->find()
+                    ->where(['type' => Defines::CONDITION_OPTION_TYPE_MAX_AGE])
+                    ->select('condition_id');
+        } else {
+            //最大年齢制限が存在し、その値がユーザーの年齢より小さい場合は除外
+            $now = new \DateTime;
+            $age = $engineer->birthday->diff($now)->y;
+
+            $conditions_not_match = $tableCO
+                    ->find()
+                    ->where(['type' => Defines::CONDITION_OPTION_TYPE_MAX_AGE, 'value <' => $age])
+                    ->select('condition_id');
+        }
+
+        $query->where([$this->aliasField('id') . ' NOT IN' => $conditions_not_match]);
+        return $query;
+    }
+
+    /**
+     * 該当ユーザーの年齢が最少年齢制限にマッチする募集を返す
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
+    public function findUserMinAge($query, $options) {
+        $user_id = Hash::get($options, 'user_id');
+        $tableCO = TableRegistry::get('ConditionOptions');
+        $engineer = TableRegistry::get('Engineers')
+                ->find()
+                ->where(['user_id' => $user_id])
+                ->first();
+
+        if ($engineer == null || $engineer->birthday == null) {
+            //最少年齢指定のあるものはすべて除外
+            $conditions_not_match = $tableCO
+                    ->find()
+                    ->where(['type' => Defines::CONDITION_OPTION_TYPE_MIN_AGE])
+                    ->select('condition_id');
+        } else {
+            //最少年齢制限が存在し、その値がユーザーの年齢より大きい場合は除外
+            $now = new \DateTime;
+            $age = $engineer->birthday->diff($now)->y;
+
+            $conditions_not_match = $tableCO
+                    ->find()
+                    ->where(['type' => Defines::CONDITION_OPTION_TYPE_MIN_AGE, 'value >' => $age])
+                    ->select('condition_id');
+        }
+
+        $query->where([$this->aliasField('id') . ' NOT IN' => $conditions_not_match]);
+        return $query;
+    }
+
+    /**
+     * 対象ユーザーのスキル条件がマッチする募集条件を返す
+     * @param type $query
+     * @param type $options
+     * @return type
+     */
+    public function findUserSkill($query, $options) {
         $user_id = Hash::get($options, 'user_id');
 
         $tableCS = TableRegistry::get('ConditionsSkills');
@@ -278,6 +410,13 @@ class ConditionsTable extends Table {
         return $query;
     }
 
+    /**
+     * オプション削除処理
+     * @param type $event
+     * @param type $entity
+     * @param type $options
+     * @return boolean
+     */
     public function beforeSave($event, $entity, $options) {
         $ContitionOptions = TableRegistry::get('ConditionOptions');
 
@@ -294,19 +433,7 @@ class ConditionsTable extends Table {
                 ->delete()
                 ->where(['condition_id' => $entity->id, 'type NOT IN' => $validTypes])
                 ->execute();
-        /*
 
-          foreach ($entity->condition_options as $option_id => $option) {
-          if( $option->value == null || $option->value == '' ){
-          $ContitionOptions->query()
-          ->delete()
-          ->where(['condition_id'=>$entity->id,'type'=>$option->type])
-          ->execute();
-
-          unset( $entity->condition_options[$option_id] );
-          }
-          }
-         */
         return true;
     }
 

@@ -12,6 +12,11 @@ $skillDefault = (object) [
 $this->Form->templates(
         Defines::FORM_TEMPLATE_INLINE_CHECKBOX + Defines::FORM_TEMPLATE_RADIO
 );
+
+
+$templateOrgs = [
+    'checkboxWrapper' => '<div class="checkbox d-inline-block" style="min-width:50%">{{label}}</div>',
+];
 ?>
 
 <?= $this->Form->create($condition, ['name' => 'main']) ?>
@@ -37,6 +42,12 @@ $this->Form->templates(
                 <tr>
                     <th>説明</th>
                     <td><?= $this->Form->control('note', ['label' => false, 'class' => 'w-100', 'id' => 'editor']); ?></td>
+                </tr>
+                <tr>
+                    <th>対象組織</th>
+                    <td>
+                        <?= $this->Form->control('organizations._ids', ['options' => $organizations, 'empty' => false, 'label' => false, 'multiple' => 'checkbox', 'templates' => $templateOrgs]); ?>
+                    </td>
                 </tr>
             </tbody>
             <tbody class="skills">
@@ -172,7 +183,7 @@ $this->Form->templates(
     });
 </script>
 
-<?php $this->append('script' , $this->Html->script('/js/ckeditor/ckeditor.js')) ?>
+<?php $this->append('script', $this->Html->script('/js/ckeditor/ckeditor.js')) ?>
 
 <?php $this->append('script'); ?>
 <script>
@@ -207,7 +218,7 @@ $this->Form->templates(
 
         function onAddOption(event) {
             var type = $('select[name="option_type"]').val();
-            console.log( 'add Option');
+            console.log('add Option');
             console.log(type);
 
             if (type == CONDITION_OPTION_TYPE_SKILL) {
@@ -230,7 +241,7 @@ $this->Form->templates(
             function update(type) {
                 var tbody = $('tbody[option_type="' + type + '"]');
                 var option = $('select[name="option_type"] option[value="' + type + '"]');
-                
+
                 if (tbody.hasClass('d-none')) {
                     option.removeAttr('disabled');
                 } else {

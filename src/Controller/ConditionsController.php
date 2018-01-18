@@ -6,8 +6,7 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use App\Defines\Defines;
-use App\Model\Table\SkillsTable;
-
+use App\Utility\MyUtil;
 /*
  * 
  * @property \App\Model\Table\ConditionsTable $Conditions
@@ -18,18 +17,18 @@ class ConditionsController extends AppController {
     public function index() {
         $loginUserId = $this->Auth->user('id');
         $loginUserGroup = $this->Auth->user('group_id');
-        
+
         $this->paginate = [
-            'order'=>['title' => 'ASC']
+            'order' => ['title' => 'ASC']
         ];
 
         $query = $this->Conditions->find()
                 ->find('search', ['search' => $this->request->data])
-                ->find('setMatch',['user_id'=>$loginUserId])
+                ->find('setMatch', ['user_id' => $loginUserId])
                 ->contain(['Skills' => ['sort' => 'Skills.id'], 'Users', 'Contacts'])
-                ->select( $this->Conditions )
-                ->select( $this->Conditions->Users )
-                ;
+                ->select($this->Conditions)
+                ->select($this->Conditions->Users)
+        ;
 
         switch ($loginUserGroup) {
             case Defines::GROUP_MARKER:
@@ -37,35 +36,35 @@ class ConditionsController extends AppController {
                 break;
 
             case Defines::GROUP_ENGINEER:
-                $orgs1 = TableRegistry::get('Organizations')->find('user',['user_id'=>$loginUserId,'relation'=>'parents'])
-                    ->select('Organizations.id');
-                $orgs2 = TableRegistry::get('Organizations')->find('user',['user_id'=>$loginUserId,'relation'=>'children'])
-                    ->select('Organizations.id');
-                
+                $orgs1 = TableRegistry::get('Organizations')->find('user', ['user_id' => $loginUserId, 'relation' => 'parents'])
+                        ->select('Organizations.id');
+                $orgs2 = TableRegistry::get('Organizations')->find('user', ['user_id' => $loginUserId, 'relation' => 'children'])
+                        ->select('Organizations.id');
+
                 $companies = TableRegistry::get('OrganizationsUsers')->find()
                         ->select('user_id')
-                        ->where(['or'=>[
-                            'organization_id in' => $orgs1,
-                            'organization_id IN' => $orgs2,
-                        ]]);
-                
+                        ->where(['or' => [
+                        'organization_id in' => $orgs1,
+                        'organization_id IN' => $orgs2,
+                ]]);
+
                 $query->where(['Conditions.published <> 0'])
-                        ->where(['Conditions.user_id IN' => $companies ]);
+                        ->where(['Conditions.user_id IN' => $companies]);
                 break;
         }
-        
+
         $conditions = $this->paginate($query);
-        
+
         //検索用
-        $condition_owner =  $this->Conditions->find()
+        $condition_owner = $this->Conditions->find()
                 ->where(['published' => 1])
                 ->select('user_id');
 
-        $companies = $this->Conditions->Users->find('list',['keyField'=>'id','valueField'=>'name'])
+        $companies = $this->Conditions->Users->find('list', ['keyField' => 'id', 'valueField' => 'name'])
                 ->where(['id IN' => $condition_owner]);
-        
 
-        $this->set(compact('conditions','companies'));
+
+        $this->set(compact('conditions', 'companies'));
     }
 
     public function view($id) {
@@ -73,7 +72,7 @@ class ConditionsController extends AppController {
         $loginUserGroup = $this->Auth->user('group_id');
 
         $contacts = $this->Conditions->Contacts->find('visible', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup])
-                ->where(['condition_id'=>$id])
+                ->where(['condition_id' => $id])
                 ->contain('Users')
                 ->contain('Conditions');
 
@@ -81,7 +80,8 @@ class ConditionsController extends AppController {
             'contain' => [
                 'Skills' => ['sort' => 'skill_id'],
                 'ConditionOptions',
-                'Users'
+                'Users',
+                'Organizations',
             ]
         ]);
         $this->set(compact('condition', 'contacts'));
@@ -89,17 +89,29 @@ class ConditionsController extends AppController {
 
     public function add() {
         $loginUserId = $this->Auth->user('id');
+        $loginUserGroup = $this->Auth->user('group_id');
+        
         $condition = $this->Conditions->newEntity(['user_id' => $loginUserId]);
+        
+        $organizations = $this->Conditions
+                ->Organizations->find();
+        
+        if( $loginUserGroup != Defines::GROUP_ADMIN){
+            $organizations->find('users',['user_id'=>$loginUserId,'relation'=>'chldren']);
+        }
+
+        $condition->organizations = $organizations->toArray();        
+        
         return $this->_edit($condition);
     }
 
     public function edit($id) {
-        $condition = $this->Conditions->get($id, ['contain' => ['Skills' => ['sort' => 'skill_id'], 'ConditionOptions']]);
+        $condition = $this->Conditions->get($id, ['contain' => ['Skills' => ['sort' => 'skill_id'], 'ConditionOptions', 'Organizations']]);
         return $this->_edit($condition);
     }
 
     protected function _edit($condition) {
-        
+
         if ($this->request->is(['post', 'patch', 'put'])) {
             $condition = $this->Conditions->patchEntity($condition, $this->request->getData());
 
@@ -119,11 +131,11 @@ class ConditionsController extends AppController {
             $this->Flash->error(__('The condition could not be saved. Please, try again.'));
         }
 
-        $skills = $this->Conditions->Skills->find();
+        $skills = MyUtil::toPathList($this->Conditions->Skills->find('usable',['user_id'=>$condition->user_id ]));
 
-        $skills = SkillsTable::toPathList($skills);
+        $organizations = TableRegistry::get('Organizations')->getListByUser( $condition->user_id );
 
-        $this->set(compact('condition', 'skills'));
+        $this->set(compact('condition', 'skills', 'organizations'));
         $this->render('edit');
     }
 

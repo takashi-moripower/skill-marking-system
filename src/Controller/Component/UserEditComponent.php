@@ -20,8 +20,8 @@ class UserEditComponent extends Component {
 
         if ($this->request->is(['patch', 'post', 'put'])) {
 
-            $user = $this->Users->patchEntity($user, $this->request->getData() ,['associated' => ['Engineers','Organizations']]);
-            
+            $user = $this->Users->patchEntity($user, $this->request->getData(), ['associated' => ['Engineers', 'Organizations']]);
+
             if ($this->Users->save($user)) {
                 $controller->Flash->success(__('The user has been saved.'));
             } else {
@@ -31,25 +31,16 @@ class UserEditComponent extends Component {
 
         $loginUser = $controller->Auth->user();
 
-        $organizations = TableRegistry::get('Organizations')
-                ->find('pathName')
-                ->select('id')
-                ->order('Organizations.lft')
-                ->find('list', ['keyField' => 'id', 'valueField' => 'path']);
+        $organizations = TableRegistry::get('Organizations')->getListByUser( $loginUser->id );
 
-        if ($loginUser->group_id != Defines::GROUP_ADMIN) {
-            $organizations
-                    ->find('user', ['user_id' => $loginUser->id, 'relation' => 'children']);
-        }
-        
         $groups = TableRegistry::get('Groups')->find('list');
-        
+
         if ($loginUser->group_id != Defines::GROUP_ADMIN) {
             $groups->where(['id >=' => $loginUser->group_id]);
         }
 
 
-        $controller->set(compact('user', 'organizations' , 'groups'));
+        $controller->set(compact('user', 'organizations', 'groups'));
         $controller->render('edit');
     }
 

@@ -67,4 +67,21 @@ class MyUtil {
         });
     }
 
+    /**
+     * スキルselect用optionsを生成
+     * @param type $skills
+     * @return type
+     */
+    public static function toPathList($skills) {
+        $skills->find('fieldPath')
+                ->contain(['Fields' => ['fields' => []]])
+                ->order('Fields.lft')
+                ->select(['id', 'name']);
+
+        $list = [];
+        foreach ($skills as $skill) {
+            $list[$skill->id] = $skill->label;
+        }
+        return $list;
+    }    
 }

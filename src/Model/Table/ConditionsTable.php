@@ -61,7 +61,8 @@ class ConditionsTable extends Table {
         $this->belongsToMany('Organizations', [
             'foreignKey' => 'condition_id',
             'targetForeignKey' => 'organization_id',
-            'joinTable' => 'conditions_organizations'
+            'joinTable' => 'conditions_organizations',
+            'sort'=>'Organizations.lft'
         ]);
 
         $this->hasMany('ConditionsSkills');

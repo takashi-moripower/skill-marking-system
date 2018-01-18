@@ -44,7 +44,7 @@ class EngineersController extends AppController {
 
         $this->paginate = [
             'order' => ['id' => 'ASC'],
-            'contain' => ['Engineers', 'Organizations' => ['sort'=>['Organizations.lft'=>'ASC']]]
+            'contain' => ['Engineers', 'Organizations']
         ];
 
         $query = $tableU

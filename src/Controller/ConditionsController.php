@@ -97,7 +97,7 @@ class ConditionsController extends AppController {
                 ->Organizations->find();
         
         if( $loginUserGroup != Defines::GROUP_ADMIN){
-            $organizations->find('users',['user_id'=>$loginUserId,'relation'=>'chldren']);
+            $organizations->find('user',['user_id'=>$loginUserId,'relation'=>'chldren']);
         }
 
         $condition->organizations = $organizations->toArray();        

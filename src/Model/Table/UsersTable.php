@@ -55,7 +55,9 @@ class UsersTable extends Table {
         ]);
         $this->hasOne('Engineers');
 
-        $this->belongsToMany('Organizations');
+        $this->belongsToMany(
+                'Organizations', ['sort' => ['Organizations.lft' => 'ASC']]
+        );
     }
 
     /**
@@ -371,12 +373,12 @@ class UsersTable extends Table {
      */
     public function findCondition($query, $options) {
         $condition = TableRegistry::get('Conditions')->get($options['condition_id'], ['contain' => ['Skills', 'ConditionOptions']]);
-        
+
         $organizations = TableRegistry::get('ConditionsOrganizations')->find()
-                ->where(['condition_id'=>$condition->id])
+                ->where(['condition_id' => $condition->id])
                 ->select('organization_id');
-        
-        $query->find('members',['organization_id'=>$organizations]);
+
+        $query->find('members', ['organization_id' => $organizations]);
 
         foreach ($condition->skills as $skill) {
             $query->find('skill', ['skill' => ['id' => $skill->id, 'level' => MyUtil::flags2Array($skill->_joinData->levels)]]);

@@ -36,7 +36,7 @@ class UsersController extends AppController {
     public function index() {
         $this->paginate = [
             'order' => ['id' => 'ASC'],
-            'contain' => ['Groups', 'Organizations' => ['sort'=>['Organizations.lft'=>'ASC']]]
+            'contain' => ['Groups', 'Organizations']
         ];
 
         $loginUserId = $this->Auth->user('id');

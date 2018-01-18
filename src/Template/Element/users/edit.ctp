@@ -5,9 +5,7 @@ use Cake\Utility\Hash;
 
 $loginUserGroup = $this->getLoginUser('group_id');
 
-$this->Form->templates([
-    'dateWidget' => '{{year}} 年 {{month}} 月 {{day}} 日 ',
-]);
+$this->Form->templates(Defines::FORM_TEMPLATE_RADIO + Defines::FORM_TEMPLATE_DATE);
 ?>
 
 <?= $this->Form->create($user) ?>
@@ -30,12 +28,14 @@ $this->Form->templates([
                     <th>password</th>
                     <td><?= $this->Form->control('password', ['label' => false, 'value' => '', 'class' => 'w-100']); ?></td>
                 </tr>
-                <?php if ($this->request->params['controller'] == 'Users'): ?>
-                    <tr>
-                        <th>権限</th>
-                        <td><?= $this->Form->select('group_id', $groups, ['label' => false]); ?></td>
-                    </tr>
-                <?php endif ?>
+            </tbody>
+            <tbody group="groups" class="<?= ($this->request->params['controller'] == 'Users') ? '' : 'd-none' ?>">
+                <tr>
+                    <th>権限</th>
+                    <td><?= $this->Form->select('group_id', $groups, ['label' => false]); ?></td>
+                </tr>
+            </tbody>
+            <tbody>
                 <tr>
                     <th>
                         組織
@@ -65,12 +65,12 @@ $this->Form->templates([
                     <td><?= $this->Form->control('note', ['label' => false, 'class' => 'w-100', 'id' => 'editor']) ?></td>
                 </tr>
             </tbody>
-            <tbody group="engineer" class="<?= ($user->group_id == Defines::GROUP_ENGINEER ? '' : 'd-none')?>">
+            <tbody group="engineer" class="<?= ($user->group_id != Defines::GROUP_ENGINEER ? '' : 'd-none') ?>">
                 <tr>
                     <th>性別</th>
                     <td>
                         <?= $this->Form->hidden('engineer.user_id', ['value' => $user->id]) ?>
-                        <?= $this->Form->select('engineer.sex', Defines::USERS_SEX, ['label' => false]) ?>
+                        <?= $this->Form->radio('engineer.sex', Defines::USERS_SEX, ['default' => Defines::SEX_MALE]) ?>
                     </td>
                 </tr>
                 <tr>
@@ -100,3 +100,24 @@ $this->Form->templates([
 </script>
 
 <?php $this->append('script', $this->Html->script('/js/ckeditor/ckeditor.js')) ?>
+<?php $this->append('script'); ?>
+<script>
+    var GROUP_ENGINEER = <?= Defines::GROUP_ENGINEER ?>;
+    $(function () {
+        $('select[name="group_id"]').on('change', onChangeGroup);
+
+        onChangeGroup();
+
+        function onChangeGroup(event) {
+            var group_id = $('select[name="group_id"]').val();
+            if (group_id == GROUP_ENGINEER) {
+                $('tbody[group="engineer"]').removeClass('d-none');
+                $('tbody[group="engineer"]').find('select,input').removeAttr('disabled');
+            } else {
+                $('tbody[group="engineer"]').addClass('d-none');
+                $('tbody[group="engineer"]').find('select,input').attr('disabled', 'disabled');
+            }
+        }
+    });
+</script>
+<?php $this->end() ?>

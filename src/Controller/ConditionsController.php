@@ -51,6 +51,19 @@ class ConditionsController extends AppController {
                 $query->where(['Conditions.published <> 0'])
                         ->where(['Conditions.user_id IN' => $companies]);
                 break;
+            
+            case Defines::GROUP_ORGANIZATION_ADMIN:
+                $orgs_controll = TableRegistry::get('Organizations')
+                    ->find('user',['user_id'=>$loginUserId,'relation'=>'children'])
+                    ->select('Organizations.id');
+                $conditions = TableRegistry::get('ConditionsOrganizations')
+                        ->find()
+                        ->where(['organization_id IN' => $orgs_controll])
+                        ->select('condition_id')
+                        ->group('condition_id');
+                
+                $query->where(['or'=>['Conditions.id IN'=>$conditions , 'Conditions.user_id' => $loginUserId]]);
+                break;
         }
 
         $conditions = $this->paginate($query);

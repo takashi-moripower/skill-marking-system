@@ -94,6 +94,17 @@ class Skill extends Entity {
         $this->marker_id = $marker_id;
         return $marker_id;
     }
+    
+    protected function _getFieldOrder($value){
+        if(isset($value)){
+            return $value;
+        }
+        
+        $field_order = TableRegistry::get('Fields')->get($this->field_id)
+                ->lft;
+        $this->field_order = $field_order;
+        return $field_order;
+    }
 
     static function getMarkerId($skill) {
         if (!is_array($skill)) {
@@ -126,5 +137,7 @@ class Skill extends Entity {
             return ( $skill->level == $maxLevels[$skill->id] );
         });
     }
+    
+    
 
 }

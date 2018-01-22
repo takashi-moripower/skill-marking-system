@@ -26,7 +26,6 @@ $mode = $this->request->session()->read('App.Mode');
                             </div>
                         </div>
                     <?php else: ?>
-
                         <div class="dropdown float-right mt-2">
                             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 GUEST
@@ -36,6 +35,10 @@ $mode = $this->request->session()->read('App.Mode');
                             </div>
                         </div>
                     <?php endif; ?>
+                    <div class="float-right mt-2">
+                        <?= $this->Html->link('サイト説明',['controller'=>'pages','action'=>'display','guide'],['class'=>'btn btn-primary']) ?>
+                    </div>
+
                 </div>
             </div>
         </div>

@@ -5804,6 +5804,23 @@ img.thumbnail {
   font-size: 0.8rem;
   border-color: #ccc; }
 
+.btn.btn-skill-selector {
+  border: 1px solid #2d4d1a;
+  background-color: white;
+  border-radius: .25rem !important;
+  padding: 0.15rem 0.5rem;
+  margin-right: 0.2rem;
+  margin-top: 0.1rem;
+  margin-bottom: 0.1rem; }
+  .btn.btn-skill-selector.active {
+    border: 1px solid white;
+    background-color: #66ab3b;
+    color: white; }
+  .btn.btn-skill-selector:not([disabled=disabled]):hover {
+    border: 1px solid white;
+    background-color: #66ab3b;
+    color: white; }
+
 .btn.btn-mode-1 {
   border-color: #007bff;
   color: #007bff; }
@@ -5817,3 +5834,30 @@ img.thumbnail {
   .btn.btn-mode-2:hover {
     color: white;
     background-color: #28a745; }
+
+.guide > p {
+  padding-left: 1rem; }
+
+.guide h2 {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  padding-left: 1.5rem;
+  background-color: #007bff;
+  color: white;
+  border-radius: 0.5rem; }
+
+.guide h3 {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  padding-left: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #007bff; }
+
+.guide table.table-bordered td, .guide table.table-bordered th {
+  border-color: #868e96; }
+
+.guide table.table-bordered thead th {
+  background-color: #cce5ff; }
+
+.guide ol li {
+  margin-bottom: 0.5rem; }

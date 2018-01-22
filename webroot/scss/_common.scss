@@ -21,9 +21,30 @@ $color-skill-loginuser:#AAD88E;
     border-color:#ccc;
 }
 
+.btn.btn-skill-selector{
+    border:1px solid darken( $color-skill-loginuser , 50% );
+    background-color:white;
+    border-radius:.25rem !important;
+    padding:0.15rem 0.5rem;
+    margin-right:0.2rem;
+    margin-top:0.1rem;
+    margin-bottom:0.1rem;
+
+    @mixin active{
+        border:1px solid white;
+        background-color:darken( $color-skill-loginuser , 25% );
+        color:white;
+    }
+
+    &.active{   @include active;    }
+
+    &:not([disabled=disabled]):hover{
+        @include active;  
+    }
+}
 
 .btn{
-    
+
     @mixin btn-mode($color){
         border-color:$color;
         color:$color;
@@ -32,11 +53,51 @@ $color-skill-loginuser:#AAD88E;
             background-color:$color;
         }
     }
-    
+
     &.btn-mode-1{
         @include btn-mode( $color-mode-matching );
     }
     &.btn-mode-2{
         @include btn-mode( $color-mode-marking );
+    }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  GUIDE
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+.guide{
+    &>p{
+        padding-left:1rem;
+    }
+    h2{
+        margin-bottom:1rem;
+        padding:0.75rem;
+        padding-left:1.5rem;
+        background-color:theme-color('primary');
+        color:white;
+        border-radius:0.5rem;
+    }
+    h3{
+        margin-bottom:1rem;
+        padding:0.75rem;
+        padding-left:1.5rem;
+        border-radius:0.5rem;
+        border:1px solid theme-color('primary');
+    }
+
+    table.table-bordered{
+        td,th{
+            border-color:$gray-600;
+        }
+        thead th{
+            background-color:theme-color-level('primary',-10);
+        }
+    }
+    
+    ol{
+        li{
+            margin-bottom:0.5rem;
+        }
     }
 }

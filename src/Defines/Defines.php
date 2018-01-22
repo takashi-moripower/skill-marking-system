@@ -18,7 +18,7 @@ class Defines {
     /*
      * 数値設定
      */
-    const SKILL_LEVEL_MAX = 4;
+    const SKILL_LEVEL_MAX = 5;
 
     /*
      * グループID
@@ -207,6 +207,7 @@ class Defines {
     const FORM_TEMPLATE_DATE = ['dateWidget' => '{{year}} 年 {{month}} 月 {{day}} 日 '];
     const FORM_TEMPLATE_INLINE_CONTAINER = ['inputContainer' => '<div class="input {{type}}{{required}} d-inline-block">{{content}}</div>'];
     const FORM_TEMPLATE_RADIO = ['nestingLabel' => '{{hidden}}{{input}}<label class="mr-4" {{attrs}}>{{text}}</label>',];
+    const FORM_TEMPLATE_RADIO_SKILL_LEVELS = ['nestingLabel' => '{{hidden}}<label class="btn btn-skill-selector" {{attrs}}>{{input}}{{text}}</label>',];
     const CONTACT_FLAG_FROM_ENGINEER = 1;
     const CONTACT_FLAG_FROM_COMPANY = 0x10;
     const CONTACT_FLAG_FROM_TEACHER = 0x100;

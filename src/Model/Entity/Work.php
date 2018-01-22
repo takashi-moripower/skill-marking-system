@@ -36,10 +36,24 @@ class Work extends Entity {
     ];
 
     public function getSkillsBy($userId, $except = false) {
-        $c = new Collection($this->skills);
-        return $c->filter(function($value, $key)use($userId, $except) {
-                    return ($value->_joinData->user_id == $userId) ^ $except;
-                });
+
+        $result = [];
+        foreach ($this->skills as $skill) {
+            if ($skill->_joinData->user_id == $userId ^ $except) {
+                $result[] = $skill;
+            }
+        }
+
+        usort($result, function( $a, $b ) {
+            $field_order = $a->field_order - $b->field_order;
+            if ($field_order) {
+                return $field_order;
+            }
+            
+            return $a->id - $b->id;
+        });
+        
+        return $result;
     }
 
 }

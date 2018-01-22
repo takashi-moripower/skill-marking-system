@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Controller\AppController;
 use App\Model\Entity\SkillsWork;
 use Cake\ORM\TableRegistry;
-
 use Cake\Utility\Hash;
 use App\Defines\Defines;
 use App\Utility\MyUtil;
@@ -70,7 +69,6 @@ class WorksController extends AppController {
                         ->toArray();
 
         $this->set(compact('works', 'organizations', 'junles'));
-       
     }
 
     /**
@@ -92,7 +90,6 @@ class WorksController extends AppController {
 
         $this->set('work', $work);
         $this->set('_serialize', ['work']);
-       
     }
 
     /**
@@ -154,10 +151,31 @@ class WorksController extends AppController {
                 ])
                 ->first();
 
-        $skillsUsed = Hash::extract($work->getSkillsBy($loginUserId)->toArray(), '{n}.id');
+        //作者による自己評価のあるスキル＝評価希望のスキル
+        $skillsRequested = Hash::extract($work->getSkillsBy($work->user_id), '{n}.id');
 
-        $skillsUnUsed = $tableS->find('usable',['user_id'=>$loginUserId]);
+        //ログインユーザーによる評価済のスキル
+        $skillsUsed = Hash::extract($work->getSkillsBy($loginUserId), '{n}.id');
+
+        $skillsToReply = array_diff($skillsRequested, $skillsUsed);
+
+        foreach ($skillsToReply as $skillId) {
+            $replySkill = $tableS->get($skillId);
+            $replySkill->_joinData = TableRegistry::get('SkillsWorks')->newEntity([
+                'skill_id' => $skillId,
+                'user_id' => $loginUserId,
+                'work_id' => $workId,
+                'level' => 0
+            ]);
+
+            array_push($work->skills, $replySkill);
+        }
         
+        $skillsUsed += $skillsToReply;
+
+        //追加用リスト　ログインユーザーが未使用のスキル
+        $skillsUnUsed = $tableS->find('usable', ['user_id' => $loginUserId]);
+
         if (!empty($skillsUsed)) {
             $skillsUnUsed
                     ->where([$tableS->aliasField('id') . ' not IN ' => $skillsUsed]);
@@ -165,13 +183,12 @@ class WorksController extends AppController {
 
         $skillsToSet = MyUtil::toPathList($skillsUnUsed);
         $this->set(compact('work', 'skillsToSet'));
-       
     }
 
     protected function _postMark($workId) {
         $tableSW = TableRegistry::get('SkillsWorks');
         $data = $this->request->data();
-        $action = $data['action'];
+        $level = $data['level'];
 
         $param = [
             'work_id' => $data['work_id'],
@@ -179,23 +196,25 @@ class WorksController extends AppController {
             'user_id' => $data['user_id'],
         ];
 
-        if ($action == 'delete') {
+        if ($level == 0) {
             $tableSW->deleteAll($param);
+            $this->set('skillUpdated', $data['skill_id']);
+            return;
         }
 
-        if ($action == 'set') {
-            if (!$tableSW->exists($param)) {
-                $entity = new SkillsWork($param);
-            } else {
-                $entity = $tableSW->find()
-                        ->where($param)
-                        ->first();
-            }
 
-            $entity->level = $data['level'];
-
-            $tableSW->save($entity);
+        if (!$tableSW->exists($param)) {
+            $entity = new SkillsWork($param);
+        } else {
+            $entity = $tableSW->find()
+                    ->where($param)
+                    ->first();
         }
+        $entity->level = $level;
+
+        $tableSW->save($entity);
+
+        $this->set('skillUpdated', $data['skill_id']);
     }
 
     /**
@@ -229,7 +248,6 @@ class WorksController extends AppController {
         }
 
         $this->set(compact('work', 'junles'));
-       
     }
 
     public function add() {
@@ -258,7 +276,7 @@ class WorksController extends AppController {
         }
 
         $this->set(compact('work', 'junles'));
-       
+
         $this->render('edit');
     }
 

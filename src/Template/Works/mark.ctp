@@ -5,9 +5,6 @@ use App\Utility\MyUtil;
 
 $loginUserId = $this->getLoginUser('id');
 $loginUserGroup = $this->getLoginUser('group_id');
-
-$LEVELS = range(1, Defines::SKILL_LEVEL_MAX);
-$LEVELS = array_combine($LEVELS, $LEVELS);
 ?>
 
 <div class="card">
@@ -55,7 +52,9 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
         <table class="table mb-0">
             <tbody role="skills">
                 <tr>
-                    <th class="w-20 border-top-0">作者の採点</th>
+                    <th class="w-20 border-top-0">
+                        作者の採点
+                    </th>
                     <td class=" border-top-0">
                         <?php
                         echo $this->Element('skills/colored_skills', ['skills' => $work->getSkillsBy($work->user_id), 'user_id' => $work->user_id]);
@@ -71,41 +70,21 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
                     </td>
                 </tr>
                 <tr>
-                    <th><?= h($this->getLoginUser('name')) ?> の採点</th>
+                    <th>
+                        <?= h($this->getLoginUser('name')) ?> の採点
+                        <?= $this->Element('popup_hint',['message'=>'スキルレベルボタンをクリックすると即座に情報は保存されます'])?>
+                    </th>
                     <td>
                         <?php
                         $skills = $work->getSkillsBy($loginUserId);
                         foreach ($skills as $skill):
-                            ?>
-                            <div class="card bg-skill-loginuser border-dark mb-1">
-                                <div class="card-body p-1">
-                                    <?= $this->Form->create(null, ['class' => 'form-inline clearfix form-edit', 'level-old' => $skill->level]); ?>
-                                    <?= $this->Form->hidden('user_id', ['value' => $loginUserId]); ?>
-                                    <?= $this->Form->hidden('work_id', ['value' => $work->id]); ?>
-                                    <?= $this->Form->hidden('skill_id', ['value' => $skill->id]); ?>
+                            echo $this->Element('works/loginUserMark', compact('skill', 'loginUserId'));
+                        endforeach;
+                        echo $this->Element('works/newMark', compact('loginUserId'));
+                        ?>
 
-                                    <?= $skill->field_path ?> > 
-                                    <?= $skill->name ?> - 
-                                    <?= $this->Form->select('level', $LEVELS, ['value' => $skill->level, 'class' => 'align-middle']) ?>
-                                    <?= $this->Form->button('修正', ['class' => 'btn btn-outline-dark disabled btn-sm ml-auto bg-weak-white', 'disabled' => 'disabled', 'type' => 'submit', 'name' => 'action', 'value' => 'set']) ?>
-                                    <?= $this->Form->button('削除', ['class' => 'btn btn-outline-danger btn-sm ml-1 bg-weak-white', 'type' => 'submit', 'name' => 'action', 'value' => 'delete']) ?>
-                                    <?= $this->Form->end() ?>
-                                </div>
-                            </div>
-                        <?php endforeach ?>
-                        <div class="card bg-skill-loginuser border-dark mb-1">
-                            <div class="card-body p-1">
-                                <?= $this->Form->create(null, ['class' => 'form-inline clearfix form-add']); ?>
-                                <?= $this->Form->hidden('user_id', ['value' => $loginUserId]); ?>
-                                <?= $this->Form->hidden('work_id', ['value' => $work->id]); ?>
+                        <?php ?>
 
-                                <?= $this->Form->select('skill_id', $skillsToSet, ['value' => 0, 'empty' => true]) ?>
-                                - 
-                                <?= $this->Form->select('level', $LEVELS, ['value' => 1, 'class' => 'align-middle']) ?>
-                                <?= $this->Form->button('追加', ['class' => 'btn btn-outline-dark disabled btn-sm ml-auto bg-weak-white', 'disabled' => 'disabled', 'type' => 'submit', 'name' => 'action', 'value' => 'set']) ?>
-                                <?= $this->Form->end() ?>
-                            </div>
-                        </div>
                     </td>
                 </tr>
             </tbody>
@@ -159,40 +138,28 @@ $LEVELS = array_combine($LEVELS, $LEVELS);
 </div>
 <?php $this->append('script'); ?>
 <script>
+
+    var skillUpdated = '<?= isset($skillUpdated) ? $skillUpdated : null; ?>';
+
     $(function () {
-        $('form.form-edit').on('change', 'select[name="level"]', function (event) {
-            form = $(event.target).parents('form.form-edit');
-            level = form.find('select[name="level"]').val();
-            levelOld = form.attr('level-old');
+        if (skillUpdated !== '') {
+            $("html,body").scrollTop($('tbody[role="skills"]').offset().top);
 
-            button = form.find('button[value="set"]');
+            console.log('focus');
+        }
 
-            setButton(button, level == levelOld);
-
-        });
 
         $('form.form-add').on('change', 'select[name="skill_id"]', function (event) {
             form = $(event.target).parents('form.form-add');
             skill_id = form.find('select[name="skill_id"]').val();
-            button = form.find('button[value="set"]')
-
-            setButton(button, skill_id == '0');
+            if( skill_id === ''){
+                $('form.form-add .btn.btn-skill-selector').attr('disabled','disabled');
+            }else{
+                $('form.form-add .btn.btn-skill-selector').removeAttr('disabled');
+            }
 
         });
 
-        function setButton(button, state) {
-            if (state) {
-                button.attr('disabled', 'disabled');
-                button.removeClass('btn-outline-primary');
-                button.addClass('btn-outline-dark disabled');
-            } else {
-                button.removeAttr('disabled');
-                button.addClass('btn-outline-primary');
-                button.removeClass('btn-outline-dark disabled');
-            }
-        }
-    });
-    $(function () {
         $('tbody[role="comments"]').on('click', 'button[value="delete"]', function (event) {
             return confirm('realy delete?');
         });

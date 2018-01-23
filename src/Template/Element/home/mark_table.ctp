@@ -11,7 +11,7 @@ use App\Defines\Defines;
             </th>
             <th class="w-10">
                 学生数
-                <?= $this->Element('popup_hint',['message'=>'直接所属する学生数(下位組織に所属する学生を含む総数)']); ?>
+                <?= $this->Element('popup_hint',['message'=>'下位組織に所属する学生を含む']); ?>
             </th>
             <th class="w-10">
                 作品数
@@ -31,7 +31,7 @@ use App\Defines\Defines;
                     <?= h($organization->path) ?>
                 </th>
                 <td class="text-right">
-                    <?= $this->Html->link( sprintf("%2d (%2d)",$organization->count_engineers ,$organization->total_count_engineers), ['controller' => 'engineers', 'action' => 'index', 'organization_id' => $organization->id, 'clear' => 1]) ?>
+                    <?= $this->Html->link( $organization->total_count_engineers, ['controller' => 'engineers', 'action' => 'index', 'organization_id' => $organization->id, 'clear' => 1]) ?>
                 </td>
                 <td class="text-right">
                     <?= $this->Html->link( $organization->count_works , ['controller'=>'works','action'=>'index','organization_id'=>$organization->id,'clear'=>1] ) ?>

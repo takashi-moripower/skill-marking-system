@@ -198,11 +198,7 @@ class UsersTable extends Table {
         $min_age = Hash::get($options, 'min_age');
         $max_birthday = new DateTime;
         $max_birthday->modify("-{$min_age} years");
-/*        
-        $max_birthday = $max_birthday->format('Y-m-d');
-debug( $max_birthday );
- * 
- */
+
         $query->where(['Engineers.birthday <=' => $max_birthday]);
         return $query;
     }
@@ -219,7 +215,7 @@ debug( $max_birthday );
     public function findSkills($query, $options) {
 
         foreach ($options['skill'] as $skill) {
-            if ($skill['id']) {
+            if (!empty($skill['id'])) {
                 $query->find('skill', ['skill' => $skill]);
             }
         }

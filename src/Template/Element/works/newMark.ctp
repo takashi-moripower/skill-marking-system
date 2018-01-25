@@ -11,7 +11,7 @@ $levels = MyUtil::getSkillLevels();
         <?= $this->Form->hidden('work_id', ['value' => $work->id]); ?>
 
         <div class="col-6">
-            <?= $this->Form->select('skill_id', $skillsToSet, ['value' => 0, 'empty' => true]) ?>
+            <?= $this->Form->select('skill_id', $skillsToSet, ['value' => 0, 'empty' => '追加するスキルを選択してください']) ?>
         </div>
         <div class="col-5 text-right">
             <div class="btn-group">

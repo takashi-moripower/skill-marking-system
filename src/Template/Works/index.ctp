@@ -13,7 +13,7 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
 ?>
 <div class="card mt-2 border-primary">
     <div class="card-body py-2">
-        <?= $this->Form->create(null, ['valueSources' => 'data','url'=>['controller'=>'works','action'=>'index']]); ?>
+        <?= $this->Form->create(null, ['valueSources' => 'data', 'url' => ['controller' => 'works', 'action' => 'index']]); ?>
         <div class="form-group row mb-0">
             <label class="col-2 col-form-label">キーワード</label>
             <div class="col-4">
@@ -38,7 +38,7 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
                 <?php if ($loginUserGroup != Defines::GROUP_ENGINEER): ?>
                     <label class="col-2 col-form-label mt-1">所属組織</label>
                     <div class="col-4 mt-1">
-                        <?= $this->Form->select('organization_id', $organizations, ['class' => 'form-control','empty'=>'すべて']) ?>
+                        <?= $this->Form->select('organization_id', $organizations, ['class' => 'form-control', 'empty' => 'すべて']) ?>
                     </div>
                 <?php endif; ?>
             </div>
@@ -54,9 +54,14 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
             <?php if ($displayName): ?> 
                 <th class="">作者</th>
             <?php endif; ?>
-            <th class="w-30">ジャンル</th>
+            <th class="w-20">ジャンル</th>
             <th>採点</th>
-            <th class="w-30">スキル評価</th>
+            <th class="w-50">
+                スキル評価
+                <div class="float-right">
+                    <?= $this->Element('skills/samples'); ?>
+                </div>
+            </th>
             <th class="">操作</th>
         </tr>
     </thead>
@@ -69,7 +74,7 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
                     <td class="text-nowrap"><?= h($work->user->name) ?></td>
                 <?php endif; ?>
                 <td>
-                    <div class="" style="width:20rem">
+                    <div class="">
                         <?= h(implode(',', Hash::extract($work->junles, '{n}.name'))) ?>
                     </div>
                 </td>
@@ -77,8 +82,8 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
                     <?= $work->mark ? '済' : '未' ?>
                 </td>
                 <td>
-                    <div class="" style="width:20rem">
-                        <?= $this->Element('skills/colored_skills', ['skills' => $work->skills, 'user_id' => $work->user_id , 'flags'=>Defines::SKILL_DISPLAY_FLAG_FOR_WORKS]);                        ?>
+                    <div class="">
+                        <?= $this->Element('skills/colored_skills', ['skills' => $work->skills, 'user_id' => $work->user_id, 'flags' => Defines::SKILL_DISPLAY_FLAG_FOR_WORKS]); ?>
                     </div>
                 </td>
                 <td class="text-nowrap py-0 align-middle">

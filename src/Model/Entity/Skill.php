@@ -7,6 +7,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use App\Defines\Defines;
 use App\Utility\MyUtil;
+
 /**
  * Skill Entity
  *
@@ -65,20 +66,20 @@ class Skill extends Entity {
         }
 
         $level = Hash::get($this, '_joinData.level', Hash::get($this, 'SkillsWorks.level'));
-        if($level == null){
-            $level = implode(',',$this->levels);
+        if ($level == null) {
+            $level = implode(',', $this->levels);
         }
 
         $this->level = $level;
         return $level;
     }
-    
-    protected function _getLevels( $value ){
+
+    protected function _getLevels($value) {
         if (isset($value)) {
             return $value;
         }
 
-        $levelsFlags = Hash::get($this, '_joinData.levels',0);
+        $levelsFlags = Hash::get($this, '_joinData.levels', 0);
         $levels = MyUtil::flags2Array($levelsFlags);
 
         return $levels;
@@ -94,12 +95,12 @@ class Skill extends Entity {
         $this->marker_id = $marker_id;
         return $marker_id;
     }
-    
-    protected function _getFieldOrder($value){
-        if(isset($value)){
+
+    protected function _getFieldOrder($value) {
+        if (isset($value)) {
             return $value;
         }
-        
+
         $field_order = TableRegistry::get('Fields')->get($this->field_id)
                 ->lft;
         $this->field_order = $field_order;
@@ -127,17 +128,22 @@ class Skill extends Entity {
     }
 
     static function findMaxLevel($skills) {
-        $maxLevels = [];
-
-        foreach ($skills as $skill) {
-            $maxLevels[$skill->id] = max(Hash::get($maxLevels, $skill->id, 0), $skill->level);
+        if (empty($skills)) {
+            return [];
         }
 
-        return array_filter($skills, function($skill) use($maxLevels) {
-            return ( $skill->level == $maxLevels[$skill->id] );
+        $result = [];
+        foreach ($skills as $skill) {
+            if (empty($result[$skill->id]) || $result[$skill->id]->level < $skill->level) {
+                $result[$skill->id] = $skill;
+            }
+        }
+
+        usort($result, function($a, $b) {
+            return $b->level - $a->level;
         });
+
+        return $result;
     }
-    
-    
 
 }

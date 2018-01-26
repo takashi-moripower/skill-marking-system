@@ -13,8 +13,13 @@ $isConditionSearch = !empty($this->request->getData('condition_id'));
             <th class="text-nowrap" >名称</th>
             <th class="" >所属</th>
             <th class="">
-                スキル評価
-                <?= $this->Element('popup_hint',['message'=>'各スキルで最大レベルのみ表示'])?>
+                <div class="float-left">
+                    スキル評価
+                    <?= $this->Element('popup_hint', ['message' => 'スキル単位ごとに、作品評価をまとめて　最大レベルのみを表示しています']) ?>
+                </div>
+                <div class="float-right">
+                    <?= $this->Element('skills/samples'); ?>
+                </div>
             </th>
             <th class="">操作</th>
         </tr>

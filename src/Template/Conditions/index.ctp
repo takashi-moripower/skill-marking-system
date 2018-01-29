@@ -44,13 +44,13 @@ $loginUserGroup = $this->getLoginUser('group_id');
                 <?php if ($loginUserGroup != Defines::GROUP_ENGINEER): ?>
                     <td class="py-0 align-middle">
                         <?php if ($loginUserGroup == Defines::GROUP_ADMIN || $condition->user_id == $loginUserId): ?>
-                            <?= $this->Html->link('検索', ['controller' => 'engineers', 'action' => 'index', 'condition_id' => $condition->id, 'clear' => 1], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>
+                            <?= $this->Html->link('検索', ['controller' => 'engineers', 'action' => 'index_by_condition', 'condition_id' => $condition->id, 'clear' => 1], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>
                             <?= $this->Html->link('編集', ['controller' => 'conditions', 'action' => 'edit', $condition->id], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>
                             <?= $this->Html->link('削除', '', ['class' => 'btn btn-sm btn-outline-danger py-0', 'role' => 'delete']) ?>
                             <?= $this->Form->create(null, ['method' => 'POST', 'url' => ['controller' => 'conditions', 'action' => 'delete', $condition->id], 'object_id' => $condition->id, "role" => "delete"]) ?>
                             <?= $this->Form->end() ?>
                         <?php else: ?>
-                            <?= $this->Html->link('検索', ['controller' => 'engineers', 'action' => 'index', 'condition_id' => $condition->id, 'clear' => 1], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>
+                            <?= $this->Html->link('検索', ['controller' => 'engineers', 'action' => 'index_by_condition', 'condition_id' => $condition->id, 'clear' => 1], ['class' => 'btn btn-sm btn-outline-primary py-0']); ?>
                         <?php endif; ?>
                     </td>
                 <?php endif; ?>

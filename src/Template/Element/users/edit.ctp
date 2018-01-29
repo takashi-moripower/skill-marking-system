@@ -1,9 +1,25 @@
 <?php
 
 use App\Defines\Defines;
+use App\Utility\MyUtil;
 use Cake\Utility\Hash;
 
 $loginUserGroup = $this->getLoginUser('group_id');
+
+$nameEditable = true;
+if ($loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN && $user->group_id == Defines::GROUP_MARKER && !$user->isNew()) {
+    $nameEditable = false;
+}
+
+$groupEditable = false;
+if ($loginUserGroup == Defines::GROUP_ADMIN || ($loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN && $user->isNew() )) {
+    $groupEditable = true;
+}
+
+$orgsEditable = false;
+if( in_array( $loginUserGroup , [Defines::GROUP_ADMIN , Defines::GROUP_ORGANIZATION_ADMIN ]) && $user->group_id != Defines::GROUP_ADMIN ){
+    $orgsEditable = true;
+}
 
 $this->Form->templates(Defines::FORM_TEMPLATE_RADIO + Defines::FORM_TEMPLATE_DATE);
 ?>
@@ -18,32 +34,62 @@ $this->Form->templates(Defines::FORM_TEMPLATE_RADIO + Defines::FORM_TEMPLATE_DAT
             <tbody>
                 <tr>
                     <th class="w-20 border-top-0">名称</th>
-                    <td class="border-top-0"><?= $this->Form->control('name', ['label' => false, 'class' => 'w-100', 'default' => '']); ?></td>
+                    <td class="border-top-0">
+                        <?php
+                        if ($nameEditable) {
+                            echo $this->Form->control('name', ['label' => false, 'class' => 'w-100', 'default' => '']);
+                        } else {
+                            echo $user->name;
+                        }
+                        ?>
+                    </td>
                 </tr>
                 <tr>
                     <th>email</th>
-                    <td><?= $this->Form->control('email', ['label' => false, 'class' => 'w-100', 'default' => '']); ?></td>
+                    <td>
+                        <?php
+                        if ($nameEditable) {
+                            echo $this->Form->control('email', ['label' => false, 'class' => 'w-100', 'default' => '']);
+                        } else {
+                            echo $user->email;
+                        }
+                        ?>
+                    </td>
                 </tr>
-                <tr>
-                    <th>password</th>
-                    <td><?= $this->Form->control('password', ['label' => false, 'value' => '', 'class' => 'w-100']); ?></td>
-                </tr>
+                <?php if ($nameEditable): ?>
+                    <tr>
+                        <th>password</th>
+                        <td><?= $this->Form->control('password', ['label' => false, 'value' => '', 'class' => 'w-100']); ?></td>
+                    </tr>
+                <?php endif; ?>
             </tbody>
             <tbody group="groups" class="<?= ($this->request->params['controller'] == 'Users') ? '' : 'd-none' ?>">
                 <tr>
                     <th>権限</th>
-                    <td><?= $this->Form->select('group_id', $groups, ['label' => false]); ?></td>
+                    <td>
+                        <?php
+                        if ($groupEditable) {
+                            echo $this->Form->select('group_id', $groups, ['label' => false]);
+                        } else {
+                            echo $user->group->name;
+                        }
+                        ?>
+                    </td>
                 </tr>
             </tbody>
-            <tbody>
+            <tbody group="organizations">
                 <tr>
                     <th>
                         組織
-                        <?= $this->Element('popup_hint', ['message' => '一つもチェックを入れなかった場合　そのユーザーは管轄外となります<br/>管轄外のユーザーはユーザー一覧に表示されず　編集操作もできません']) ?>
+                        <?php
+                        if ($orgsEditable) {
+                            echo $this->Element('popup_hint', ['message' => '一つもチェックを入れなかった場合　そのユーザーは管轄外となります<br/>管轄外のユーザーはユーザー一覧に表示されず　編集操作もできません']);
+                        }
+                        ?>
                     </th>
                     <td>
                         <?php
-                        if (in_array($loginUserGroup, [Defines::GROUP_ADMIN, Defines::GROUP_ORGANIZATION_ADMIN])) {
+                        if ($orgsEditable) {
                             echo $this->Form->control('organizations._ids', ['options' => $organizations, 'empty' => false, 'label' => false, 'multiple' => 'checkbox',]);
 
                             $org_set = Hash::extract($user, 'organizations.{n}.id');
@@ -60,9 +106,19 @@ $this->Form->templates(Defines::FORM_TEMPLATE_RADIO + Defines::FORM_TEMPLATE_DAT
                         ?>
                     </td>
                 </tr>
+            </tbody>
+            <tbody>
                 <tr>
                     <th>ユーザ紹介</th>
-                    <td><?= $this->Form->control('note', ['label' => false, 'class' => 'w-100', 'id' => 'editor']) ?></td>
+                    <td>
+                        <?php
+                        if ($nameEditable) {
+                            echo $this->Form->control('note', ['label' => false, 'class' => 'w-100', 'id' => 'editor']);
+                        } else {
+                            echo MyUtil::strip_tags($user->note);
+                        }
+                        ?>
+                    </td>
                 </tr>
             </tbody>
             <tbody group="engineer" class="<?= ($user->group_id != Defines::GROUP_ENGINEER ? '' : 'd-none') ?>">

@@ -112,7 +112,7 @@ $Contacts = \Cake\ORM\TableRegistry::get('Contacts');
             <?= $this->Form->end(); ?>
         <?php endif; ?>
     <?php else: ?>
-        <?= $this->Html->link('該当ユーザーを検索', ['controller' => 'engineers', 'action' => 'index', 'condition_id' => $condition->id, 'clear' => 1], ['class' => 'btn btn-outline-primary']); ?>
+        <?= $this->Html->link('該当ユーザーを検索', ['controller' => 'engineers', 'action' => 'index_by_condition', 'condition_id' => $condition->id, 'clear' => 1], ['class' => 'btn btn-outline-primary']); ?>
     <?php endif; ?>
 </div>
 

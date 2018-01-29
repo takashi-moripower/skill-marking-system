@@ -2,17 +2,7 @@
 
 use App\Defines\Defines;
 
-
-$isConditionSearch = !empty($this->request->getData('condition_id'));
+echo $this->Element('engineers/search_form');
+echo $this->Element('engineers/index');
+echo $this->Element('paginator');
 ?>
-<?php
-if ($isConditionSearch) {
-    echo $this->Element('engineers/index_condition');
-    $condition_id = $this->request->getData('condition_id');
-} else {
-    echo $this->Element('engineers/search_form');
-}
-?>
-<?= $this->Element('engineers/index') ?>
-
-<?= $this->Element('paginator'); ?>

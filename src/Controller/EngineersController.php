@@ -21,7 +21,7 @@ class EngineersController extends AppController {
         parent::initialize();
 
 
-        $this->loadComponent('SearchSession', []);
+        $this->loadComponent('SearchSession', ['actions'=>['index','indexByCondition']]);
         $this->loadComponent('UserEdit');
     }
 
@@ -48,7 +48,7 @@ class EngineersController extends AppController {
 
         $query = $tableU
                 ->find()
-                ->contain(['Engineers','Organizations'])
+                ->contain(['Engineers', 'Organizations'])
                 ->where(['group_id' => Defines::GROUP_ENGINEER])
                 ->find('search', ['search' => $this->request->data]);
 
@@ -86,6 +86,31 @@ class EngineersController extends AppController {
         }
 
         $this->set(compact('users', 'skills', 'levels', 'organizations'));
+    }
+
+    public function indexByCondition() {
+        $loginUserId = $this->Auth->user('id');
+        $loginUserGroup = $this->Auth->user('group_id');
+
+        $tableU = TableRegistry::get('Users');
+        $tableO = TableRegistry::get('Organizations');
+
+        $this->paginate = [
+            'order' => ['id' => 'ASC'],
+        ];
+
+        $query = $tableU
+                ->find()
+                ->contain(['Engineers', 'Organizations'])
+                ->where(['group_id' => Defines::GROUP_ENGINEER])
+                ->find('search', ['search' => $this->request->data]);
+
+        if ($loginUserGroup != Defines::GROUP_ADMIN) {
+            $query->find('editable', ['user_id' => $loginUserId]);
+        }
+
+        $users = $this->paginate($query);
+        $this->set(compact('users'));
     }
 
     public function view($user_id) {

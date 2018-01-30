@@ -76,11 +76,12 @@ class User extends Entity {
         if( isset($val)){
             return $val;
         }
-        
         $tableS = TableRegistry::get('skills');
 
         $skills = $tableS
                 ->find('byEngineer', ['engineer_id' => $this->id])
+                ->contain('Fields')
+                ->select('Fields.lft')
                 ->order(['level'=>'DESC'])
                 ->toArray();
         

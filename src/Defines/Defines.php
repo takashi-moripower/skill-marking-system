@@ -79,6 +79,7 @@ class Defines {
     const NAV_ID_PROFILE = 9;
     const NAV_ID_CONDITIONS = 10;
     const NAV_ID_CONTACTS = 11;
+    const NAV_ID_STATISTICS = 12;
     const NAV_ID_ENG_WORKS = 101;
     const NAV_ID_ENG_NEW_WORK = 102;
     const NAV_ID_ENG_MARKS = 103;
@@ -97,6 +98,7 @@ class Defines {
         self::NAV_ID_CONDITIONS => ['label' => '人材募集', 'url' => ['controller' => 'Conditions', 'action' => 'index']],
         self::NAV_ID_ENGINEERS => ['label' => '学生一覧', 'url' => ['controller' => 'Engineers', 'action' => 'index']],
         self::NAV_ID_CONTACTS => ['label' => 'コンタクト', 'url' => ['controller' => 'Contacts', 'action' => 'index']],
+        self::NAV_ID_STATISTICS => ['label' => '統計', 'url' => ['controller' => 'statistics', 'action' => 'index']],
         self::NAV_ID_ENG_WORKS => ['label' => '作品一覧', 'url' => ['controller' => 'Works', 'action' => 'index']],
         self::NAV_ID_ENG_NEW_WORK => ['label' => '新規投稿', 'url' => ['controller' => 'Works', 'action' => 'add']],
         self::NAV_ID_ENG_PROFILE => ['label' => 'プロファイル', 'url' => ['controller' => 'engineers', 'action' => 'editSelf']],
@@ -115,6 +117,7 @@ class Defines {
                 self::NAV_ID_JUNLES,
                 self::NAV_ID_CONDITIONS,
                 self::NAV_ID_CONTACTS,
+                self::NAV_ID_STATISTICS,
             ],
             self::GROUP_ORGANIZATION_ADMIN => [
                 self::NAV_ID_ORGANIZATIONS,
@@ -153,6 +156,7 @@ class Defines {
                 self::NAV_ID_JUNLES,
                 self::NAV_ID_CONDITIONS,
                 self::NAV_ID_CONTACTS,
+                self::NAV_ID_STATISTICS,
             ],
             self::GROUP_ORGANIZATION_ADMIN => [
                 self::NAV_ID_ORGANIZATIONS,

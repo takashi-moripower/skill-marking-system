@@ -124,7 +124,6 @@ class EngineersController extends AppController {
                 ->find()
                 ->contain(['Engineers', 'Organizations'])
                 ->where(['Users.id' => $loginUserId]);
-
         $this->set('users', $users);
     }
 

@@ -5,7 +5,7 @@ use Cake\Utility\Hash;
 use App\Utility\MyUtil;
 
 $loginUserId = $this->getLoginUser('id');
-$loginUserGroup = $this->getLoginUser('group');
+$loginUserGroup = $this->getLoginUser('group_id');
 ?>
 <div class="card">
     <div class="card-header">技術者情報</div>
@@ -58,3 +58,5 @@ $loginUserGroup = $this->getLoginUser('group');
     }
     ?>
 </div>
+
+<?= $this->Element('engineers/deviation',['user'=>$user]) ?>

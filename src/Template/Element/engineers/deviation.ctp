@@ -21,7 +21,7 @@ foreach ($user->organizations as $organization) {
             <th>スキル名</th>
             <th>レベル</th>
             <th>評価数</th>
-            <th class="w-20"><?= $this->Form->select('org_id', $org_selectors,['style'=>'max-width:100%']); ?></th>
+            <th class="w-20"><?= $this->Form->select('org_id', $org_selectors); ?></th>
             <th class="w-20">全組織</th>
         </tr>
     </thead>
@@ -30,7 +30,7 @@ foreach ($user->organizations as $organization) {
             <?php foreach ($levels as $level => $count): ?>
                 <tr>
                     <?php if ($level === MyUtil::first_key($levels)): ?>
-                        <th rowspan="<?= count($levels) ?>"><?= Hash::extract($skills, "{n}[id={$skill_id}].label")[0] ?></th>
+                        <th rowspan="<?= count($levels) ?>"><?= Hash::extract($skills, "{n}[id={$skill_id}]")[0]->label ?></th>
                     <?php endif; ?>
                     <td class="text-right"><?= $level ?></td>
                     <td class="text-right"><?= $count ?></td>

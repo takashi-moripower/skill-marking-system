@@ -47,7 +47,6 @@ class SkillsTable extends Table {
             'joinType' => 'INNER',
         ]);
 
-
         $this->belongsToMany('Works', [
             'foreignKey' => 'skill_id',
             'targetForeignKey' => 'work_id',

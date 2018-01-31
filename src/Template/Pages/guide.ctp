@@ -85,20 +85,59 @@
     <table class="table table-bordered table-sm">
         <thead>
             <tr>
-                <th class="w-20 text-center">1</th>
-                <th class="w-20 text-center">2</th>
-                <th class="w-20 text-center">3</th>
-                <th class="w-20 text-center">4</th>
-                <th class="w-20 text-center">5</th>
+                <th>レベル</th>
+                <th>人材イメージ</th>
+                <th>スキル感</th>
             </tr>
         </thead>        
         <tbody>
             <tr>
-                <td>非常に悪い</td>
-                <td>悪い</td>
-                <td>普通</td>
-                <td>良い</td>
-                <td>非常に良い</td>
+                <th class="text-center">1</th>
+                <td class="text-center">要学習</td>
+                <td>
+                    該当スキルを学ぶ必要がある<br/>
+                    該当スキルの概要を知っている
+                </td>
+            </tr>
+            <tr>
+                <th class="text-center">2</th>
+                <td class="text-center">学　生</td>
+                <td>
+                    一通り該当スキルを学んでいる<br/>
+                    スキルに関する知識を持っている<br/>
+                    スキルに見合ったツールを操作できる
+
+                </td>
+            </tr>
+            <tr>
+                <th class="text-center">3</th>
+                <td class="text-center">要育成</td>
+                <td>
+                    スキルを学んである程度表現できる<br/>
+                    スキルに見合ったツールを使って自己表現できる<br/>
+                    指導を受けながら作業を遂行できる
+
+                </td>
+            </tr>
+            <tr>
+                <th class="text-center">4</th>
+                <td class="text-center">作業員</td>
+                <td>
+                    スキルを十分に使いこなせる<br/>
+                    主体的に成果物を完成させることができる<br/>
+                    スキルを活用しクライアント・ニーズに対応できる
+
+                </td>
+            </tr>
+            <tr>
+                <th class="text-center">5</th>
+                <td class="text-center">即戦力</td>
+                <td>
+                    人に教える・指導できる<br/>
+                    プロジェクト内で連携し制作進行できる<br/>
+                    品質・納期など責任をもって制作できる
+
+                </td>
             </tr>
         </tbody>
     </table>

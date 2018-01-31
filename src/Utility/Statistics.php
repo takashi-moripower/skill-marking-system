@@ -10,10 +10,12 @@ namespace App\Utility;
 
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use App\Defines\Defines;
 
 class Statistics {
 
     public $SkillsWorks;
+    public $countCache = [];
 
     public function __construct($query = null) {
         if ($query == null) {
@@ -28,42 +30,42 @@ class Statistics {
         return $this->_query->cleanCopy();
     }
 
+    
     public function getSkills() {
-        $skill_ids = $this->getQuery()
-                ->select('SkillsWorks.skill_id')
-                ->group('SkillsWorks.skill_id');
-
-        $skills = TableRegistry::get('Skills')
-                ->find()
+        $Skills = TableRegistry::get('Skills');
+        
+        $SWIds = $this->getQuery()
+                ->select('id');
+        
+        $skills = $Skills->find()
                 ->contain('Fields')
-                ->where(['Skills.id IN' => $skill_ids])
+                ->join([
+                    'table' => 'skills_works',
+                    'alias' => 'SkillsWorks',
+                    'type' => 'right',
+                    'conditions' => 'SkillsWorks.skill_id = Skills.id',
+                ])
+                ->group('Skills.id')
+                ->select('SkillsWorks.id')
+                ->having(['SkillsWorks.id IN' => $SWIds])
+                ->select(['count' => 'count(SkillsWorks.level)'])
+                ->select(['average' => 'avg(SkillsWorks.level)'])
+                ->select($Skills)
+                ->select($Skills->Fields)
                 ->order(['Fields.lft' => 'ASC', 'Skills.id' => 'ASC']);
+
+        for ($l = 1; $l <= Defines::SKILL_LEVEL_MAX; $l++) {
+            $label = "count_{$l}";
+            $value = "count(SkillsWorks.level = {$l} or null)";
+            $skills
+                    ->select([$label => $value]);
+        }
+
         return $skills;
     }
-
-    public function count($skill_id, $level) {
-        $query = $this->getQuery();
-
-        if ($skill_id) {
-            $query->where(['skill_id' => $skill_id]);
-        }
-
-        if ($level) {
-            $query->where(['level' => $level]);
-        }
-
-        $count = $query->count();
-
-        return $count;
-    }
-
-    public function average($skill_id) {
-        $query = $this->getQuery();
-
-        $query->where(['skill_id' => $skill_id]);
-
-        $avg = $query->avg('level');
-        return $avg;
+    
+    public static function getColor( $a , $b ){
+        
     }
 
 }

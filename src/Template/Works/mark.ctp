@@ -32,6 +32,10 @@ $loginUserGroup = $this->getLoginUser('group_id');
                     <td><?= h($work->user->name) ?></td>
                 </tr>
                 <tr>
+                    <th>所属組織</th>
+                    <td><?= $this->element('organizations/list', ['organizations' => $work->user->organizations]) ?></td>
+                </tr>
+                <tr>
                     <th>解説</th>
                     <td><?= MyUtil::strip_tags($work->note) ?></td>
                 </tr>
@@ -72,7 +76,7 @@ $loginUserGroup = $this->getLoginUser('group_id');
                 <tr>
                     <th>
                         <?= h($this->getLoginUser('name')) ?> の採点
-                        <?= $this->Element('popup_hint',['message'=>'スキルレベルボタンをクリックすると即座に情報は保存されます'])?>
+                        <?= $this->Element('popup_hint', ['message' => 'スキルレベルボタンをクリックすると即座に情報は保存されます']) ?>
                     </th>
                     <td>
                         <?php
@@ -152,9 +156,9 @@ $loginUserGroup = $this->getLoginUser('group_id');
         $('form.form-add').on('change', 'select[name="skill_id"]', function (event) {
             form = $(event.target).parents('form.form-add');
             skill_id = form.find('select[name="skill_id"]').val();
-            if( skill_id === ''){
-                $('form.form-add .btn.btn-skill-selector').attr('disabled','disabled');
-            }else{
+            if (skill_id === '') {
+                $('form.form-add .btn.btn-skill-selector').attr('disabled', 'disabled');
+            } else {
                 $('form.form-add .btn.btn-skill-selector').removeAttr('disabled');
             }
 

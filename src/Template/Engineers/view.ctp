@@ -17,12 +17,9 @@ $loginUserGroup = $this->getLoginUser('group_id');
                     <td colspan="3" class="border-top-0"><?= h($user->name); ?></td>
                 </tr>
                 <tr>
-                    <th>所属</th>
+                    <th>所属組織</th>
                     <td colspan="3">
-                        <?php foreach ($user->organizations as $org): ?>
-                            <?= $org->name ?>
-                            <?= ($org !== end($user->organizations)) ? ',' : '' ?>
-                        <?php endforeach ?>
+                        <?= $this->element('organizations/list', ['organizations' => $user->organizations]) ?>
                     </td>
                 </tr>
                 <tr>

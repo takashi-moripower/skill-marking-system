@@ -1,5 +1,7 @@
 <?php
+
 use App\Defines\Defines;
+use App\Utility\Color;
 ?>
 <table class="table table-bordered table-sm">
     <tbody>
@@ -11,9 +13,23 @@ use App\Defines\Defines;
             <th>計</th>
             <th>スキル平均</th>
         </tr>
+        <?php
+        $lineId = 0;
+        $count = $skills->count();
+        ?>
         <?php foreach ($skills as $skill): ?>
             <tr>
-                <th><?= $skill->label ?></th>
+                <th>
+                    <button class="line-chart-selector btn btn-outline-dark btn-sm" line_id="<?= $lineId ?>" line_hidden="0">
+                        <?php
+                        $H = $lineId * 360 / $count;
+                        $color = Color::hsv($H, 1, 1);
+                        $lineId++;
+                        ?>
+                        <div style="display:inline-block;width:4rem;height:1rem;border:3px solid rgba(<?= $color->r ?>,<?= $color->g ?>,<?= $color->b ?>,1);background-color: rgba(<?= $color->r ?>,<?= $color->g ?>,<?= $color->b ?>,0.1)"></div>
+                        <?= $skill->label ?>
+                    </button>
+                </th>
                 <?php for ($l = 1; $l <= Defines::SKILL_LEVEL_MAX; $l++): ?>
                     <td class="text-right">
                         <?php

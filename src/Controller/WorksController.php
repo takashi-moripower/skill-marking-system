@@ -143,7 +143,7 @@ class WorksController extends AppController {
         $work = $this->Works->find()
                 ->where(['Works.id' => $workId])
                 ->contain([
-                    'Users' => ['fields' => ['Users.id', 'name']],
+                    'Users' => ['fields' => ['Users.id', 'name'] , 'Organizations'],
                     'Files',
                     'Junles',
                     'Comments' => ['Users' => ['fields' => ['name']]],

@@ -30,7 +30,8 @@ class StatisticsController extends AppController {
     public function skills() {
         $statistics = new Statistics($this->_getQuery());
         $organizations = $this->_getOrganizations();
-        $this->set(compact('statistics', 'organizations'));
+        $junles = $this->_getJunles();
+        $this->set(compact('statistics', 'organizations', 'junles'));
     }
 
     protected function _getQuery() {
@@ -41,10 +42,16 @@ class StatisticsController extends AppController {
         $min_age = Hash::get($data, 'min_age', null);
         $max_age = Hash::get($data, 'max_age', null);
         $sex = Hash::get($data, 'sex', null);
+        $junle_id = Hash::get($data, 'junle_id', null);
+
         $users = TableRegistry::get('Users')->find()
                 ->select('Users.id');
 
+        $works = TableRegistry::get('Works')->find()
+                ->select('Works.id');
+
         $userSelected = false;
+        $workSelected = false;
 
         if (!empty($organization_id)) {
             $users->find('RootOrganization', ['organization_id' => $organization_id]);
@@ -72,10 +79,23 @@ class StatisticsController extends AppController {
         }
 
         if ($userSelected) {
-            $works = TableRegistry::get('Works')->find()
-                    ->where(['Works.user_id IN' => $users])
-                    ->select('Works.id');
+            $works
+                    ->where(['Works.user_id IN' => $users]);
+            $workSelected = true;
+        }
 
+        if ($junle_id) {
+            $worksByJunle = TableRegistry::get('JunlesWorks')
+                    ->find()
+                    ->where(['junle_id'=>$junle_id])
+                    ->select('work_id');
+            
+            $works
+                    ->where(['Works.id IN' => $worksByJunle ]);
+            
+        }
+        
+        if( $workSelected ){
             $query->where(['SkillsWorks.work_id IN' => $works]);
         }
 
@@ -98,6 +118,13 @@ class StatisticsController extends AppController {
         }
 
         return $organizations;
+    }
+
+    protected function _getJunles() {
+        $tableJ = TableRegistry::get('Junles');
+        $junles = $tableJ->find('list');
+
+        return $junles;
     }
 
 }

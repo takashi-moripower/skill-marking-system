@@ -19,25 +19,20 @@ class Statistics {
 
     public function __construct($query = null) {
         if ($query == null) {
-            $this->_query = TableRegistry::get('SkillsWorks')
-                    ->find();
+            $this->_query = null;
         } else {
             $this->_query = $query;
         }
     }
 
     public function getQuery() {
-        return $this->_query->cleanCopy();
+        return $this->_query;
     }
 
-    
     public function getSkills() {
         $Skills = TableRegistry::get('Skills');
-        
-        $SWIds = $this->getQuery()
-                ->select('id');
-        
-        $skills = $Skills->find()
+
+        $skillsQuery = $Skills->find()
                 ->contain('Fields')
                 ->join([
                     'table' => 'skills_works',
@@ -46,13 +41,24 @@ class Statistics {
                     'conditions' => 'SkillsWorks.skill_id = Skills.id',
                 ])
                 ->group('Skills.id')
-                ->select('SkillsWorks.id')
-                ->having(['SkillsWorks.id IN' => $SWIds])
+                ->select('SkillsWorks.id');
+
+        if ($this->getQuery()) {
+            $SWIds = $this->getQuery()
+                    ->select('id');
+                        
+            $skillsQuery->having(['SkillsWorks.id IN' => $SWIds])
+;
+            }
+
+        $skillsQuery
                 ->select(['count' => 'count(SkillsWorks.level)'])
                 ->select(['average' => 'avg(SkillsWorks.level)'])
                 ->select($Skills)
                 ->select($Skills->Fields)
                 ->order(['Fields.lft' => 'ASC', 'Skills.id' => 'ASC']);
+
+        $skills = $skillsQuery;
 
         for ($l = 1; $l <= Defines::SKILL_LEVEL_MAX; $l++) {
             $label = "count_{$l}";
@@ -63,8 +69,8 @@ class Statistics {
 
         return $skills;
     }
-    
-    public static function getColor( $a , $b ){
+
+    public static function getColor($a, $b) {
         
     }
 

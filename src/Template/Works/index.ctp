@@ -17,7 +17,7 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
         <div class="form-group row mb-0">
             <label class="col-2 col-form-label">キーワード</label>
             <div class="col-4">
-                <?= $this->Form->text('keyword', ['class' => 'form-control', 'placeHolder' => 'keyword']) ?>
+                <?= $this->Form->text('keyword', ['class' => 'form-control', 'placeHolder' => '作品名、作者、解説']) ?>
             </div>
             <div class="col-6 text-right">
                 <button class="btn btn-primary mr-2" type="submit"><i class="fa fa-search"></i> 検索 </button>

@@ -15,7 +15,7 @@ foreach ($user->organizations as $organization) {
 }
 ?>
 
-<h3 class="mt-5">スキル評価　および　集団内での偏差値<?= $this->Element('popup_hint',['message'=>'スキル数及び偏差値に、作者自身による評価は含まれません'])?></h3>
+<h3 class="mt-5">スキル評価　および　集団内での偏差値<?= $this->Element('popup_hint',['message'=>'評価数及び偏差値に、作者自身による評価は含まれません'])?></h3>
 <table class="table table-bordered table-sm table-deviation">
     <thead>
         <tr>

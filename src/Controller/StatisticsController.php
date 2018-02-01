@@ -28,78 +28,52 @@ class StatisticsController extends AppController {
     }
 
     public function skills() {
-        $statistics = new Statistics($this->_getQuery());
+
         $organizations = $this->_getOrganizations();
         $junles = $this->_getJunles();
-        $this->set(compact('statistics', 'organizations', 'junles'));
+
+        $this->users = $this->_getUsers();
+        $this->works = $this->_getWorks();
+        $skills = $this->_getSkills();
+
+        $this->set('users',$this->users);
+        $this->set('works',$this->works);
+        $this->set(compact('organizations', 'junles', 'skills'));
     }
 
-    protected function _getQuery() {
-        $query = TableRegistry::get('SkillsWorks')->find();
-        $data = $this->request->data();
+    protected function _getUsers() {
+        $keys = [
+            'organization_id',
+            'min_age',
+            'max_age',
+            'sex'
+        ];
 
-        $organization_id = Hash::get($data, 'organization_id', null);
-        $min_age = Hash::get($data, 'min_age', null);
-        $max_age = Hash::get($data, 'max_age', null);
-        $sex = Hash::get($data, 'sex', null);
-        $junle_id = Hash::get($data, 'junle_id', null);
+        $searchParams = [];
 
-        $users = TableRegistry::get('Users')->find()
-                ->select('Users.id');
-
-        $works = TableRegistry::get('Works')->find()
-                ->select('Works.id');
-
-        $userSelected = false;
-        $workSelected = false;
-
-        if (!empty($organization_id)) {
-            $users->find('RootOrganization', ['organization_id' => $organization_id]);
-            $userSelected = true;
-        }
-        if (!empty($max_age)) {
-            $users
-                    ->contain('Engineers')
-                    ->find('maxAge', ['max_age' => $max_age]);
-            $userSelected = true;
+        foreach ($keys as $key) {
+            $searchParams[$key] = $this->request->data($key);
         }
 
-        if (!empty($min_age)) {
-            $users
-                    ->contain('Engineers')
-                    ->find('minAge', ['min_age' => $min_age]);
-            $userSelected = true;
-        }
-
-        if (!empty($sex) && $sex != Defines::SEX_INDIFFARENCE) {
-            $users
-                    ->contain('Engineers')
-                    ->find('sex', ['sex' => $sex]);
-            $userSelected = true;
-        }
-
-        if ($userSelected) {
-            $works
-                    ->where(['Works.user_id IN' => $users]);
-            $workSelected = true;
-        }
-
-        if ($junle_id) {
-            $worksByJunle = TableRegistry::get('JunlesWorks')
-                    ->find()
-                    ->where(['junle_id'=>$junle_id])
-                    ->select('work_id');
-            
-            $works
-                    ->where(['Works.id IN' => $worksByJunle ]);
-            
-        }
+        $users = TableRegistry::get('Users')
+                ->find('search', ['search' => $searchParams])
+                ->where(['group_id'=>Defines::GROUP_ENGINEER]);
         
-        if( $workSelected ){
-            $query->where(['SkillsWorks.work_id IN' => $works]);
-        }
-
-        return $query;
+        return $users;
+    }
+    
+    protected function _getWorks(){
+        $searchParams = [
+            'junle_id'=>$this->request->data('junle_id')
+        ];
+        
+        $users = $this->users->cleanCopy()->select('Users.id');
+        
+        $works = TableRegistry::get('Works')
+                ->find('search',['search'=>$searchParams])
+                ->where(['Works.user_id IN'=>$users]);
+        
+        return $works;
     }
 
     protected function _getOrganizations() {
@@ -125,6 +99,42 @@ class StatisticsController extends AppController {
         $junles = $tableJ->find('list');
 
         return $junles;
+    }
+
+    protected function _getSkills() {
+        $Skills = TableRegistry::get('Skills');
+
+        $works = $this->works->cleanCopy()
+                ->select('id');
+        $query = $Skills->find()
+                ->contain('Fields')
+                ->join([
+                    'table' => 'skills_works',
+                    'alias' => 'SkillsWorks',
+                    'type' => 'right',
+                    'conditions' => 'SkillsWorks.skill_id = Skills.id'
+                ])
+                ->join([
+                    'table' => 'works',
+                    'alias' => 'Works',
+                    'type' => 'right',
+                    'conditions' => ['SkillsWorks.work_id = Works.id','SkillsWorks.user_id <> Works.user_id']
+                ])
+                ->where(['SkillsWorks.work_id IN'=>$works])
+                ->group('Skills.id')
+                ->find('fieldPath')
+                ->select(['count' => 'count(SkillsWorks.level)'])
+                ->select(['average' => 'avg(SkillsWorks.level)'])
+                ->select($Skills)
+                ->select($Skills->Fields)
+                ->order(['Fields.lft' => 'ASC', 'Skills.id' => 'ASC']);
+        for ($l = 1; $l <= Defines::SKILL_LEVEL_MAX; $l++) {
+            $label = "count_{$l}";
+            $value = "count(SkillsWorks.level = {$l} or null)";
+            $query
+                    ->select([$label => $value]);
+        }
+        return $query;
     }
 
 }

@@ -3,10 +3,11 @@
 use App\Model\Entity\Skill;
 use App\Utility\MyUtil;
 use Cake\Utility\Hash;
+use App\Model\Table\SkillsTable;
 
 $skills = Hash::sort(Skill::findByMarker($user->skills, $user->id, true), '{n}.field.lft');
 
-$counts = MyUtil::countSkills($skills);
+$counts = SkillsTable::countSkills($skills);
 
 $org_selectors = [];
 foreach ($user->organizations as $organization) {
@@ -14,7 +15,7 @@ foreach ($user->organizations as $organization) {
 }
 ?>
 
-<h3 class="mt-5">スキル評価　および　集団内での偏差値</h3>
+<h3 class="mt-5">スキル評価　および　集団内での偏差値<?= $this->Element('popup_hint',['message'=>'スキル数及び偏差値に、作者自身による評価は含まれません'])?></h3>
 <table class="table table-bordered table-sm table-deviation">
     <thead>
         <tr>
@@ -37,11 +38,11 @@ foreach ($user->organizations as $organization) {
                     <td class="text-right">
                         <?php foreach ($user->organizations as $organization): ?>
                             <div org_id="<?= $organization->id ?>">
-                                <?= number_format(MyUtil::getDeviation($skill_id, $organization->id, $level), 2) ?>
+                                <?= number_format(SkillsTable::getDeviation($skill_id, $organization->id, $level), 2) ?>
                             </div>
                         <?php endforeach; ?>
                     </td>
-                    <td class="text-right"><?= number_format(MyUtil::getDeviation($skill_id, 0, $level), 2) ?></td>
+                    <td class="text-right"><?= number_format(SkillsTable::getDeviation($skill_id, 0, $level), 2) ?></td>
                 </tr>
             <?php endforeach ?>
         <?php endforeach ?>

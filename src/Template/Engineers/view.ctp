@@ -32,7 +32,17 @@ $loginUserGroup = $this->getLoginUser('group_id');
                     </td>
                 </tr>
                 <tr>
-                    <th colspan="4" class="bg-light py-1">作品</th>
+                    <th class="bg-light py-1">
+                        作品
+                    </th>
+                    <th class="bg-light text-right py-1">
+                        <div class="float-left">スキル評価</div>
+                        <div class="float-right">
+                            <?= $this->Element('skills/samples') ?>
+                        </div>
+                    </th>
+                    <th  colspan="2" class="bg-light">
+                    </th>
                 </tr>
                 <?php foreach ($user->works as $work): ?>
                     <tr>
@@ -59,4 +69,4 @@ $loginUserGroup = $this->getLoginUser('group_id');
     ?>
 </div>
 
-<?= $this->Element('engineers/deviation',['user'=>$user]) ?>
+<?= $this->Element('engineers/deviation', ['user' => $user]) ?>

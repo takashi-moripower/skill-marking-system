@@ -266,4 +266,45 @@ class SkillsTable extends Table {
         return $query->where([$this->aliasField('field_id') . ' IN' => $fields]);
     }
 
+    public static function getDeviation($skill_id, $organization_id, $level) {
+
+
+        $query = TableRegistry::get('SkillsWorks')
+                ->find()
+                ->leftJoin(['Works' => 'works'], 'Works.id = SkillsWorks.work_id')
+                ->where(['Works.user_id <> SkillsWorks.user_id']);
+        if ($organization_id) {
+            $users = TableRegistry::get('Users')->find('RootOrganization', ['organization_id' => $organization_id])
+                    ->select('Users.id');
+
+            $query->where(['Works.user_id IN' => $users]);
+        }
+
+        $levels = $query
+                ->where(['SkillsWorks.skill_id' => $skill_id])
+                ->select(['avg' => 'avg(SkillsWorks.level)'])
+                ->select(['std' => 'std(SkillsWorks.level)'])
+                ->first();
+
+        if ($levels->std == 0) {
+            return 50;
+        }
+
+        $dev = ($level - $levels->avg) * 10 / $levels->std + 50;
+
+        return $dev;
+    }
+
+    public static function countSkills($skills) {
+
+        $result = [];
+        foreach ($skills as $skill) {
+            $path = "{$skill->id}.{$skill->level}";
+            $count = Hash::get($result, $path, 0);
+
+            $result = Hash::insert($result, $path, $count + 1);
+        }
+
+        return $result;
+    }
 }

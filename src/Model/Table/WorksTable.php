@@ -209,8 +209,8 @@ class WorksTable extends Table {
                             ->where(['user_id' => $options['user_id']]);
         }
 
-        //組織管理者は　自分の関連組織　および子組織に所属するユーザーの作品を閲覧可能
-        if ($options['group_id'] == Defines::GROUP_ORGANIZATION_ADMIN) {
+        //組織管理者、採点者は　自分の関連組織　および子組織に所属するユーザーの作品を閲覧可能
+        if ($options['group_id'] == Defines::GROUP_ORGANIZATION_ADMIN || $options['group_id'] == Defines::GROUP_MARKER) {
             $tableOrg = TableRegistry::get('organizations');
             $orgIds = $tableOrg->find('user', ['user_id' => $options['user_id'], 'relation' => 'children'])
                     ->select('id');
@@ -219,15 +219,6 @@ class WorksTable extends Table {
             return $query;
         }
 
-        //採点者は　自分の関連組織に所属するユーザーの作品を閲覧可能
-        if ($options['group_id'] == Defines::GROUP_MARKER) {
-            $tableOrg = TableRegistry::get('organizations');
-            $orgIds = $tableOrg->find('user', ['user_id' => $options['user_id'], 'relation' => 'match'])
-                    ->select('id');
-
-            $query->find('Organization', ['organization_ids' => $orgIds]);
-            return $query;
-        }
         return $query;
     }
 

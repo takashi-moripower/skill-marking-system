@@ -133,13 +133,11 @@ class WorksTable extends Table {
                 ->where(['organization_id IN' => $org_ids])
                 ->group('user_id')
                 ->select('user_id');
-        
-        $query->where([ $this->aliasField('user_id').' IN'=>$users ]);
-        
+
+        $query->where([$this->aliasField('user_id') . ' IN' => $users]);
+
         return $query;
     }
-
-    
 
     /**
      * 絞り込み検索用　所属ジャンル
@@ -195,10 +193,16 @@ class WorksTable extends Table {
         }
 
         if (!empty($entity->file_to_remove)) {
-            $this->Files->query()
-                    ->delete()
-                    ->where(['id IN' => $entity->file_to_remove])
-                    ->execute();
+            /*
+              $this->Files->query()
+              ->delete()
+              ->where(['id IN' => $entity->file_to_remove])
+              ->execute();
+             */
+            foreach ($entity->file_to_remove as $fileId) {
+                $file = $this->Files->get($fileId);
+                $this->Files->delete($file);
+            }
         }
     }
 

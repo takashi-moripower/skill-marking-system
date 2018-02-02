@@ -79,9 +79,30 @@ class FilesTable extends Table {
 
     public function beforeSave($event, $entity, $options) {
         if ($entity->error === UPLOAD_ERR_OK) {
-            $entity->contents = $this->_getContents($entity);
+            
         } else {
+            return false;
         }
+    }
+
+    public function afterSave($event, $entity, $options) {
+        if ($entity->error === UPLOAD_ERR_OK && $entity->isNew() ) {
+            $root = \Cake\Core\Configure::read('App.wwwRoot');
+            $upload = $root . 'uploads/';
+            $tmp_dir = ini_get('upload_tmp_dir');
+
+            $newTemp = $upload . sprintf('%06d_', $entity->id).ltrim($entity->tmp_name, $tmp_dir);
+            
+            copy( $entity->tmp_name , $newTemp );
+            
+            $entity->tmp_name = $newTemp;
+            $entity->isNew(false);
+            $this->save($entity);
+        }
+    }
+    
+    public function afterDelete( $event , $entity , $options ){
+        unlink( $entity->tmp_name );
     }
 
     protected function _getContents($entity) {

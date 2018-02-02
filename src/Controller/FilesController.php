@@ -16,7 +16,7 @@ class FilesController extends AppController {
     public function load($id,$filename) {
         $this->autoRender = false;
         $file = $this->Files->get($id);
-        $img = stream_get_contents($file->contents);
+        $img = file_get_contents($file->tmp_name);
 
         $reg = "/(.*)(?:\.([^.]+$))/";
         $matches = [];

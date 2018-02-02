@@ -113,40 +113,59 @@ class DebugController extends AppController {
     }
 
     public function test() {
-        $user_id = $this->Auth->user('id');
+        $root = \Cake\Core\Configure::read('App.wwwRoot');
+        $upload = $root . 'uploads/';
+        $this->set('data', \Cake\Core\Configure::read('App.wwwRoot'));
 
-        $tableU = TableRegistry::get('Users');
-        $tableS = TableRegistry::get('skills');
-        $tableW = TableRegistry::get('Works');
-        $tableSW = TableRegistry::get('skills_works');
-        $tableO = TableRegistry::get('Organizations');
-        $tableF = TableRegistry::get('Fields');
-        $tableC = TableRegistry::get('Conditions');
-        $tableCS = TableRegistry::get('ConditionsSkills');
-        $tableCO = TableRegistry::get('ConditionOptions');
-        $user_id = 4;
+        $tmp_dir = ini_get('upload_tmp_dir');
+        if ($this->request->is(['POST'])) {
+            $data = $this->request->data();
+            $this->set('data', $data);
+            if ($data['file']['error'] == UPLOAD_ERR_OK) {
 
-        
+                $Files = TableRegistry::get('Files');
+                $newFile = $Files->newEntity($data['file']);
+                $newFile->work_id = 1;
+                $saveResult = $Files->save($newFile);
+                if( !$saveResult ){
+                    debug( $newFile );exit;
+                }
+            } else {
+                
+            }
+        }
+    }
 
-        $min_age = 10;
-        $max_birthday = new \DateTime;
-        $max_birthday->modify("-{$min_age} years");
-        
-        $query = $tableU->find()
-                ->contain('Engineers')
-                ->where(['group_id'=>Defines::GROUP_ENGINEER]);
-//        $query->find('minAge',['min_age'=>'39']);
-        $query->find('condition',['condition_id'=>14]);
-          
-        $data = $query->toArray();
+    public function test4() {
+        echo ini_get('upload_tmp_dir');
+        exit;
+    }
 
-        
-
-
-
-
+    public function test3() {
+        $data = $this->request->data();
         $this->set('data', $data);
-        $this->render('/Common/debug');
+
+        if ($this->request->is(['POST'])) {
+
+            if ($data['file']['error'] == UPLOAD_ERR_OK) {
+                $src = $data['file']['tmp_name'];
+                $dest = '/home/moripower4/skill/webroot/uploads/0000';
+                copy($src, $dest);
+            } else {
+                
+            }
+        }
+
+        $this->render('test');
+    }
+
+    public function test2() {
+        $this->autoRender = false;
+
+        $img = file_get_contents('/home/moripower4/skill/webroot/uploads/0000');
+
+        $this->response->type('zip');
+        $this->response->body($img);
     }
 
 }

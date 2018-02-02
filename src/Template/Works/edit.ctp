@@ -29,6 +29,9 @@ if ($this->request->action == 'add') {
                     <td><?= $this->Form->input('note', ['class' => 'form-control', 'label' => false, 'type' => 'textArea' , 'id'=>'editor']) ?></td>
                 </tr>
                 <tr>
+                    <th colspan="3">現在ファイルアップロード機能はメンテナンス中です</th>
+                </tr>
+                <tr class="d-none">
                     <th>添付ファイル</th>
                     <td>
                         <div class="files">

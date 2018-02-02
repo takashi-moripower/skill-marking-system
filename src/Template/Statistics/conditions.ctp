@@ -1,4 +1,4 @@
-<?= $this->element('statistics/form'); ?>
+<?= $this->element('statistics/form_conditions'); ?>
 
 <?= $this->element('statistics/table'); ?>
 

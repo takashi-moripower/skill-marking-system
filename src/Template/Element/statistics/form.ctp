@@ -30,8 +30,6 @@ use App\Utility\MyUtil;
                 <?= $this->Form->select('sex', Defines::CONDITION_SEX_OPTIONS, ['class' => 'form-control d-inline-block w-20']) ?>
             </td>
         </tr>
-    </tbody>
-    <tbody>
         <tr>
             <th>
                 作品条件<br/>
@@ -39,6 +37,14 @@ use App\Utility\MyUtil;
             </th>
             <th>ジャンル</th>
             <td><?= $this->Form->select('junle_id', $junles, ['empty' => '制限なし', 'class' => 'form-control']); ?></td>
+        </tr>
+        <tr>
+            <th>
+                スキル条件<br/>
+                該当：<?= $skills->count() ?>件
+            </th>
+            <th>スキル分野</th>
+            <td><?= $this->Form->select('field_id', $fields, ['empty' => '制限なし', 'class' => 'form-control']); ?></td>
         </tr>
     </tbody>
 </table>

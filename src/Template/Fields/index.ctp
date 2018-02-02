@@ -16,7 +16,7 @@ use Cake\Utility\Hash;
             <th>説明</th>
             <th>
                 スキル数
-                <?= $this->Element('popup_hint',['message'=>'下位分野を含む(含まない)']) ?>
+                <?= $this->Element('popup_hint', ['message' => '下位分野を含む(含まない)']) ?>
             </th>
             <th>操作</th>
         </tr>
@@ -34,7 +34,7 @@ use Cake\Utility\Hash;
                 </td>
                 <td class="text-right">
                     <a href="<?= $this->Url->build(['controller' => 'skills', 'action' => 'index', 'organization_id' => $field->organization_id, 'field_id' => $field->id, 'clear' => 1]) ?>">
-                        <?= sprintf( '%2d ( %2d )' , $field->skill_count_children , $field->skill_count) ?>
+                        <?= sprintf('%2d ( %2d )', $field->skill_count_children, $field->skill_count) ?>
                     </a>
                 </td>
                 <td>

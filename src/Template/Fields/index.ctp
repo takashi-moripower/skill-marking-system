@@ -1,12 +1,16 @@
 <?php
 
 use Cake\Utility\Hash;
+use App\Defines\Defines;
+
+$loginUserGroup = $this->getLoginUser('group_id');
 ?>
 
+<?php if( in_array( $loginUserGroup ,[Defines::GROUP_ADMIN , Defines::GROUP_ORGANIZATION_ADMIN]) ): ?>
 <div class="text-right mb-2">
     <?= $this->Html->link('新規追加', ['controller' => 'fields', 'action' => 'add'], ['class' => 'btn btn-outline-primary']); ?>
 </div>
-
+<?php endif; ?>
 <table class="table table-bordered table-sm">
     <thead>
         <tr>

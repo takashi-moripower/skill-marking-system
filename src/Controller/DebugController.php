@@ -113,59 +113,18 @@ class DebugController extends AppController {
     }
 
     public function test() {
-        $root = \Cake\Core\Configure::read('App.wwwRoot');
-        $upload = $root . 'uploads/';
-        $this->set('data', \Cake\Core\Configure::read('App.wwwRoot'));
-
-        $tmp_dir = ini_get('upload_tmp_dir');
-        if ($this->request->is(['POST'])) {
-            $data = $this->request->data();
-            $this->set('data', $data);
-            if ($data['file']['error'] == UPLOAD_ERR_OK) {
-
-                $Files = TableRegistry::get('Files');
-                $newFile = $Files->newEntity($data['file']);
-                $newFile->work_id = 1;
-                $saveResult = $Files->save($newFile);
-                if( !$saveResult ){
-                    debug( $newFile );exit;
-                }
-            } else {
-                
-            }
-        }
+        
     }
 
-    public function test4() {
-        echo ini_get('upload_tmp_dir');
-        exit;
-    }
-
-    public function test3() {
-        $data = $this->request->data();
-        $this->set('data', $data);
-
-        if ($this->request->is(['POST'])) {
-
-            if ($data['file']['error'] == UPLOAD_ERR_OK) {
-                $src = $data['file']['tmp_name'];
-                $dest = '/home/moripower4/skill/webroot/uploads/0000';
-                copy($src, $dest);
-            } else {
-                
-            }
+    public function upload() {
+        if (empty($_FILES) || $_FILES["file"]["error"]) {
+            die('{"OK": 0}');
         }
 
-        $this->render('test');
-    }
+        $fileName = $_FILES["file"]["name"];
+        move_uploaded_file($_FILES["file"]["tmp_name"], "uploads/$fileName");
 
-    public function test2() {
-        $this->autoRender = false;
-
-        $img = file_get_contents('/home/moripower4/skill/webroot/uploads/0000');
-
-        $this->response->type('zip');
-        $this->response->body($img);
+        die('{"OK": 1}');
     }
 
 }

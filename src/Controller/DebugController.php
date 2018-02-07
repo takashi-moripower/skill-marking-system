@@ -18,6 +18,7 @@ class DebugController extends AppController {
     public function initialize() {
         parent::initialize();
         $this->loadComponent('DummyData');
+        $this->loadComponent('RequestHandler');
     }
 
     public function index() {
@@ -105,7 +106,6 @@ class DebugController extends AppController {
             $this->redirect(['controller' => 'home', 'action' => 'index']);
         }
 
-
         $users = $tableU->find()
                 ->contain(['Groups', 'Organizations']);
 
@@ -113,18 +113,23 @@ class DebugController extends AppController {
     }
 
     public function test() {
-        
     }
+    
+    public function test2(){}
 
     public function upload() {
-        if (empty($_FILES) || $_FILES["file"]["error"]) {
-            die('{"OK": 0}');
-        }
-
-        $fileName = $_FILES["file"]["name"];
-        move_uploaded_file($_FILES["file"]["tmp_name"], "uploads/$fileName");
-
-        die('{"OK": 1}');
+        $this->viewBuilder()->className('Json');
+        // シリアライズする必要があるビュー変数をセットする
+        $this->set('data', ['い','ろ','は','に']);
+        // JsonView がシリアライズするべきビュー変数を指定する
+        $this->set('_serialize', ['data']);
+    }
+    public function upload1() {
+        $this->viewBuilder()->layout(false);
+        // シリアライズする必要があるビュー変数をセットする
+        $this->set('data', ['い','ろ','は','に']);
+        // JsonView がシリアライズするべきビュー変数を指定する
+        $this->render('/Common/json');
     }
 
 }

@@ -430,9 +430,17 @@ class ConditionsTable extends Table {
             }
         }
 
-        $ContitionOptions->query()
+        $deleteQuery = $ContitionOptions->query()
                 ->delete()
-                ->where(['condition_id' => $entity->id, 'type NOT IN' => $validTypes])
+                ->where(['condition_id' => $entity->id]);
+        
+        if( !empty( $validTypes )){
+            $deleteQuery
+                    ->where(['type NOT IN' => $validTypes]);
+            
+        }
+        
+        $deleteQuery
                 ->execute();
 
         return true;

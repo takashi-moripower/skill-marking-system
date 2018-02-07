@@ -10,7 +10,12 @@
     <a id="start-upload" href="javascript:;">[Start Upload]</a>
 </div>
 <br />
+
+<button class="btn btn-primary btn-debug">debug</button>
 <pre id="console"></pre>
+
+
+
 
 <script type="text/javascript">
     var uploader = new plupload.Uploader({
@@ -43,4 +48,29 @@
     document.getElementById('start-upload').onclick = function () {
         uploader.start();
     };
+
+    uploader.bind('FileUploaded', function (uploader, file, result) {
+        console.log(result);
+        data = JSON.parse(result.response);
+        console.log(data);
+    });
+    uploader.bind('UploadComplete', function (uploader, files) {
+        console.log('complete');
+    });
+
+    $(function () {
+        $('.btn-debug').on('click', function () {
+            var url = "<?= $this->Url->build(['controller' => 'debug', 'action' => 'upload']) ?>";
+            var data = [1, 2, 3];
+
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: data
+            }).done(function (result) {
+                console.log(result);
+            });
+        });
+    });
+
 </script>

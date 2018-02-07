@@ -4,6 +4,7 @@ use App\Defines\Defines;
 
 $loginUser = $this->request->session()->read('Auth.User');
 $mode = $this->request->session()->read('App.Mode');
+
 ?>
 <header>
     <div class="bg-primary">

@@ -63,5 +63,9 @@ class AppView extends View {
 
         return $result;
     }
+    
+    public function getMode(){
+        return $this->request->session()->read('App.Mode');
+    }
 
 }

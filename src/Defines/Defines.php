@@ -3,6 +3,8 @@
 namespace App\Defines;
 
 class Defines {
+    
+    const VERSION = 0.71;
 
     const MODE_MARKING = 1;     //スキル認定システム
     const MODE_MATCHING = 2;    //人材マッチングシステム
@@ -127,6 +129,7 @@ class Defines {
                 self::NAV_ID_WORKS,
                 self::NAV_ID_CONDITIONS,
                 self::NAV_ID_CONTACTS,
+                self::NAV_ID_STATISTICS,
             ],
             self::GROUP_MARKER => [
                 self::NAV_ID_ENGINEERS,
@@ -134,6 +137,7 @@ class Defines {
                 self::NAV_ID_FIELDS,
                 self::NAV_ID_CONDITIONS,
                 self::NAV_ID_CONTACTS,
+                self::NAV_ID_STATISTICS,
             ],
             self::GROUP_ENGINEER => [
                 self::NAV_ID_ENG_VIEW,
@@ -164,11 +168,13 @@ class Defines {
                 self::NAV_ID_FIELDS,
                 self::NAV_ID_ENGINEERS,
                 self::NAV_ID_WORKS,
+                self::NAV_ID_STATISTICS,
             ],
             self::GROUP_MARKER => [
                 self::NAV_ID_ENGINEERS,
                 self::NAV_ID_WORKS,
                 self::NAV_ID_FIELDS,
+                self::NAV_ID_STATISTICS,
             ],
             self::GROUP_ENGINEER => [
                 self::NAV_ID_ENG_VIEW,

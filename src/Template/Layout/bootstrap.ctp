@@ -3,7 +3,8 @@
 use App\Defines\Defines;
 use Cake\Utility\Hash;
 
-$mode = $this->request->session()->read('App.Mode');
+//$mode = $this->request->session()->read('App.Mode');
+$mode = $this->getMode();
 $this->start('title');
 echo Hash::get(Defines::TITLES, $mode, Defines::TITLES[Defines::MODE_MARKING]);
 $this->end();
@@ -46,30 +47,9 @@ if ($mode == Defines::MODE_MATCHING) {
         <?= $this->Element('nav') ?>
 
         <div class="container">
-            <?php
-            $flash = $this->Flash->render();
-            if ($flash != null):
-                ?>
-                <div class="row justify-content-center">
-                    <div class="col-6 text-center mt-3 mb-3">
-                        <?= $flash ?>
-                    </div>
-                </div>
-                <?php
-            endif;
-            ?>
+            <?= $this->Element('flash') ?>
             <?= $this->fetch('content') ?>
         </div>
-        <footer class="footer bg-primary text-white">
-            <div class="container clearfix py-2">
-                <div class="float-left">
-                    一般社団法人JapanEntertainment開発協会 <br/>
-                    Japan Entertainment Development Association Institute (JEDAI)<br/>
-                </div>
-                <div class="float-right mt-4">
-                    ver0.70 
-                </div>
-            </div>
-        </footer>
+        <?= $this->element('footer'); ?>
     </body>
 </html>

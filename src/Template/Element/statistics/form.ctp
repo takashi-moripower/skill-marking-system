@@ -11,8 +11,8 @@ use App\Utility\MyUtil;
                 該当：<?= $users->count() ?>名
             </th>
             <th>所属組織</th>
-            <td><?= $this->Form->select('organization_id', $organizations, ['class' => 'form-control', 'empty' => '制限なし']) ?></td>
-            <td rowspan="4" class="text-right">
+            <td><?= $this->Form->select('organization_id', $organizations, ['class' => 'form-control', 'empty' => '制限なし（システムに登録済みの全組織）']) ?></td>
+            <td rowspan="5" class="text-right">
                 <button class="btn btn-primary mr-2" type="submit"><i class="fa fa-search"></i> 検索</button>
                 <a class="btn btn-outline-primary mr-2" href="<?= $this->Url->build(['controller' => 'statistics', 'action' => 'skills', 'clear' => 1]) ?>">クリア</a>
             </td>

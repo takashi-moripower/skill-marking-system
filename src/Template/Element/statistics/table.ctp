@@ -20,7 +20,7 @@ use App\Utility\Color;
         <?php foreach ($skills as $skill): ?>
             <tr>
                 <th>
-                    <button class="line-chart-selector btn btn-outline-dark btn-sm" line_id="<?= $lineId ?>" line_hidden="0">
+                    <button class="line-chart-selector btn btn-outline-dark btn-sm" line_id="<?= $lineId ?>" line_hidden="0" type="button">
                         <?php
                         $H = $lineId * 360 / $count;
                         $color = Color::hsv($H, 1, 1);

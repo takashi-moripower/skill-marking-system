@@ -19,7 +19,7 @@ $loginUserGroup = $this->getLoginUser('group_id');
             <th><?= $this->Paginator->sort('user_id', '主催'); ?></th>
             <th class="text-nowrap">
                 適合
-                <?= $this->Element('popup_hint', ['message' => 'あなたのスキルが募集条件に適合している場合　マークが表示されます']) ?>
+                <?= $this->Element('popup_hint', ['message' => 'あなたのスキル、年齢等が募集条件に適合している場合　マークが表示されます']) ?>
             </th>
             <th class="w-40">スキル</th>
             <?php if ($loginUserGroup != Defines::GROUP_ENGINEER): ?>

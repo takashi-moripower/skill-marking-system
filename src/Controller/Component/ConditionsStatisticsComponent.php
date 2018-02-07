@@ -9,8 +9,29 @@ use App\Defines\Defines;
 class ConditionsStatisticsComponent extends StatisticsComponent {
 
     public function conditions() {
+        $loginUserId = $this->Auth->user('id');
+        $loginUserGroup = $this->Auth->user('group_id');
+        
         $conditions = TableRegistry::get('Conditions')
                 ->find('list');
+        
+        switch( $loginUserGroup ){
+            case Defines::GROUP_ORGANIZATION_ADMIN:
+                $orgs = TableRegistry::get('Organizations')
+                    ->find('User',['user_id'=>$loginUserId,'relation'=>'children'])
+                    ->select('id');
+                $conds = TableRegistry::get('ConditionsOrganizations')
+                        ->find()
+                        ->where(['ConditionsOrganizations.organization_id IN' => $orgs])
+                        ->select('ConditionsOrganizations.condition_id');
+                
+                $conditions->where(['Conditions.id IN' => $conds]);
+                break;
+            
+            case Defines::GROUP_MARKER:
+                $conditions->where(['user_id'=>$loginUserId]);
+                break;
+        }
 
 
         $this->users = $this->_getUsers();
@@ -41,26 +62,41 @@ class ConditionsStatisticsComponent extends StatisticsComponent {
                 ->where(['condition_id' => $condition_id])
                 ->select('user_id');
 
-        $contact_state_student = $this->request->data('contact_state_student');
-        if ($contact_state_student != null && $contact_state_student != [0, 1, 2]) {
-            $flag_conditions = [];
-
-            if (in_array(Defines::CONTACT_STATE_UNDEFINED, $contact_state_student)) {
-                $flag_conditions[] = 0;
-            }
-            if (in_array(Defines::CONTACT_STATE_ALLOW, $contact_state_student)) {
-                $flag_conditions[] = Defines::CONTACT_FLAG_ALLOW_BY_ENGINEER;
-            }
-            if (in_array(Defines::CONTACT_STATE_DENY, $contact_state_student)) {
-                $flag_conditions[] = Defines::CONTACT_FLAG_DENIED_BY_ENGINEER;
-            }
-
-            $uc->where(['(Contacts.flags & ' . Defines::CONTACT_FLAG_FILTER_ENGINEER . ') IN (' . implode(',', $flag_conditions) . ')']);
-        }
+        $this->_checkFlags($uc, 'contact_state_student', Defines::CONTACT_FLAG_ALLOW_BY_ENGINEER, Defines::CONTACT_FLAG_DENIED_BY_ENGINEER);
+        $this->_checkFlags($uc, 'contact_state_teacher', Defines::CONTACT_FLAG_ALLOW_BY_TEACHER, Defines::CONTACT_FLAG_DENIED_BY_TEACHER);
+        $this->_checkFlags($uc, 'contact_state_company', Defines::CONTACT_FLAG_ALLOW_BY_COMPANY, Defines::CONTACT_FLAG_DENIED_BY_COMPANY);
 
         $users->where(['id IN' => $uc]);
 
         return $users;
+    }
+
+    protected function _checkFlags($uc, $request_key, $flag_allow, $flag_deny) {
+        $state_requested = $this->request->data($request_key);
+        if (
+                $state_requested == null ||
+                $state_requested == [
+            Defines::CONTACT_STATE_UNDEFINED,
+            Defines::CONTACT_STATE_ALLOW,
+            Defines::CONTACT_STATE_DENY]
+        ) {
+            return;
+        }
+
+        $flag_conditions = [];
+
+        if (in_array(Defines::CONTACT_STATE_UNDEFINED, $state_requested)) {
+            $flag_conditions[] = 0;
+        }
+        if (in_array(Defines::CONTACT_STATE_ALLOW, $state_requested)) {
+            $flag_conditions[] = $flag_allow;
+        }
+        if (in_array(Defines::CONTACT_STATE_DENY, $state_requested)) {
+            $flag_conditions[] = $flag_deny;
+        }
+
+        $filter = $flag_allow | $flag_deny;
+        $uc->where(["(Contacts.flags & {$filter}) IN (" . implode(',', $flag_conditions) . ")"]);
     }
 
     protected function _getWorks() {

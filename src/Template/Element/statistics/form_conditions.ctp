@@ -15,7 +15,7 @@ $this->Form->templates(
                 募集<br/>
             </th>
             <td><?= $this->Form->select('condition_id', $conditions, ['class' => 'form-control', 'empty' => true]) ?></td>
-            <td rowspan="4" class="text-right">
+            <td rowspan="5" class="text-right">
                 <button class="btn btn-primary mr-2" type="submit"><i class="fa fa-search"></i> 検索</button>
                 <a class="btn btn-outline-primary mr-2" href="<?= $this->Url->build(['controller' => 'statistics', 'action' => 'conditions', 'clear' => 1]) ?>">クリア</a>
             </td>
@@ -23,6 +23,7 @@ $this->Form->templates(
         <tr>
             <th rowspan="3">
                 応募状況<br/>
+                該当：<?= $users->count() ?>件
             </th>
             <th>学生</th>
             <td><?= $this->Form->multicheckbox('contact_state_student',Defines::CONTACT_STATES_ENGINEER,['multiple'=>'checkbox','default'=>[0,1,2,]])?></td>

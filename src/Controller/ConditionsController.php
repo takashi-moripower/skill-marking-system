@@ -7,6 +7,7 @@ use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
 use App\Defines\Defines;
 use App\Utility\MyUtil;
+
 /*
  * 
  * @property \App\Model\Table\ConditionsTable $Conditions
@@ -32,7 +33,10 @@ class ConditionsController extends AppController {
 
         switch ($loginUserGroup) {
             case Defines::GROUP_MARKER:
-                $query->where(['Conditions.user_id' => $loginUserId]);
+                $query->where(['or' => [
+                        'Conditions.published <> 0',
+                        'Conditions.user_id' => $loginUserId
+            ]]);
                 break;
 
             case Defines::GROUP_ENGINEER:
@@ -51,18 +55,18 @@ class ConditionsController extends AppController {
                 $query->where(['Conditions.published <> 0'])
                         ->where(['Conditions.user_id IN' => $companies]);
                 break;
-            
+
             case Defines::GROUP_ORGANIZATION_ADMIN:
                 $orgs_controll = TableRegistry::get('Organizations')
-                    ->find('user',['user_id'=>$loginUserId,'relation'=>'children'])
-                    ->select('Organizations.id');
+                        ->find('user', ['user_id' => $loginUserId, 'relation' => 'children'])
+                        ->select('Organizations.id');
                 $conditions = TableRegistry::get('ConditionsOrganizations')
                         ->find()
                         ->where(['organization_id IN' => $orgs_controll])
                         ->select('condition_id')
                         ->group('condition_id');
-                
-                $query->where(['or'=>['Conditions.id IN'=>$conditions , 'Conditions.user_id' => $loginUserId]]);
+
+                $query->where(['or' => [['Conditions.id IN' => $conditions , 'Conditions.published <> 0'], 'Conditions.user_id' => $loginUserId]]);
                 break;
         }
 
@@ -103,18 +107,18 @@ class ConditionsController extends AppController {
     public function add() {
         $loginUserId = $this->Auth->user('id');
         $loginUserGroup = $this->Auth->user('group_id');
-        
+
         $condition = $this->Conditions->newEntity(['user_id' => $loginUserId]);
-        
+
         $organizations = $this->Conditions
                 ->Organizations->find();
-        
-        if( $loginUserGroup != Defines::GROUP_ADMIN){
-            $organizations->find('user',['user_id'=>$loginUserId,'relation'=>'chldren']);
+
+        if ($loginUserGroup != Defines::GROUP_ADMIN) {
+            $organizations->find('user', ['user_id' => $loginUserId, 'relation' => 'chldren']);
         }
 
-        $condition->organizations = $organizations->toArray();        
-        
+        $condition->organizations = $organizations->toArray();
+
         return $this->_edit($condition);
     }
 
@@ -144,9 +148,9 @@ class ConditionsController extends AppController {
             $this->Flash->error(__('The condition could not be saved. Please, try again.'));
         }
 
-        $skills = MyUtil::toPathList($this->Conditions->Skills->find('usable',['user_id'=>$condition->user_id ]));
+        $skills = MyUtil::toPathList($this->Conditions->Skills->find('usable', ['user_id' => $condition->user_id]));
 
-        $organizations = TableRegistry::get('Organizations')->getListByUser( $condition->user_id );
+        $organizations = TableRegistry::get('Organizations')->getListByUser($condition->user_id);
 
         $this->set(compact('condition', 'skills', 'organizations'));
         $this->render('edit');

@@ -12,7 +12,7 @@ use App\Defines\Defines;
                     <?= $this->Form->select('user_id', $companies, ['class' => 'form-control', 'empty' => '主催者 (選択なし）']) ?>
                 </div>
                 <div class="col-3">
-                    <?= $this->Form->select('match', [null=>'条件非適合の募集も表示',1=>'条件適合のみ'], ['class' => 'form-control']) ?>
+                    <?= $this->Form->select('match', [null=>'すべての募集を表示',1=>'条件適合のみ'], ['class' => 'form-control']) ?>
                 </div>
                 <div class="col-3 text-right">
                     <button class="btn btn-primary mr-2" type="submit"><i class="fa fa-search"></i> 検索</button>

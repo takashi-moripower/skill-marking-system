@@ -1,3 +1,9 @@
+<ul>
+    <li>
+        <?= $this->Html->link('操作手引書(pdf)', "/guide/操作手引書（第1.0版）.pdf") ?>
+    </li>
+</ul>
+
 <div class="guide pt-1">
     <h2>(1) 背景・目的</h2>
     <p>

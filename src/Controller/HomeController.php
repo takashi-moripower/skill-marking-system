@@ -46,27 +46,11 @@ class HomeController extends AppController {
     }
 
     protected function _marker() {
-        $loginUserId = $this->Auth->user('id');
-        $tableOrgs = TableRegistry::get('Organizations');
-
-        $organizations = $tableOrgs
-                ->find('home',['user_id' => $loginUserId])
-                ->order('Organizations.lft');
-        
-        $this->set(compact('organizations'));
         return $this->render('marker');
     }
 
     protected function _org_admin() {
-        $loginUserId = $this->Auth->user('id');
-        $tableOrgs = TableRegistry::get('Organizations');
-
-        $organizations = $tableOrgs
-                ->find('home',['user_id' => $loginUserId])
-                ->order('Organizations.lft');
-        
-        $this->set(compact('organizations'));
-        return $this->render('marker');
+        return $this->render('org_admin');
     }
 
     protected function _engineer() {

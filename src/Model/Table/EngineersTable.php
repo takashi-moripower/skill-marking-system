@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Table;
 
 use Cake\ORM\Query;
@@ -19,8 +20,7 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Engineer[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Engineer findOrCreate($search, callable $callback = null, $options = [])
  */
-class EngineersTable extends Table
-{
+class EngineersTable extends Table {
 
     /**
      * Initialize method
@@ -28,8 +28,7 @@ class EngineersTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         parent::initialize($config);
 
         $this->setTable('engineers');
@@ -38,7 +37,8 @@ class EngineersTable extends Table
 
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
-            'joinType' => 'INNER'
+            'joinType' => 'INNER',
+            'dependent' => true,
         ]);
     }
 
@@ -48,19 +48,18 @@ class EngineersTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
-    {
+    public function validationDefault(Validator $validator) {
         $validator
-            ->integer('id')
-            ->allowEmpty('id', 'create');
+                ->integer('id')
+                ->allowEmpty('id', 'create');
 
         $validator
-            ->integer('sex')
-            ->allowEmpty('sex');
+                ->integer('sex')
+                ->allowEmpty('sex');
 
         $validator
-            ->date('birthday')
-            ->allowEmpty('birthday');
+                ->date('birthday')
+                ->allowEmpty('birthday');
 
         return $validator;
     }
@@ -72,10 +71,10 @@ class EngineersTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules)
-    {
+    public function buildRules(RulesChecker $rules) {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
 
         return $rules;
     }
+
 }

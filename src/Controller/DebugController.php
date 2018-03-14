@@ -112,24 +112,15 @@ class DebugController extends AppController {
         $this->set('users', $users);
     }
 
-    public function test() {
-    }
-    
-    public function test2(){}
+    public function Companies() {
+        $Companies = $this->loadModel('AgcjCompanies');
 
-    public function upload() {
-        $this->viewBuilder()->className('Json');
-        // シリアライズする必要があるビュー変数をセットする
-        $this->set('data', ['い','ろ','は','に']);
-        // JsonView がシリアライズするべきビュー変数を指定する
-        $this->set('_serialize', ['data']);
-    }
-    public function upload1() {
-        $this->viewBuilder()->layout(false);
-        // シリアライズする必要があるビュー変数をセットする
-        $this->set('data', ['い','ろ','は','に']);
-        // JsonView がシリアライズするべきビュー変数を指定する
-        $this->render('/Common/json');
+        $companies = $Companies->find('company')
+                ->contain('AgcjCompanyOptions')
+                ->limit(10);
+        
+        $this->set(compact('companies'));
+        $this->render('/Companies/index');
     }
 
 }

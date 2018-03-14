@@ -25,7 +25,10 @@ if ($this->request->action == 'add') {
                     <td class="junles"> <?= $this->element('works/junles') ?></td>
                 </tr>
                 <tr>
-                    <th>解説</th>
+                    <th>
+                        解説
+                        <?= $this->Element('popup_hint',['message'=>'動画や写真は、Youtube,instagramへのリンク表示も可能です']);?>
+                    </th>
                     <td><?= $this->Form->input('note', ['class' => 'form-control', 'label' => false, 'type' => 'textArea' , 'id'=>'editor']) ?></td>
                 </tr>
                 <tr>

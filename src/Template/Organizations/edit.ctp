@@ -15,13 +15,18 @@ $empty = ($group == Defines::GROUP_ADMIN);
         <table class="table table-bordered mb-0">
             <tbody>
                 <tr>
-                    <th class="">名称</th>
-                    <td class=""><?= $this->Form->text('name') ?></td>
+                    <th class="w-25">名称</th>
+                    <td class="w-75"><?= $this->Form->text('name') ?></td>
                 </tr>
                 <?php if (!empty($parentOrganizations->toArray())): ?>
                     <tr>
                         <th>親組織</th>
                         <td><?= $this->Form->control('parent_id', ['options' => $parentOrganizations, 'empty' => $empty, 'label' => false]); ?></td>
+                    </tr>
+                <?php else: ?>
+                    <tr>
+                        <th>組織コード</th>
+                        <td><?= $this->Form->control('code_prefix',['label'=>false]); ?></td>
                     </tr>
                 <?php endif; ?>
                 <tr>

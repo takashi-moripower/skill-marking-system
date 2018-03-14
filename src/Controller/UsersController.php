@@ -8,6 +8,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Event\Event;
 use \SplFileObject;
 use Cake\Utility\Hash;
+use App\Utility\MyUtil;
 
 /**
  * Users Controller
@@ -20,6 +21,7 @@ class UsersController extends AppController {
 
     public function initialize() {
         parent::initialize();
+        $this->loadComponent('SearchSession', ['actions'=>['index']]);
         $this->loadComponent('UserEdit');
     }
 
@@ -46,7 +48,7 @@ class UsersController extends AppController {
                 ->find('search', ['search' => $this->request->data])
                 ->select($this->Users)
                 ->select($this->Users->Groups)
-;
+        ;
         if ($loginUserGroup == Defines::GROUP_ORGANIZATION_ADMIN) {
             $users->find('editable', ['user_id' => $loginUserId]);
             $users->find('setDeletable', ['user_id' => $loginUserId]);
@@ -84,7 +86,6 @@ class UsersController extends AppController {
         } else {
             $this->Flash->error(__('The user could not be deleted. Please, try again.'));
         }
-
 
         return $this->redirect(['action' => 'index']);
     }
@@ -140,6 +141,11 @@ class UsersController extends AppController {
 
     public function add() {
         $loginUserId = $this->Auth->user('id');
+
+        if (empty($loginUserId)) {
+            return $this->redirect(['controller'=>'registering-users', 'action' => 'add']);
+        }
+
         $organizations = $this->Users
                 ->Organizations
                 ->find('user', ['user_id' => $loginUserId, 'relation' => 'self'])

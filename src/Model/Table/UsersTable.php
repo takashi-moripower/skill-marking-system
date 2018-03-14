@@ -53,7 +53,9 @@ class UsersTable extends Table {
         $this->hasMany('Comments', [
             'foreignKey' => 'user_id'
         ]);
-        $this->hasOne('Engineers');
+        $this->hasOne('Engineers', [
+            'dependent' => true
+        ]);
 
         $this->belongsToMany(
                 'Organizations', ['sort' => ['Organizations.lft' => 'ASC']]
@@ -373,7 +375,7 @@ class UsersTable extends Table {
      * @return type
      */
     public function findCondition($query, $options) {
-        $condition_id = Hash::get($options,'condition_id');
+        $condition_id = Hash::get($options, 'condition_id');
         $condition = TableRegistry::get('Conditions')->get($condition_id, ['contain' => ['Skills', 'ConditionOptions']]);
 
         $organizations = TableRegistry::get('ConditionsOrganizations')->find()

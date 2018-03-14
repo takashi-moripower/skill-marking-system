@@ -15,8 +15,8 @@ class Defines {
     const ALLOW_TAGS = '<br><p><img><a><div><strong><em><ul><ol><li><iframe>';
     const DATE_FRMAT = 'Y年m月d日';
     const DATE_UNDEFINED = '未定';
-
-
+    
+    
     /*
      * 数値設定
      */
@@ -254,4 +254,13 @@ class Defines {
     const SKILL_DISPLAY_FLAG_FOR_ENGINEERS = 0;
     const SKILL_DISPLAY_FLAG_FOR_WORKS = self::SKILL_DISPLAY_FLAG_DETAILED_OWNER & self::SKILL_DISPLAY_FLAG_DETAILED_VIEWER;
 
+    
+    //  ユーザー登録前のEmail確認処理の猶予時間　分単位
+    const USER_REGISTRY_TOKEN_LIMIT = 30;   
+    const USER_REGISTRY_MAIL_TITLE = self::TITLES[self::MODE_MARKING]."登録手続き";
+    
+    
+    
+    
+    const OPTION_KEY_COMPANY_DISPLAYING = 'COMPANY_DISPLAYING';
 }

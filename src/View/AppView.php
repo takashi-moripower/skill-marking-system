@@ -26,7 +26,7 @@ use Cake\Utility\Inflector;
  * @link https://book.cakephp.org/3.0/en/views.html#the-app-view
  */
 class AppView extends View {
-
+    use loginUserTrait;
     /**
      * Initialization hook method.
      *
@@ -48,22 +48,6 @@ class AppView extends View {
         return "controller-{$controller} action-{$action}";
     }
 
-    public function getLoginUser($key = null, $default = null) {
-        if (isset($key)) {
-            $key = 'Auth.User.' . $key;
-        } else {
-            $key = 'Auth.User';
-        }
-
-        $result = $this->request->session()->read($key);
-
-        if ($result === null) {
-            return $default;
-        }
-
-        return $result;
-    }
-    
     public function getMode(){
         return $this->request->session()->read('App.Mode');
     }

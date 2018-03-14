@@ -71,6 +71,7 @@ class SkillsStatisticsComponent extends StatisticsComponent {
         //検索フォーム用データ
         $organizations = $tableO->find()
                 ->find('pathName')
+                ->order(['Organizations.lft'=>'ASC'])
                 ->select($tableO->aliasField('id'))
                 ->find('list', ['keyField' => 'id', 'valueField' => 'path']);
 

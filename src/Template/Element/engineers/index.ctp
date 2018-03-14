@@ -9,8 +9,8 @@ $isConditionSearch = !empty($this->request->getData('condition_id'));
 <table class="table table-bordered table-sm mt-2">
     <thead>
         <tr class="">
-
             <th class="text-nowrap" >名称</th>
+            <th>CODE</th>
             <th class="" >所属</th>
             <th class="">
                 <div class="float-left">
@@ -29,6 +29,7 @@ $isConditionSearch = !empty($this->request->getData('condition_id'));
             <tr>
 
                 <td class="text-nowrap"><?= h($user->name) ?></th>
+                <td class="text-nowrap"><?= h($user->code) ?></th>
                 <td class="text-nowrap">
                     <?php foreach ($user->organizations as $org): ?>
                         <div><?= h($org->path_name) ?></div>

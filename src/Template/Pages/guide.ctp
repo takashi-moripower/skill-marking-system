@@ -1,6 +1,6 @@
 <ul>
     <li>
-        <?= $this->Html->link('操作手引書(pdf)', "/guide/操作手引書（第1.0版）.pdf") ?>
+        <?= $this->Html->link('操作手引書(pdf)', "/guide/操作手引書（第1.0版）.pdf",['target'=>'_blank']) ?>
     </li>
 </ul>
 

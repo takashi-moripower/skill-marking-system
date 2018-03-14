@@ -6,6 +6,9 @@ use DateTime;
 use App\Defines\Defines;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use Cake\Utility\Security;
+use Cake\Core\Configure;
+
 class MyUtil {
 
     public static function dateFormat($dateString) {
@@ -86,9 +89,35 @@ class MyUtil {
         return $list;
     }
 
-
-    public static function first_key( $array ){
-        reset( $array );
-        return each( $array )['key'];
+    public static function first_key($array) {
+        reset($array);
+        return each($array)['key'];
     }
+
+    /**
+     * ランダム文字列生成 (英数字)
+     * $length: 生成する文字数
+     */
+    public static function makeRandStr($length) {
+        $str = array_merge(range('a', 'z'), range('0', '9'), range('A', 'Z'));
+        $r_str = null;
+        for ($i = 0; $i < $length; $i++) {
+            $r_str .= $str[rand(0, count($str) - 1)];
+        }
+        return $r_str;
+    }
+
+    public static function encypt($str) {
+        $key = Configure::read('key', '12345678901234567980123456789012');
+        $salt = Configure::read('salt', 'salt');
+
+        return Security::encrypt($str, $key, $salt);
+    }
+
+    public static function decypt($str) {
+        $key = Configure::read('key', '12345678901234567980123456789012');
+        $salt = Configure::read('salt', 'salt');
+        return Security::decrypt($str, $key, $salt);
+    }
+
 }

@@ -5889,3 +5889,6 @@ img.thumbnail {
 
 .guide ol li {
   margin-bottom: 0.5rem; }
+
+.company-logo img {
+  max-height: 3rem; }

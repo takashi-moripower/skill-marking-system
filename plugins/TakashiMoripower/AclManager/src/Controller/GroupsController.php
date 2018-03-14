@@ -5,6 +5,7 @@ namespace TakashiMoripower\AclManager\Controller;
 use TakashiMoripower\AclManager\Controller\AppController;
 use Cake\Event\Event;
 use JcPires\AclManager\Event\PermissionsEditor;
+use Cake\Utility\Hash;
 
 /**
  * Groups Controller
@@ -123,6 +124,72 @@ class GroupsController extends AppController {
         $this->AclManager->acosBuilder();
 
         return $this->redirect(['action' => 'index']);
+    }
+
+    public function arosIndex() {
+        $Aros = $this->loadModel('Aros');
+
+        $aros = $Aros->find()
+                ->order('lft');
+        
+        $arosTree = $Aros->find('threaded');
+
+        $this->set(compact('aros','arosTree'));
+    }
+
+    public function arosUpdateGroups() {
+        $groups = $this->Groups->find();
+        $Aros = $this->loadModel('Aros');
+
+        $Aros->query()
+                ->delete()
+                ->where(['model' => 'Groups'])
+                ->execute();
+
+        foreach ($groups as $group) {
+            $newAro = $Aros->newEntity([
+                'foreign_key' => $group->id,
+                'model' => 'Groups'
+            ]);
+
+            $Aros->save($newAro);
+        }
+
+        $this->redirect(['action' => 'arosIndex']);
+    }
+
+    public function arosUpdateUsers() {
+        $Users = $this->loadModel('Users');
+        $Aros = $this->loadModel('Aros');
+
+        $users = $Users->find()
+                ->order('id');
+
+        $Aros->query()
+                ->delete()
+                ->where(['model' => 'Users'])
+                ->execute();
+
+        $aroGroups = $Aros->find()
+                ->where(['model' => 'Groups'])
+                ->toArray();
+
+
+        foreach ($users as $user) {
+
+            $aroGroup = Hash::extract($aroGroups, "{n}[foreign_key={$user->group_id}]");
+
+            $newAro = $Aros->newEntity([
+                'parent_id' => Hash::get($aroGroup, '0.id'),
+                'foreign_key' => $user->id,
+                'model' => 'Users'
+            ]);
+
+            $Aros->save($newAro);
+        }
+
+
+        $this->redirect(['action' => 'arosIndex']);
     }
 
 }

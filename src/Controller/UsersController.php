@@ -101,7 +101,7 @@ class UsersController extends AppController {
         $this->_login(Defines::MODE_MATCHING);
     }
 
-    public function _login($mode) {
+    protected function _login($mode) {
         $this->Auth->logout();
 
         $session = $this->request->Session();

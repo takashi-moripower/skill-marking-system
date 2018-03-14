@@ -15,7 +15,7 @@ use Cake\Utility\Hash;
                 <td class="text-nowrap">
                     <?= $this->Html->link(h($user->name), ['controller' => 'debug', 'action' => 'loginAs', $user->id]) ?>
                 </td>
-                <td>
+                <td class="text-nowrap">
                     <?= h($user->group->name) ?>
                 </td>
                 <td>

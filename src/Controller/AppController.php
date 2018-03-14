@@ -20,7 +20,7 @@ use Cake\Controller\Controller;
 use Cake\Event\Event;
 use Cake\Controller\ComponentRegistry;
 use Acl\Controller\Component\AclComponent;
-
+use Cake\Core\Configure;
 /**
  * Application Controller
  *
@@ -55,7 +55,7 @@ class AppController extends Controller {
         $this->loadComponent('Auth', [
             'authorize' => 'Controller',
             // 権限無しページに飛ぶと無限ループになったり、変なURLにリダイレクトされるのを防ぐ
-            'unauthorizedRedirect' => ['plugin' => NULL, 'controller' => 'users', 'action' => 'login'],
+            'unauthorizedRedirect' => ['plugin' => NULL, 'controller' => 'pages', 'action' => 'display' , 'deny'],
             'authError' => 'アクセス権限がありません',
             'authenticate' => [
                 'Form' => [
@@ -87,7 +87,7 @@ class AppController extends Controller {
     public function beforeFilter(Event $event) {
 
         //デバッグ時はすべてのアクションにアクセス可能にする
-        if (\Cake\Core\Configure::read('debug')) {
+        if (Configure::read('debug') && Configure::read('allow_on_debug',1) ) {
             $this->Auth->allow();
         }
     }

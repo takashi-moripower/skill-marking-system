@@ -53,4 +53,5 @@ class GroupsTable extends Table
 
         return $validator;
     }
+    
 }

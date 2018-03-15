@@ -33,6 +33,7 @@ class ContactsTable extends Table {
      */
     public function initialize(array $config) {
         parent::initialize($config);
+        $this->addBehavior('Search.Search');
 
         $this->setTable('contacts');
         $this->setDisplayField('id');
@@ -94,6 +95,19 @@ class ContactsTable extends Table {
     }
 
     /**
+     * @return \Search\Manager
+     */
+    public function searchManager() {
+        /** @var \Search\Manager $searchManager */
+        $searchManager = $this->behaviors()->Search->searchManager();
+        $searchManager
+                ->finder('states', ['alwaysRun' => true])
+                ->like('keyword', ['field' => ['Users.name','Conditions.title'], 'before' => true, 'after' => true])
+;
+        return $searchManager;
+    }
+
+    /**
      * 該当コンタクトが存在するかどうか
      * @param type $condition_id
      * @param type $user_id
@@ -109,17 +123,17 @@ class ContactsTable extends Table {
 
         return ( $count != 0 );
     }
-    
+
     /**
      * 該当コンタクトに許可を与えているかどうか
      */
-    public function isAllowed( $condition_id , $user_id , $login_user_group){
+    public function isAllowed($condition_id, $user_id, $login_user_group) {
         $contact = $this->find()
-                ->where(['condition_id'=>$condition_id,'user_id'=>$user_id])
+                ->where(['condition_id' => $condition_id, 'user_id' => $user_id])
                 ->first();
-        
-        $state = $contact->getState( $login_user_group );
-        
+
+        $state = $contact->getState($login_user_group);
+
         return ( $state == Defines::CONTACT_STATE_ALLOW );
     }
 
@@ -157,6 +171,39 @@ class ContactsTable extends Table {
                 $query
                         ->where([$this->aliasField('user_id') => $user_id]);
         }
+
+        return $query;
+    }
+
+    public function findStates($query, $options) {
+
+        $setWhereFunc = function($field, $key, $flag_allow, $flag_deny) use( $query, $options ) {
+            $flag = "({$field} & ".($flag_allow | $flag_deny).") = ";
+
+            
+            $var = Hash::get($options, $key );
+            switch ($var) {
+                case null:
+                    break;
+                
+                case Defines::CONTACT_STATE_UNDEFINED:
+                    return $query->where([$flag => 0]);
+
+                case Defines::CONTACT_STATE_ALLOW:
+                    return $query->where([$flag => $flag_allow]);
+
+                case Defines::CONTACT_STATE_DENY:
+                    return $query->where([$flag => $flag_deny]);
+                    
+            }
+
+            return $query;
+        };
+
+        $query = $setWhereFunc($this->aliasField('flags'), 'search.state_engineer', Defines::CONTACT_FLAG_ALLOW_BY_ENGINEER, Defines::CONTACT_FLAG_DENIED_BY_ENGINEER);
+        $query = $setWhereFunc($this->aliasField('flags'), 'search.state_teacher', Defines::CONTACT_FLAG_ALLOW_BY_TEACHER, Defines::CONTACT_FLAG_DENIED_BY_TEACHER);
+        $query = $setWhereFunc($this->aliasField('flags'), 'search.state_company', Defines::CONTACT_FLAG_ALLOW_BY_COMPANY, Defines::CONTACT_FLAG_DENIED_BY_COMPANY);
+
 
         return $query;
     }

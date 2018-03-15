@@ -1,5 +1,4 @@
 <?php
-
 use App\Defines\Defines;
 ?>
 <h3 class="mt-4">所属している組織の状況</h3>

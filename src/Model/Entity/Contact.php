@@ -80,4 +80,8 @@ class Contact extends Entity {
     public function clearFlag( $flags ){
         $this->flags &= $this->flags ^ $flags;
     }
+    
+    public function addFlag( $flags ){
+        $this->flags |= $flags;
+    }
 }

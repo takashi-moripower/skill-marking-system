@@ -131,10 +131,16 @@ class GroupsController extends AppController {
 
         $aros = $Aros->find()
                 ->order('lft');
-        
+
         $arosTree = $Aros->find('threaded');
 
-        $this->set(compact('aros','arosTree'));
+        $this->set(compact('aros', 'arosTree'));
+    }
+
+    public function arosClear() {
+        $this->Groups->connection()->query("TRUNCATE aros");
+        $this->Groups->connection()->query("TRUNCATE aros_acos");
+        $this->redirect(['action' => 'arosIndex']);
     }
 
     public function arosUpdateGroups() {

@@ -7,25 +7,20 @@ use App\Defines\Defines;
 
 class ContactsController extends AppController {
 
+    const GROUP_TYPE = [
+        Defines::GROUP_ADMIN => 'teacher',
+        Defines::GROUP_ORGANIZATION_ADMIN => 'teacher',
+        Defines::GROUP_MARKER => 'company',
+        Defines::GROUP_ENGINEER => 'engineer',
+    ];
+
     public function initialize() {
         parent::initialize();
 
         $loginUserGroup = $this->Auth->user('group_id');
-        switch ($loginUserGroup) {
-            case Defines::GROUP_ENGINEER:
-            default:
-                $this->loadComponent('Component', ['className' => 'ContactEngineer']);
-                break;
 
-            case Defines::GROUP_MARKER:
-                $this->loadComponent('Component', ['className' => 'ContactCompany']);
-                break;
-
-            case Defines::GROUP_ADMIN:
-            case Defines::GROUP_ORGANIZATION_ADMIN:
-                $this->loadComponent('Component', ['className' => 'ContactTeacher']);
-                break;
-        }
+        $this->loadComponent('Component', ['className' => 'Contacts', 'type' => self::GROUP_TYPE[$loginUserGroup]]);
+        $this->loadComponent('SearchSession', ['actions'=>['index']]);
     }
 
     public function index() {
@@ -33,6 +28,7 @@ class ContactsController extends AppController {
         $loginUserGroup = $this->Auth->user('group_id');
 
         $query = $this->Contacts
+                ->find('search', ['search' => $this->request->data])
                 ->find('visible', ['user_id' => $loginUserId, 'group_id' => $loginUserGroup])
                 ->contain(['Users', 'Conditions']);
         $contacts = $this->paginate($query);
@@ -43,7 +39,7 @@ class ContactsController extends AppController {
     public function add() {
         $callback_url = $this->request->data('callback_url');
 
-        if ($this->Contacts->isExists($this->request->data('condition_id'),$this->request->data('user_id'))) {
+        if ($this->Contacts->isExists($this->request->data('condition_id'), $this->request->data('user_id'))) {
             $this->Flash->error('すでに申請されています');
             return $this->redirect($callback_url);
         }
@@ -80,7 +76,7 @@ class ContactsController extends AppController {
     public function cancel() {
         $contact_id = $this->request->data('contact_id');
         $callback_url = $this->request->data('callback_url');
-        
+
         $contact = $this->Contacts->get($contact_id);
         $contact = $this->Component->cancel($contact);
 

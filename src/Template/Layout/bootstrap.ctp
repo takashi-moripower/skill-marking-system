@@ -36,11 +36,11 @@ if ($mode == Defines::MODE_MATCHING) {
         <script src="https://use.fontawesome.com/763feb1343.js"></script>
         <?php
         ?>
-        <?= $this->Html->css($style . '?v=' . $this->TimeStamp->TimeStamp("css/{$style}")) ?>
-
         <?= $this->fetch('meta') ?>
+        <?= $this->Html->css($style . '?v=' . $this->TimeStamp->TimeStamp("css/{$style}")) ?>
         <?= $this->fetch('css') ?>
         <?= $this->fetch('script') ?>
+        <?= $this->Html->script('common') ?>
     </head>
     <body class="<?= $this->bodyClass() ?>">
         <?= $this->element('header'); ?>

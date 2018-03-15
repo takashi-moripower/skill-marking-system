@@ -3,10 +3,3 @@
     <i class="fa fa-question"></i>
 </button>
 
-<?php $this->append('script') ?>
-<script>
-    $(function () {
-        $('.hint').tooltip();
-    });
-</script>
-<?php $this->end() ?>

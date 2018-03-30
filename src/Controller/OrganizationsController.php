@@ -99,7 +99,8 @@ class OrganizationsController extends AppController {
         $parentOrganizations = $this->Organizations->ParentOrganizations
                 ->find('pathName')
                 ->select('id')
-                ->find('list', ['keyField' => 'id', 'valueField' => 'path']);
+                ->find('list', ['keyField' => 'id', 'valueField' => 'path'])
+                ->order('ParentOrganizations.lft');
 
         if ($group == Defines::GROUP_ORGANIZATION_ADMIN) {
             $parentOrganizations->find('user', ['user_id' => $user->id, 'relation' => 'children']);
@@ -138,7 +139,8 @@ class OrganizationsController extends AppController {
         $parentOrganizations = $this->Organizations->ParentOrganizations
                 ->find('pathName')
                 ->select('id')
-                ->find('list', ['keyField' => 'id', 'valueField' => 'path']);
+                ->find('list', ['keyField' => 'id', 'valueField' => 'path'])
+                ->order('ParentOrganizations.lft');
 
         //GROUP_ADMINは自身の管轄下の組織以外を親にできない
         if ($group == Defines::GROUP_ORGANIZATION_ADMIN) {

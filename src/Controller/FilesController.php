@@ -13,7 +13,7 @@ use App\Controller\AppController;
  */
 class FilesController extends AppController {
 
-    public function load($id,$filename) {
+    public function load($id, $filename) {
         $this->autoRender = false;
         $file = $this->Files->get($id);
         $img = file_get_contents($file->tmp_name);
@@ -27,6 +27,13 @@ class FilesController extends AppController {
             $this->response->type($matches[2]);
         }
         $this->response->body($img);
+    }
+
+    public function index($work_id) {
+        $files = $this->Files->find()
+                ->where(['work_id' => $work_id]);
+
+        $this->set(['files' => $files]);
     }
 
 }

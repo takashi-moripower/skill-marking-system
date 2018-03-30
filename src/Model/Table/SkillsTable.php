@@ -307,4 +307,37 @@ class SkillsTable extends Table {
 
         return $result;
     }
+
+    public function getSkillsForChart() {
+        $query = $this->find()
+                ->contain('Fields')
+                ->join([
+                    'table' => 'skills_works',
+                    'alias' => 'SkillsWorks',
+                    'type' => 'right',
+                    'conditions' => 'SkillsWorks.skill_id = Skills.id'
+                ])
+                ->join([
+                    'table' => 'works',
+                    'alias' => 'Works',
+                    'type' => 'right',
+                    'conditions' => ['SkillsWorks.work_id = Works.id', 'SkillsWorks.user_id <> Works.user_id']
+                ])
+                ->group('Skills.id')
+                ->find('fieldPath')
+                ->select(['count' => 'count(SkillsWorks.level)'])
+                ->select(['average' => 'avg(SkillsWorks.level)'])
+                ->select($this)
+                ->select($this->Fields)
+                ->order(['Fields.lft' => 'ASC', 'Skills.id' => 'ASC']);
+        for ($l = 1; $l <= Defines::SKILL_LEVEL_MAX; $l++) {
+            $label = "count_{$l}";
+            $value = "count(SkillsWorks.level = {$l} or null)";
+            $query
+                    ->select([$label => $value]);
+        }
+
+        return $query;
+    }
+
 }

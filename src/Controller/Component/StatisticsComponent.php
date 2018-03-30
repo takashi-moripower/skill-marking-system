@@ -17,35 +17,10 @@ class StatisticsComponent extends Component {
 
         $works = $this->works->cleanCopy()
                 ->select('id');
-        $query = $Skills->find()
-                ->contain('Fields')
-                ->join([
-                    'table' => 'skills_works',
-                    'alias' => 'SkillsWorks',
-                    'type' => 'right',
-                    'conditions' => 'SkillsWorks.skill_id = Skills.id'
-                ])
-                ->join([
-                    'table' => 'works',
-                    'alias' => 'Works',
-                    'type' => 'right',
-                    'conditions' => ['SkillsWorks.work_id = Works.id', 'SkillsWorks.user_id <> Works.user_id']
-                ])
-                ->where(['SkillsWorks.work_id IN' => $works])
-                ->group('Skills.id')
-                ->find('fieldPath')
-                ->select(['count' => 'count(SkillsWorks.level)'])
-                ->select(['average' => 'avg(SkillsWorks.level)'])
-                ->select($Skills)
-                ->select($Skills->Fields)
-                ->order(['Fields.lft' => 'ASC', 'Skills.id' => 'ASC']);
-        for ($l = 1; $l <= Defines::SKILL_LEVEL_MAX; $l++) {
-            $label = "count_{$l}";
-            $value = "count(SkillsWorks.level = {$l} or null)";
-            $query
-                    ->select([$label => $value]);
-        }
-
+        
+        $query = $Skills->getSkillsForChart()
+                ->where(['SkillsWorks.work_id IN' => $works]);
+        
         $field_id = $this->request->data('field_id');
         if (!empty($field_id)) {
             $query->leftJoin(['RootFields' => 'fields'], ["RootFields.id" => $field_id])

@@ -40,6 +40,10 @@ $displayName = ($loginUserGroup != Defines::GROUP_ENGINEER);
                     <div class="col-4 mt-1">
                         <?= $this->Form->select('organization_id', $organizations, ['class' => 'form-control', 'empty' => 'すべて']) ?>
                     </div>
+                    <label class="col-2 col-form-label mt-1">採点日付</label>
+                    <div class="col-4 mt-1">
+                        <?= $this->Form->select('dummy-date', ['2月6日','2月20日'], ['class' => 'form-control']) ?>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>

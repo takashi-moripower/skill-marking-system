@@ -4,7 +4,7 @@ use App\Model\Entity\Skill;
 use App\Utility\MyUtil;
 use Cake\Utility\Hash;
 use App\Model\Table\SkillsTable;
-
+use Cake\ORM\TableRegistry;
 $skills = Hash::sort(Skill::findByMarker($user->skills, $user->id, true), '{n}.field.lft');
 
 $counts = SkillsTable::countSkills($skills);
@@ -15,7 +15,6 @@ foreach ($user->organizations as $organization) {
 }
 ?>
 
-<h3 class="mt-5">スキル評価　および　集団内での偏差値<?= $this->Element('popup_hint',['message'=>'評価数及び偏差値に、作者自身による評価は含まれません'])?></h3>
 <table class="table table-bordered table-sm table-deviation">
     <thead>
         <tr>
@@ -48,6 +47,7 @@ foreach ($user->organizations as $organization) {
         <?php endforeach ?>
     </tbody>
 </table>
+
 
 
 <?php $this->append('script') ?>

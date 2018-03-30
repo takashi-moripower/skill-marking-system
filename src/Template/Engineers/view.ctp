@@ -3,6 +3,7 @@
 use App\Defines\Defines;
 use Cake\Utility\Hash;
 use App\Utility\MyUtil;
+use Cake\ORM\TableRegistry;
 
 $loginUserId = $this->getLoginUser('id');
 $loginUserGroup = $this->getLoginUser('group_id');
@@ -66,4 +67,28 @@ $loginUserGroup = $this->getLoginUser('group_id');
     ?>
 </div>
 
-<?= $this->Element('engineers/deviation', ['user' => $user]) ?>
+<h3 class="my-3">データ解析<?= $this->Element('popup_hint', ['message' => '評価数及び偏差値に、作者自身による評価は含まれません']) ?></h3>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a href="#tab1" class="nav-link active" data-toggle="tab">スキル分布</a>
+    </li>
+    <li class="nav-item">
+        <a href="#tab2" class="nav-link" data-toggle="tab">偏差値</a>
+    </li>
+</ul>
+<div class="tab-content mb-5">
+    <div id="tab1" class="tab-pane active">
+        <?php
+        $skills = TableRegistry::get('Skills')->getSkillsForChart()
+                ->where(['Works.user_id' => $user->id])
+                ->where(['SkillsWorks.user_id <>' => $user->id]);
+
+        echo $this->Element('statistics/table', compact('skills'));
+        echo $this->Element('statistics/chart', compact('skills'))
+        ?>
+    </div>
+    <div id="tab2" class="tab-pane">
+        <?= $this->Element('engineers/deviation', ['user' => $user]) ?>
+    </div>
+</div>

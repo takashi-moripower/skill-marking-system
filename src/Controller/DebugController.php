@@ -118,9 +118,23 @@ class DebugController extends AppController {
         $companies = $Companies->find('company')
                 ->contain('AgcjCompanyOptions')
                 ->limit(10);
-        
+
         $this->set(compact('companies'));
         $this->render('/Companies/index');
+    }
+
+    public function test() {
+        
+    }
+
+    public function upload() {
+        $this->viewBuilder()->className('Json');
+        
+        $data =  $this->request->getData();
+        $this->set([
+            'data' => $data,
+            '_serialize' => ['data'],
+        ]);
     }
 
 }

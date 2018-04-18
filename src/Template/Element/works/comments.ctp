@@ -7,23 +7,19 @@ $edit = ($comment->user_id == $loginUserId);
     </th>
     <td>
         <?php if ($edit): ?>
-            <?= $this->Form->create($comment, ['url' => ['controller' => 'comments', 'action' => 'edit']]) ?>
-            <?= $this->Form->hidden('id') ?> 
-            <?= $this->Form->hidden('work_id') ?> 
             <div class="row">
                 <div class="col-10">
-                    <?= $this->Form->textArea('comment', ['class' => 'w-100', 'style' => 'height:4rem']) ?>
+                    <?= $this->Form->textArea('comment', ['class' => 'w-100', 'style' => 'height:4rem', 'comment_id' => $comment->id, 'value' => $comment->comment]) ?>
                 </div>
                 <div class="col-2 text-right">
-                    <button class="btn btn-small btn-outline-primary btn-sm" name="action" value="edit">
+                    <button class="btn btn-outline-primary btn-sm btn-edit-comment" type="button "comment_id="<?= $comment->id ?>">
                         編集
                     </button>
-                    <button class="btn btn-small btn-outline-danger btn-sm" name="action" value="delete">
+                    <button class="btn btn-outline-danger btn-sm btn-delete-comment" type="button "comment_id="<?= $comment->id ?>">
                         削除
                     </button>
                 </div>
             </div>
-            <?= $this->Form->end() ?>
         <?php else: ?>
             <?= $comment->comment ?>
         <?php endif; ?>

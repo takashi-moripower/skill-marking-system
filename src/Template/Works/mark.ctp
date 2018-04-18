@@ -39,95 +39,24 @@ $loginUserGroup = $this->getLoginUser('group_id');
                     <th>解説</th>
                     <td><?= MyUtil::strip_tags($work->note) ?></td>
                 </tr>
-                <tr>
-                    <th>添付ファイル</th>
-                    <td>
-                        <?php foreach ($work->files as $file): ?>
-                            <?= $this->Element('files/thumbnail', ['file' => $file]) ?>
-                        <?php endforeach; ?>
-                    </td>
-                </tr>
+                <?php if (!empty($work->files)): ?>
+                    <tr>
+                        <th>添付ファイル</th>
+                        <td>
+                            <?php foreach ($work->files as $file): ?>
+                                <?= $this->Element('files/thumbnail', ['file' => $file]) ?>
+                            <?php endforeach; ?>
+                        </td>
+                    </tr>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
 </div>
-<div class="card mt-1">
-    <div class="card-body p-0">
-        <table class="table mb-0">
-            <tbody role="skills">
-                <tr>
-                    <th class="w-20 border-top-0">
-                        作者の採点
-                    </th>
-                    <td class=" border-top-0">
-                        <?php
-                        echo $this->Element('skills/colored_skills', ['skills' => $work->getSkillsBy($work->user_id), 'user_id' => $work->user_id]);
-                        ?>
-                    </td>
-                </tr>
-                <tr>
-                    <th><?= h($this->getLoginUser('name')) ?> 以外の採点</th>
-                    <td>
-                        <?php
-                        echo $this->Element('skills/colored_skills', ['skills' => $work->getSkillsBy($loginUserId, 1)]);
-                        ?>
-                    </td>
-                </tr>
-                <tr>
-                    <th>
-                        <?= h($this->getLoginUser('name')) ?> の採点
-                        <?= $this->Element('popup_hint', ['message' => 'スキルレベルボタンをクリックすると即座に情報は保存されます']) ?>
-                    </th>
-                    <td>
-                        <?php
-                        $skills = $work->getSkillsBy($loginUserId);
-                        foreach ($skills as $skill):
-                            echo $this->Element('works/loginUserMark', compact('skill', 'loginUserId'));
-                        endforeach;
-                        echo $this->Element('works/newMark', compact('loginUserId'));
-                        ?>
-
-                        <?php ?>
-
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-<div class="card mt-1">
-
-    <div class="card-boty p-0">
-        <table class="table mb-0">
-            <tbody role="comments">
-                <?php foreach ($work->comments as $comment): ?>
-                    <?= $this->Element('works/comments', compact('comment', 'loginUserId')) ?>
-                <?php endforeach ?>
-                <tr>
-                    <th class="w-20 border-top-0">コメント</th>
-                    <td class="border-top-0">
-                        <?= $this->Form->create(null, ['url' => ['controller' => 'comments', 'action' => 'add']]); ?>
-                        <div class="row">
-                            <div class="col-10">
-                                <?= $this->Form->textArea('comment', ['class' => 'w-100', 'style' => 'height:4rem']) ?>
-
-                            </div>
-                            <div class="col-2 text-right">
-                                <?= $this->Form->button('追加', ['class' => 'btn btn-outline-primary btn-sm']) ?>
-                            </div>
-                        </div>
-                        <?= $this->Form->hidden('user_id', ['value' => $loginUserId]) ?>
-                        <?= $this->Form->hidden('work_id', ['value' => $work->id]) ?>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<?= $this->Form->end() ?>
-
-
+<section name="ajax-skills">
+</section>
+<section name="ajax-comments">
+</section>
 <div class="text-right">
 
     <div class="text-right mt-1">
@@ -140,33 +69,113 @@ $loginUserGroup = $this->getLoginUser('group_id');
         ?>
     </div>
 </div>
-<?php $this->append('script'); ?>
+<?php $this->append('script') ?>
 <script>
-
-    var skillUpdated = '<?= isset($skillUpdated) ? $skillUpdated : null; ?>';
-
+    var URL_AJAX_SKILLS = '<?= $this->Url->build(['controller' => 'works', 'action' => 'ajax_skills',$work->id]); ?>';
+    var URL_AJAX_COMMENTS = '<?= $this->Url->build(['controller' => 'works', 'action' => 'ajax_comments',$work->id]); ?>';
+    var loginUserId = <?= $loginUserId ?>;
+    var work_id = <?= $work->id ?>;
     $(function () {
-        if (skillUpdated !== '') {
-            $("html,body").scrollTop($('tbody[role="skills"]').offset().top);
 
-            console.log('focus');
+        updateSkills(null);
+        updateNewSkill(null);
+        updateComments(null);
+
+        $(document).on('click', '.btn[skill_id][level]', postSkill);
+        $(document).on('change', 'select[name="new_skill_id"]', updateNewSkill);
+        $(document).on('click', '.btn.btn-add-comment', addComment);
+        $(document).on('click', '.btn.btn-edit-comment', editComment);
+        $(document).on('click', '.btn.btn-delete-comment', deleteComment);
+
+
+        function editComment(e) {
+            var comment_id = $(e.currentTarget).attr('comment_id');
+            var comment = $('textarea[comment_id="' + comment_id + '"]').val();
+            var data = {
+                id: comment_id,
+                work_id: work_id,
+                user_id: loginUserId,
+                comment: comment
+            };
+
+            updateComments(data);
+        }
+
+        function deleteComment(e) {
+            var comment_id = $(e.currentTarget).attr('comment_id');
+
+            var data = {
+                id: comment_id,
+                work_id: work_id,
+                user_id: loginUserId,
+                comment: null
+            };
+
+            updateComments(data);
+        }
+
+        function addComment(e) {
+            var comment = $('textarea[name="new-comment"]').val();
+            var data = {
+                work_id: work_id,
+                user_id: loginUserId,
+                comment: comment
+            };
+            updateComments(data);
         }
 
 
-        $('form.form-add').on('change', 'select[name="skill_id"]', function (event) {
-            form = $(event.target).parents('form.form-add');
-            skill_id = form.find('select[name="skill_id"]').val();
-            if (skill_id === '') {
-                $('form.form-add .btn.btn-skill-selector').attr('disabled', 'disabled');
+        function postSkill(e) {
+            var skill_id = $(e.currentTarget).attr('skill_id');
+            var level = $(e.currentTarget).attr('level');
+            var data = {
+                work_id: work_id,
+                skill_id: skill_id,
+                user_id: loginUserId,
+                level: level
+            };
+            updateSkills({data: data, method: "post"});
+        }
+
+        function updateSkills(data) {
+            update(URL_AJAX_SKILLS,data,"ajax-skills");
+        }
+
+        function updateComments(data) {
+            update(URL_AJAX_COMMENTS,data,"ajax-comments");
+        }
+
+        function update(url, data, section_name) {
+            var data_post;
+            if (data !== null) {
+                data_post = {
+                    data: data,
+                    method: 'post'
+                };
             } else {
-                $('form.form-add .btn.btn-skill-selector').removeAttr('disabled');
+                data_post = null;
             }
 
-        });
+            $.ajax(url, data_post)
+                    .done(function (result) {
+                        $('section[name="' + section_name + '"]').html(result);
+                    });
+        }
 
-        $('tbody[role="comments"]').on('click', 'button[value="delete"]', function (event) {
-            return confirm('realy delete?');
-        });
+        function updateNewSkill(e) {
+            var skill_id = $('select[name="new_skill_id"]').val();
+            console.log(skill_id);
+
+            var btn = $('.new-skill .btn.btn-skill-selector');
+            if (skill_id == '') {
+                btn.attr('disabled', 'disabled');
+                btn.removeAttr('skill_id');
+            } else {
+                btn.removeAttr('disabled');
+                btn.attr('skill_id', skill_id);
+            }
+        }
+
 
     });
 </script>

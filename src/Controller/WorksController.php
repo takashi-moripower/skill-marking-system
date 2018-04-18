@@ -39,7 +39,7 @@ class WorksController extends AppController {
             'contain' => [
                 'Users' => ['fields' => ['id', 'name']],
                 'Junles' => ['sort' => ['Junles.id' => 'ASC']],
-                'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'finder' => ['fieldPath'], 'fields' => ['id', 'name', 'field_id', 'SkillsWorks.level', 'SkillsWorks.work_id']],
+                'Skills' => ['Fields', 'sort' => ['Fields.lft' => 'ASC', 'Skills.id'], 'finder' => ['fieldPath'], 'fields' => ['id', 'name', 'field_id', 'SkillsWorks.level', 'SkillsWorks.work_id', 'Fields.lft']],
             ]
         ];
 
@@ -130,64 +130,140 @@ class WorksController extends AppController {
     }
 
     public function mark($workId) {
-        if ($this->request->is('POST')) {
-            $this->_postMark($workId);
-        }
-        $loginUserId = $this->Auth->user('id');
-
-        $tableSW = TableRegistry::get('skills_works');
-        $tableS = TableRegistry::get('skills');
-
-        $markerId = $this->Auth->user('id');
-
         $work = $this->Works->find()
                 ->where(['Works.id' => $workId])
                 ->contain([
-                    'Users' => ['fields' => ['Users.id', 'name'] , 'Organizations'],
-                    'Files',
+                    'Users' => 'Organizations',
                     'Junles',
-                    'Comments' => ['Users' => ['fields' => ['name']]],
-                    'Skills' => ['sort' => ['SkillsWorks.level' => 'DESC'], 'finder' => ['fieldPath'], 'fields' => ['id', 'name', 'field_id', 'SkillsWorks.level', 'SkillsWorks.work_id']],
+                    'Files'
                 ])
                 ->first();
-
-        //作者による自己評価のあるスキル＝評価希望のスキル
-        $skillsRequested = Hash::extract($work->getSkillsBy($work->user_id), '{n}.id');
-
-        //ログインユーザーによる評価済のスキル
-        $skillsUsed = Hash::extract($work->getSkillsBy($loginUserId), '{n}.id');
-
-        $skillsToReply = array_diff($skillsRequested, $skillsUsed);
-
-        foreach ($skillsToReply as $skillId) {
-            $replySkill = $tableS->get($skillId);
-            $replySkill->_joinData = TableRegistry::get('SkillsWorks')->newEntity([
-                'skill_id' => $skillId,
-                'user_id' => $loginUserId,
-                'work_id' => $workId,
-                'level' => 0
-            ]);
-
-            array_push($work->skills, $replySkill);
-        }
-        
-        $skillsUsed += $skillsToReply;
-
-        //追加用リスト　ログインユーザーが未使用のスキル
-        $skillsUnUsed = $tableS->find('usable', ['user_id' => $loginUserId]);
-
-        if (!empty($skillsUsed)) {
-            $skillsUnUsed
-                    ->where([$tableS->aliasField('id') . ' not IN ' => $skillsUsed]);
-        }
-
-        $skillsToSet = MyUtil::toPathList($skillsUnUsed);
-        $this->set(compact('work', 'skillsToSet'));
+        $this->set(compact('work'));
     }
 
-    protected function _postMark($workId) {
+    public function ajaxComments($workId) {
+        $this->viewBuilder()->enableAutoLayout(false);
+
+        if ($this->request->is('POST')) {
+            $this->_postComment();
+        }
+
+        $work = $this->Works->get($workId, ['contain' => ['Comments' => 'Users']]);
+        $this->set(compact('work'));
+    }
+
+    protected function _postComment() {
+        $data = $this->request->data();
+        if (empty($data)) {
+            return;
+        }
+
+        $Comments = $this->loadModel('Comments');
+
+        if (isset($data["id"])) {
+            $comment = $Comments->get($data["id"]);
+        } else {
+            $comment = $Comments->newEntity();
+        }
+
+        $Comments->patchEntity($comment, $data);
+
+        //本文未設定or空の場合
+        if (!isset($comment->comment) || trim($comment->comment) == '') {
+            //ID設定済みなら削除
+            if (isset($comment->id)) {
+                $Comments->delete($comment);
+            }
+            //ID未設定なら何もしない
+            return;
+        }
+
+        $Comments->save($comment);
+        return;
+    }
+
+    public function ajaxSkills($workId) {
+        $this->viewBuilder()->enableAutoLayout(false);
+
+        if ($this->request->is('POST')) {
+            $this->_postMark();
+        }
+
+
+
+        $Skills = $this->loadModel('Skills');
+        $loginUserId = $this->Auth->user('id');
+
+
+
+        $work = $this->Works->get($workId);
+
+        $creatorId = $work->user_id;
+
+        //作者による評価
+        $skillsBySelf = $Skills->find('fieldPath')
+                ->select($Skills)
+                ->select(['SkillsWorks.level'])
+                ->select(['Fields.lft'])
+                ->leftJoin(['SkillsWorks' => 'skills_works'], ['Skills.id = SkillsWorks.skill_id'])
+                ->leftJoin(['Fields' => 'fields'], ['Skills.field_id = Fields.id'])
+                ->order(['Fields.lft' => 'ASC', 'Skills.id' => 'ASC', 'SkillsWorks.level' => 'DESC'])
+                ->where(['SkillsWorks.work_id' => $workId, 'SkillsWorks.user_id' => $creatorId]);
+
+        //作者、ログインユーザー以外からの評価
+        $skillsByOther = $Skills->find('fieldPath')
+                ->select($Skills)
+                ->select(['SkillsWorks.level'])
+                ->select(['Fields.lft'])
+                ->leftJoin(['SkillsWorks' => 'skills_works'], ['Skills.id = SkillsWorks.skill_id'])
+                ->leftJoin(['Fields' => 'fields'], ['Skills.field_id = Fields.id'])
+                ->order(['Fields.lft' => 'ASC', 'Skills.id' => 'ASC', 'SkillsWorks.level' => 'DESC'])
+                ->where(['SkillsWorks.work_id' => $workId, 'SkillsWorks.user_id NOT IN' => [$work->user_id, $loginUserId]]);
+        $skillsByOther = \App\Model\Entity\Skill::findMaxLevel($skillsByOther);
+
+        //作者による評価　＝　評価希望項目
+        $skillsRequested = $this->loadModel('SkillsWorks')->find()
+                ->where(['work_id' => $workId, 'user_id' => $creatorId])
+                ->select('Skill_id');
+
+        //ログインユーザーが採点済みの項目
+        $skillsMarked = $this->loadModel('SkillsWorks')->find()
+                ->where(['work_id' => $workId, 'user_id' => $loginUserId])
+                ->select('Skill_id');
+
+        //評価済みor評価希望項目
+        $skillsByLoginUser = $Skills->find('fieldPath')
+                ->select($Skills)
+                ->select(['SkillsWorks.level'])
+                ->select(['Fields.lft'])
+                ->leftJoin(['SkillsWorks' => 'skills_works'], ['Skills.id = SkillsWorks.skill_id', 'SkillsWorks.work_id' => $workId, 'SkillsWorks.user_id' => $loginUserId])
+                ->leftJoin(['Fields' => 'fields'], ['Skills.field_id = Fields.id'])
+                ->order(['Fields.lft' => 'ASC', 'Skills.id' => 'ASC', 'SkillsWorks.level' => 'DESC'])
+                ->where(['or' => [
+                'Skills.id IN' => $skillsRequested,
+                'Skills.id in' => $skillsMarked,
+        ]]);
+
+        //追加用リスト　ログインユーザーが未使用のスキル
+        $skillsUnused = $Skills->find('usable', ['user_id' => $loginUserId])
+                ->where(['Skills.id NOT IN' => $skillsMarked]);
+
+        $skillsUnused = MyUtil::toPathList($skillsUnused);
+
+
+
+        $this->set(compact('skillsBySelf', 'skillsByOther', 'skillsByLoginUser', 'skillsUnused'));
+        $this->set('work', $work);
+    }
+
+    protected function _postMark() {
         $tableSW = TableRegistry::get('SkillsWorks');
         $data = $this->request->data();
+
+        if (empty($data)) {
+            return;
+        }
+
         $level = $data['level'];
 
         $param = [

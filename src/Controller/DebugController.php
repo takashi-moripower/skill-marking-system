@@ -124,7 +124,6 @@ class DebugController extends AppController {
     }
 
     public function test() {
-        
     }
 
     public function upload() {

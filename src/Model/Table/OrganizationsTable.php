@@ -210,7 +210,10 @@ class OrganizationsTable extends Table {
     public function getListByUser($user_id, $group_id = null) {
 
         if ($group_id == null) {
-            $user = TableRegistry::get('Users')->get($user_id);
+            $user = TableRegistry::get('Users')
+                    ->find()
+                    ->where(['id'=>$user_id])
+                    ->first();
             $group_id = $user->group_id;
         }
 

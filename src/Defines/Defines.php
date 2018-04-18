@@ -184,6 +184,13 @@ class Defines {
             ],
         ],
     ];
+    
+    const ACTION_LABEL = [
+        'edit'=>'編集',
+        'view'=>'閲覧',
+        'delete'=>'削除'
+    ];
+    
     const ENCODING = [
         'SJIS-win',
         'UTF-8',

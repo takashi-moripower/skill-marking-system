@@ -30,7 +30,6 @@
     "autoload": {
         "psr-4": {
             "App\\": "src",
-            "TakashiMoripower\\AclManager\\": "./plugins/TakashiMoripower/AclManager/src",
             "TakashiMoripower\\CakeOpauth\\": "./plugins/TakashiMoripower/CakeOpauth/src"
         }
     },

@@ -140,6 +140,11 @@ class Skill extends Entity {
         }
 
         usort($result, function($a, $b) {
+            $fl = Hash::get($a, 'field.lft',Hash::get($a,'Fields.lft')) - Hash::get($b, 'field.lft',Hash::get($b,'Fields.lft'));
+
+            if ($fl) {
+                return $fl;
+            }
             return $b->level - $a->level;
         });
 

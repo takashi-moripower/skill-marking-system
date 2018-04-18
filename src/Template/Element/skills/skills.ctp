@@ -1,5 +1,8 @@
 <?php
+
 foreach ($skills as $skill) {
-    $class = "";
+    if (!isset($class)) {
+        $class = "";
+    }
     echo $this->Element('skills/skill', compact('skill', 'class'));
 }
